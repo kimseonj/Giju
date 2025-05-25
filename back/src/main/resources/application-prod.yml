@@ -18,4 +18,4 @@ spring:
         show-sql: true
 
 app:
-  base-url: test
+  base-url: http://43.200.226.212:8080
