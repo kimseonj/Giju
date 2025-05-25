@@ -200,6 +200,10 @@ public class PaymentServiceImpl implements PaymentService {
         boolean isValid = canceledDetails.stream()
                 .allMatch(detail -> detail.getOrder().getId().equals(order.getId()));
 
+        for (OrderDetail detail : canceledDetails) {
+            detail.cancel();
+        }
+
         if (!isValid) {
             throw new CustomException(ErrorCode.INVALID_CANCEL_ITEM);
         }

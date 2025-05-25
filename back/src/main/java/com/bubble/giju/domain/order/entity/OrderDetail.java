@@ -31,11 +31,20 @@ public class OrderDetail {
     @JoinColumn(name = "order_id", referencedColumnName = "order_id")
     private Order order;
 
+    @Column(name = "is_canceled")
+    private boolean canceled;
+
+
     @Builder
-    public OrderDetail(String drinkName, int price, int quantity, Order order) {
+    public OrderDetail(String drinkName, int price, int quantity, Order order, boolean canceled) {
         this.drinkName = drinkName;
         this.price = price;
         this.quantity = quantity;
         this.order = order;
+        this.canceled = canceled;
+    }
+
+    public void cancel() {
+        this.canceled = true;
     }
 }

@@ -1,15 +1,20 @@
 package com.bubble.giju.domain.order.service.serviceImpl;
 
+import com.amazonaws.services.s3.model.GetRequestPaymentConfigurationRequest;
 import com.bubble.giju.domain.cart.entity.Cart;
 import com.bubble.giju.domain.cart.repository.CartRepository;
 import com.bubble.giju.domain.drink.entity.Drink;
 import com.bubble.giju.domain.order.dto.request.OrderRequestDto;
+import com.bubble.giju.domain.order.dto.response.OrderHistoryResonseDto;
+import com.bubble.giju.domain.order.dto.response.OrderItemDto;
 import com.bubble.giju.domain.order.dto.response.OrderResponseDto;
 import com.bubble.giju.domain.order.entity.Order;
 import com.bubble.giju.domain.order.entity.OrderDetail;
 import com.bubble.giju.domain.order.entity.OrderStatus;
 import com.bubble.giju.domain.order.repository.OrderRepository;
 import com.bubble.giju.domain.order.service.OrderService;
+import com.bubble.giju.domain.payment.entity.Payment;
+import com.bubble.giju.domain.payment.repository.PaymentRepository;
 import com.bubble.giju.domain.user.dto.CustomPrincipal;
 import com.bubble.giju.domain.user.entity.User;
 import com.bubble.giju.domain.user.repository.UserRepository;
@@ -34,6 +39,7 @@ public class OrderServiceImpl implements OrderService {
     private final OrderRepository orderRepository;
     private final UserRepository userRepository;
     private final CartRepository cartRepository;
+    private final PaymentRepository paymentRepository;
 
     @Value("${app.base-url}")
     private String baseUrl;
@@ -124,6 +130,53 @@ public class OrderServiceImpl implements OrderService {
     private int calculateDeliveryCharge(int totalAmount) {
         return totalAmount >= 30000 ? 0 : deliveryCharge;
     }
+
+
+    @Transactional(readOnly = true)
+    @Override
+    public List<OrderHistoryResonseDto> getOrderHistory(CustomPrincipal principal) {
+
+        User user = userRepository.findById(UUID.fromString(principal.getUserId()))
+                .orElseThrow(() -> new CustomException(ErrorCode.NON_EXISTENT_USER));
+
+        // 2. 유저의 주문 목록 중 성공/부분취소만 필터링
+        List<Order> orders = orderRepository.findAllByUser(user).stream()
+                .filter(order -> {
+                    OrderStatus status = order.getOrderStatus();
+                    return status == OrderStatus.SUCCEEDED
+                            || status == OrderStatus.PARTIALLY_CANCELED
+                            || status == OrderStatus.CANCELED;
+                })
+                .toList();
+
+        // 3. 주문 정보를 DTO로 변환
+        return orders.stream()
+                .map(order -> {
+                    Payment payment = paymentRepository.findByOrder(order)
+                            .orElseThrow(() -> new CustomException(ErrorCode.PAYMENT_NOT_FOUND));
+
+                    List<OrderItemDto> items = order.getOrderDetails().stream()
+                            .map(detail -> OrderItemDto.builder()
+                                    .drinkName(detail.getDrinkName())
+                                    .price(detail.getPrice())
+                                    .quantity(detail.getQuantity())
+                                    .totalPrice(detail.getPrice() * detail.getQuantity())
+                                    .canceled(detail.isCanceled()) // 필요 시 cancel 정보 매핑
+                                    .build())
+                            .toList();
+
+                    return OrderHistoryResonseDto.builder()
+                            .orderId(order.getId())
+                            .orderedAt(order.getCreatedAt())
+                            .orderStatus(order.getOrderStatus().name())
+                            .totalAmount(order.getTotalAmount())
+                            .paymentMethod(payment != null ? payment.getPaymentMethod() : "결제 정보 없음")
+                            .items(items)
+                            .build();
+                })
+                .toList();
+    }
+
 
 
     //tossPayment 결제 결과에 따른 order 주문 상태 변화
