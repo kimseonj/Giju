@@ -193,17 +193,7 @@ public class OrderServiceImpl implements OrderService {
         }
 
         // 환불 요청 대상 조회 및 검증, 여러 개 ID 한번에 조회
-        List<OrderDetail> refundItems = orderDetailRepository.findAllById(requestDto.getRefundItemIds());
-
-        for (OrderDetail detail : refundItems) {
-            Long detailId = detail.getId();
-            Long detailOrderId = detail.getOrder().getId();
-
-            log.info("▶ OrderDetail ID: {}", detailId);
-            log.info(" - 주문 ID 일치 여부: {}", detailOrderId.equals(order.getId()));
-            log.info(" - 취소 여부 (isCanceled): {}", detail.isCanceled());
-            log.info(" - 환불 요청 여부 (isRefundRequested): {}", detail.isRefundRequested());
-        }
+        List<OrderDetail> refundItems = orderDetailRepository.findAllById(requestDto.getOrderDetailId());
 
 
         // 검증
