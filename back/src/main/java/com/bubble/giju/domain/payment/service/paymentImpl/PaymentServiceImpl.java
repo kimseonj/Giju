@@ -43,6 +43,7 @@ public class PaymentServiceImpl implements PaymentService {
     private final PaymentCancelInfoRepository paymentCancelInfoRepository;
     private final PaymentFailInfoRepository paymentFailInfoRepository;
     private final OrderDetailRepository orderDetailRepository;
+    private final UserRepository userRepository;
 
     private static final String CANCEL_REASON = "결제 정보 불일치로 인한 자동 취소";
     private final CartRepository cartRepository;
@@ -143,8 +144,22 @@ public class PaymentServiceImpl implements PaymentService {
 
     @Transactional
     @Override
-    public PaymentCancelResponseDto paymentCancel(PaymentCancelRequestDto paymentCancelRequestDto) {
+    public PaymentCancelResponseDto paymentCancel(PaymentCancelRequestDto paymentCancelRequestDto, CustomPrincipal principal) {
+        User user = userRepository.findById(UUID.fromString(principal.getUserId()))
+                .orElseThrow(() -> new CustomException(ErrorCode.NON_EXISTENT_USER));
+
         Order order = getOrder(paymentCancelRequestDto.getOrderId());
+
+        // 사용자 권한 확인
+        if (!order.getUser().getUserId().equals(user.getUserId())) {
+            throw new CustomException(ErrorCode.UNAUTHORIZED_USER);
+        }
+
+        // 주문 상태 확인
+        if (order.getOrderStatus() != OrderStatus.SUCCEEDED) {
+            throw new CustomException(ErrorCode.CANNOT_CANCEL_THIS_ORDER);
+        }
+
         Payment payment = paymentRepository.findByOrder(order)
                 .orElseThrow(()-> new CustomException(ErrorCode.PAYMENT_NOT_FOUND));
 

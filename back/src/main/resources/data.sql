@@ -69,10 +69,49 @@ INSERT INTO order_detail (
     price,
     quantity,
     drink_name,
-    order_id
+    order_id,
+    is_canceled,
+    is_refund_requested,
+    is_refunded
 ) VALUES
-      (1, 10000, 1, '막걸리', 1),
-      (2, 12000, 1, '서울의밤', 1);
+      (1, 10000, 1, '막걸리', 1, false, false, false),
+      (2, 12000, 1, '서울의밤', 1, false, false, false);
+
+
+INSERT INTO Orders (
+    order_id,
+    total_amount,
+    created_at,
+    order_status,
+    delivery_charge,
+    is_deleted,
+    order_name,
+    deleted_at,
+    user_id
+) VALUES (
+             2,
+             22000,
+             '2025-05-25T16:47:00',
+             'DELIVERED',
+             3000,
+             false,
+             'testuser1의 두번째 주문',
+             NULL,
+             '11111111-1111-1111-1111-111111111112'
+         );
+
+INSERT INTO order_detail (
+    order_detail_id,
+    price,
+    quantity,
+    drink_name,
+    order_id,
+    is_canceled,
+    is_refund_requested,
+    is_refunded
+) VALUES
+      (3, 10000, 1, '막걸리', 2, false, false, false),
+      (4, 12000, 1, '서울의밤', 2, false, false, false);
 
 
 INSERT INTO Deliveries(delivery_id,delivery_company_id,order_id,delivery_num)

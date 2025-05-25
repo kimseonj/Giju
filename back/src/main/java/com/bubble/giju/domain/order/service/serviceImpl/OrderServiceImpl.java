@@ -1,16 +1,14 @@
 package com.bubble.giju.domain.order.service.serviceImpl;
 
-import com.amazonaws.services.s3.model.GetRequestPaymentConfigurationRequest;
 import com.bubble.giju.domain.cart.entity.Cart;
 import com.bubble.giju.domain.cart.repository.CartRepository;
 import com.bubble.giju.domain.drink.entity.Drink;
-import com.bubble.giju.domain.order.dto.request.OrderRequestDto;
-import com.bubble.giju.domain.order.dto.response.OrderHistoryResonseDto;
-import com.bubble.giju.domain.order.dto.response.OrderItemDto;
-import com.bubble.giju.domain.order.dto.response.OrderResponseDto;
+import com.bubble.giju.domain.order.dto.request.RefundRequestDto;
+import com.bubble.giju.domain.order.dto.response.*;
 import com.bubble.giju.domain.order.entity.Order;
 import com.bubble.giju.domain.order.entity.OrderDetail;
 import com.bubble.giju.domain.order.entity.OrderStatus;
+import com.bubble.giju.domain.order.repository.OrderDetailRepository;
 import com.bubble.giju.domain.order.repository.OrderRepository;
 import com.bubble.giju.domain.order.service.OrderService;
 import com.bubble.giju.domain.payment.entity.Payment;
@@ -20,7 +18,6 @@ import com.bubble.giju.domain.user.entity.User;
 import com.bubble.giju.domain.user.repository.UserRepository;
 import com.bubble.giju.global.config.CustomException;
 import com.bubble.giju.global.config.ErrorCode;
-import jakarta.persistence.Id;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Value;
@@ -40,6 +37,7 @@ public class OrderServiceImpl implements OrderService {
     private final UserRepository userRepository;
     private final CartRepository cartRepository;
     private final PaymentRepository paymentRepository;
+    private final OrderDetailRepository orderDetailRepository;
 
     @Value("${app.base-url}")
     private String baseUrl;
@@ -85,7 +83,7 @@ public class OrderServiceImpl implements OrderService {
             // orderDetail 생성
             OrderDetail orderDetail = OrderDetail.builder()
                     .drinkName(drink.getName())
-                    .price(price)
+                    .price(price*quantity)
                     .quantity(quantity)
                     .order(order)
                     .build();
@@ -97,12 +95,12 @@ public class OrderServiceImpl implements OrderService {
 
         return OrderResponseDto.builder()
                 .orderId(savedOrder.getId().toString()) //토스페이먼츠서버로 보내기 위해 String변환
-                .amount(savedOrder.getTotalAmount()+savedOrder.getDeliveryCharge()) // 상품값 + 배달비
+                .amount(savedOrder.getTotalAmount() + savedOrder.getDeliveryCharge()) // 상품값 + 배달비
                 .orderName(savedOrder.getOrderName())
                 .customerEmail(user.getEmail())
                 .customerName(user.getName())
-                .successUrl(baseUrl+successUrl)
-                .failUrl(baseUrl+failUrl)
+                .successUrl(baseUrl + successUrl)
+                .failUrl(baseUrl + failUrl)
                 .build();
     }
 
@@ -139,7 +137,7 @@ public class OrderServiceImpl implements OrderService {
         User user = userRepository.findById(UUID.fromString(principal.getUserId()))
                 .orElseThrow(() -> new CustomException(ErrorCode.NON_EXISTENT_USER));
 
-        // 2. 유저의 주문 목록 중 성공/부분취소만 필터링
+        // 유저의 주문 목록 중 성공/부분취소만 필터링
         List<Order> orders = orderRepository.findAllByUser(user).stream()
                 .filter(order -> {
                     OrderStatus status = order.getOrderStatus();
@@ -149,7 +147,7 @@ public class OrderServiceImpl implements OrderService {
                 })
                 .toList();
 
-        // 3. 주문 정보를 DTO로 변환
+        // 주문 정보를 DTO로 변환
         return orders.stream()
                 .map(order -> {
                     Payment payment = paymentRepository.findByOrder(order)
@@ -161,7 +159,7 @@ public class OrderServiceImpl implements OrderService {
                                     .price(detail.getPrice())
                                     .quantity(detail.getQuantity())
                                     .totalPrice(detail.getPrice() * detail.getQuantity())
-                                    .canceled(detail.isCanceled()) // 필요 시 cancel 정보 매핑
+                                    .canceled(detail.isCanceled())
                                     .build())
                             .toList();
 
@@ -178,13 +176,63 @@ public class OrderServiceImpl implements OrderService {
     }
 
 
-
-    //tossPayment 결제 결과에 따른 order 주문 상태 변화
     @Transactional
-    public void updateOrderStatus(Long orderId, OrderStatus orderStatus) {
-        Order order = orderRepository.findById(orderId)
+    public RefundResponseDto requestRefund(RefundRequestDto requestDto, CustomPrincipal principal) {
+        UUID userId = UUID.fromString(principal.getUserId());
+
+        // 주문 조회 및 검증
+        Order order = orderRepository.findById(requestDto.getOrderId())
                 .orElseThrow(() -> new CustomException(ErrorCode.NON_EXISTENT_ORDER));
-        order.updateStatus(orderStatus);
+
+        if (!order.getUser().getUserId().equals(userId)) {
+            throw new CustomException(ErrorCode.UNAUTHORIZED_USER);
+        }
+
+        if (order.getOrderStatus() != OrderStatus.DELIVERED) {
+            throw new CustomException(ErrorCode.CANNOT_REFUND_THIS_ORDER);
+        }
+
+        // 환불 요청 대상 조회 및 검증, 여러 개 ID 한번에 조회
+        List<OrderDetail> refundItems = orderDetailRepository.findAllById(requestDto.getRefundItemIds());
+
+        for (OrderDetail detail : refundItems) {
+            Long detailId = detail.getId();
+            Long detailOrderId = detail.getOrder().getId();
+
+            log.info("▶ OrderDetail ID: {}", detailId);
+            log.info(" - 주문 ID 일치 여부: {}", detailOrderId.equals(order.getId()));
+            log.info(" - 취소 여부 (isCanceled): {}", detail.isCanceled());
+            log.info(" - 환불 요청 여부 (isRefundRequested): {}", detail.isRefundRequested());
+        }
+
+
+        // 검증
+        boolean isValid = refundItems.stream()
+                .allMatch(detail -> detail.getOrder().getId().equals(order.getId()) && // 해당 주문에 속한 주문인지
+                        !detail.isCanceled() &&                                        //이미 취소된 상품인지 아닌지
+                        !detail.isRefundRequested());                                  //이미 환불 요청된 상품은 아닌지
+
+        if (!isValid) {
+            throw new CustomException(ErrorCode.INVALID_REFUND_ITEM);
+        }
+
+        // 상태 업데이트 -> 환불이라고 요청했다고 변경
+        refundItems.forEach(OrderDetail::requestRefund);
+
+        // 응답 데이터 구성
+        List<RefundedItemDto> refundedItemDtos = refundItems.stream()
+                .map(item -> RefundedItemDto.builder()
+                        .drinkName(item.getDrinkName())
+                        .price(item.getPrice())
+                        .quantity(item.getQuantity())
+                        .build())
+                .toList();
+
+        return RefundResponseDto.builder()
+                .orderId(order.getId())
+                .refundRequestedItems(refundedItemDtos)
+                .build();
     }
+
 
 }

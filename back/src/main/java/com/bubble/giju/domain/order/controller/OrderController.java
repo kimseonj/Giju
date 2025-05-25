@@ -1,8 +1,10 @@
 package com.bubble.giju.domain.order.controller;
 
 import com.bubble.giju.domain.order.dto.request.OrderRequestDto;
+import com.bubble.giju.domain.order.dto.request.RefundRequestDto;
 import com.bubble.giju.domain.order.dto.response.OrderHistoryResonseDto;
 import com.bubble.giju.domain.order.dto.response.OrderResponseDto;
+import com.bubble.giju.domain.order.dto.response.RefundResponseDto;
 import com.bubble.giju.domain.order.service.OrderService;
 import com.bubble.giju.domain.user.dto.CustomPrincipal;
 import com.bubble.giju.global.config.ApiResponse;
@@ -45,4 +47,28 @@ public class OrderController {
         List<OrderHistoryResonseDto> history = orderService.getOrderHistory(customPrincipal);
         return ResponseEntity.ok(history);
     }
+
+    @Operation(summary = "환불 요청", description = "사용자가 결제 완료된 주문 중 선택된 상품에 대해 환불을 요청, 요청값 : 주문id, 반품할 id리스트")
+    @PostMapping("/refund/request")
+    public ResponseEntity<ApiResponse<RefundResponseDto>> requestRefund(
+            @RequestBody RefundRequestDto requestDto,
+            @AuthenticationPrincipal CustomPrincipal customPrincipal) {
+
+        RefundResponseDto result = orderService.requestRefund(requestDto, customPrincipal);
+        ApiResponse<RefundResponseDto> response = ApiResponse.success("환불 요청이 정상적으로 접수되었습니다", result);
+        return ResponseEntity.ok(response);
+    }
+
+
+
+    /*
+    @Operation(summary = "주문 상세 조회", description = "특정 주문의 상세 정보를 조회합니다")
+    @GetMapping("/order/{orderId}")
+    public ResponseEntity<OrderDetailResponseDto> orderDetail(
+            @PathVariable Long orderId,
+            @AuthenticationPrincipal CustomPrincipal principal) {
+        OrderDetailResponseDto detail = orderService.getOrderDetail(orderId, principal);
+        return ResponseEntity.ok(detail);
+    }*/
+
 }
