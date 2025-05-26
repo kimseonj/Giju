@@ -2,9 +2,9 @@ package com.bubble.giju.domain.payment.service.paymentImpl;
 
 import com.bubble.giju.domain.cart.repository.CartRepository;
 import com.bubble.giju.domain.order.entity.Order;
-import com.bubble.giju.domain.order.entity.OrderDetail;
+
 import com.bubble.giju.domain.order.entity.OrderStatus;
-import com.bubble.giju.domain.order.repository.OrderDetailRepository;
+
 import com.bubble.giju.domain.order.repository.OrderRepository;
 import com.bubble.giju.domain.payment.dto.request.CanceledItemDto;
 import com.bubble.giju.domain.payment.dto.request.PaymentCancelRequestDto;
@@ -18,8 +18,7 @@ import com.bubble.giju.domain.payment.repository.PaymentRepository;
 import com.bubble.giju.domain.payment.service.PaymentService;
 import com.bubble.giju.domain.payment.tossClient.TossClientImpl.TossClientImpl;
 import com.bubble.giju.domain.user.dto.CustomPrincipal;
-import com.bubble.giju.domain.user.entity.User;
-import com.bubble.giju.domain.user.repository.UserRepository;
+
 import com.bubble.giju.global.config.CustomException;
 import com.bubble.giju.global.config.ErrorCode;
 import lombok.RequiredArgsConstructor;
@@ -27,11 +26,9 @@ import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
-import java.time.LocalDateTime;
-import java.time.OffsetDateTime;
-import java.util.List;
+
 import java.util.UUID;
-import java.util.stream.Collectors;
+
 
 @Service
 @RequiredArgsConstructor
@@ -43,7 +40,6 @@ public class PaymentServiceImpl implements PaymentService {
     private final PaymentRepository paymentRepository;
     private final PaymentCancelInfoRepository paymentCancelInfoRepository;
     private final PaymentFailInfoRepository paymentFailInfoRepository;
-    private final OrderDetailRepository orderDetailRepository;
 
     private static final String CANCEL_REASON = "결제 정보 불일치로 인한 자동 취소";
     private final CartRepository cartRepository;

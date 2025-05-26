@@ -33,7 +33,7 @@ public class Payment {
     @Column(name = "payment_status", nullable = false, length = 20)
     private String paymentStatus;
 
-    @Column(name = "approved_at", nullable = false, columnDefinition = "TIMESTAMP")
+    @Column(name = "approved_at", nullable = true, columnDefinition = "TIMESTAMP")
     private OffsetDateTime approvedAt;
 
     @Column(name = "transaction_key")

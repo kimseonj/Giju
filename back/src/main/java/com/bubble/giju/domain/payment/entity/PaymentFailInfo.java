@@ -15,7 +15,7 @@ public class PaymentFailInfo {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     @Column(name = "fail_id")
-    private Long Id;
+    private Long id;
 
     @Column(name = "fail_message")
     private String failMessage;
