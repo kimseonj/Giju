@@ -14,13 +14,11 @@ import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.security.core.annotation.AuthenticationPrincipal;
 import org.springframework.web.bind.annotation.*;
 
-
 @Tag(name = "토스페이먼츠 API")
 @RestController
 @RequiredArgsConstructor
 @Slf4j
 @RequestMapping("/api/payment")
-//@PreAuthorize("hasRole('USER')")
 public class PaymentController {
 
     private final PaymentService paymentService;
@@ -46,13 +44,11 @@ public class PaymentController {
         return ResponseEntity.ok("결제 실패" + message + ", 주문 아이디" + orderId);
     }
 
-    @Operation(summary = "결제 취소", description = "선택한 상품 또는 전체 결제 금액을 취소 처리, isFullCancel는 전체 취소인지 아닌지 판별용")
-    @PostMapping("/cancel")
     @PreAuthorize("hasRole('USER')")
-    public ResponseEntity<ApiResponse<PaymentCancelResponseDto>> cancelPayment(
-            @RequestBody PaymentCancelRequestDto paymentCancelRequestDto,
-            @AuthenticationPrincipal CustomPrincipal principal) {
-        PaymentCancelResponseDto cancel = paymentService.paymentCancel(paymentCancelRequestDto, principal);
+    @Operation(summary = "결제 취소", description = "선택한 상품 또는 전체 결제 금액을 취소 처리, isFullCancel는 전체 취소인지 아닌지 판별용, 주문상태가 SUCCEEDED 만 사용")
+    @PostMapping("/{order_id}/cancel")
+    public ResponseEntity<ApiResponse<PaymentCancelResponseDto>> cancelPayment(@AuthenticationPrincipal CustomPrincipal customPrincipal, @RequestBody PaymentCancelRequestDto paymentCancelRequestDto) {
+        PaymentCancelResponseDto cancel = paymentService.paymentCancel(customPrincipal, paymentCancelRequestDto);
         ApiResponse<PaymentCancelResponseDto> response = ApiResponse.success("결제 취소 성공",cancel);
         return ResponseEntity.ok(response);
     }

@@ -8,5 +8,5 @@ import com.bubble.giju.domain.user.dto.CustomPrincipal;
 public interface PaymentService {
     void paymentSuccess(String paymentKey, String orderId, int amount);
     void paymentFail(String code, String message, String orderId);
-    PaymentCancelResponseDto paymentCancel(PaymentCancelRequestDto paymentCancelRequestDto, CustomPrincipal principal);
+    PaymentCancelResponseDto paymentCancel(CustomPrincipal customPrincipal, PaymentCancelRequestDto paymentCancelRequestDto);
 }

@@ -13,6 +13,8 @@ import org.springframework.data.repository.query.Param;
 
 import java.time.LocalDateTime;
 import java.util.List;
+import java.util.Optional;
+import java.util.UUID;
 
 public interface OrderRepository extends JpaRepository<Order, Long> {
     @Query("SELECT o FROM Order o WHERE o.orderStatus = :status AND o.createdAt < :cutoff AND o.isDeleted = false")
@@ -30,6 +32,10 @@ public interface OrderRepository extends JpaRepository<Order, Long> {
     void hardDeleteByOrderIds(@Param("ids") List<Long> ids);
 
     List<Order> findAllByUser(User user);
+
+
+    Optional<Order> findByIdAndUser_UserId(Long orderId, UUID userId);
+
 
 }
 

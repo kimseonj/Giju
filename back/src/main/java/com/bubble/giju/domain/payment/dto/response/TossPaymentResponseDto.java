@@ -4,6 +4,7 @@ import com.fasterxml.jackson.annotation.JsonFormat;
 import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
 import lombok.Getter;
 
+import java.time.OffsetDateTime;
 import java.time.ZonedDateTime;
 
 /*
@@ -22,21 +23,29 @@ public class TossPaymentResponseDto {
     private String method;
     private String status;
 
-    @JsonFormat(pattern = "yyyy-MM-dd'T'HH:mm:ssXXX")
-    private ZonedDateTime approvedAt;
+    @JsonFormat(shape = JsonFormat.Shape.STRING, pattern = "yyyy-MM-dd'T'HH:mm:ssXXX")
+    private OffsetDateTime approvedAt;
 
     private Receipt receipt;
     private CashReceipt cashReceipt;
+    private Card card;
+    private String lastTransactionKey;
 
     @Getter
     @JsonIgnoreProperties(ignoreUnknown = true)
     public static class Receipt {
-        private String receiptUrl;
+        private String url;
     }
 
     @Getter
     @JsonIgnoreProperties(ignoreUnknown = true)
     public static class CashReceipt {
-        private String cashReceiptUrl;
+        private String receiptUrl;
+    }
+
+    @Getter
+    @JsonIgnoreProperties(ignoreUnknown = true)
+    public static class Card {
+        private String approveNo;
     }
 }

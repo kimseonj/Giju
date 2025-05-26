@@ -1,31 +1,25 @@
 package com.bubble.giju.domain.payment.dto.response;
 
+
+import com.fasterxml.jackson.annotation.JsonFormat;
 import lombok.Builder;
 import lombok.Getter;
-import lombok.NoArgsConstructor;
+
 
 import java.time.LocalDateTime;
-import java.util.List;
+import java.time.OffsetDateTime;
 
 @Getter
-@NoArgsConstructor
+@Builder
 public class PaymentCancelResponseDto {
     private Long orderId;
-    private String orderName;
+    private String paymentKey;
     private int cancelAmount;
+    private String cancelReason;
     private boolean isFullCancel;
-    private String receiptUrl; // 생성: "https://merchants.tosspayments.com/web/receipt?receiptKey=" + receiptKey
-    private LocalDateTime canceledAt;
-    private List<CanceledItemResponseDto> canceledItems;
 
-    @Builder
-    public PaymentCancelResponseDto(Long orderId,String orderName, int cancelAmount, boolean isFullCancel, String receiptUrl, LocalDateTime canceledAt,List<CanceledItemResponseDto> canceledItems ) {
-        this.orderId = orderId;
-        this.orderName= orderName;
-        this.cancelAmount = cancelAmount;
-        this.isFullCancel = isFullCancel;
-        this.receiptUrl = receiptUrl;
-        this.canceledAt = canceledAt;
-        this.canceledItems = canceledItems;
-    }
+    @JsonFormat(shape = JsonFormat.Shape.STRING, pattern = "yyyy-MM-dd'T'HH:mm:ssXXX")
+    private OffsetDateTime canceledAt;
+    private String receiptUrl;
+    private String cashReceiptUrl;
 }

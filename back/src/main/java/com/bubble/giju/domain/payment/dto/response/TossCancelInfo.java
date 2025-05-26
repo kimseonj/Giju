@@ -6,7 +6,7 @@ import lombok.Getter;
 
 @Getter
 public class TossCancelInfo {
-    private String cancelReason;
+    private String cTossCancelInfoancelReason;
     private String canceledAt;
     private int cancelAmount;
     private String receiptKey;
