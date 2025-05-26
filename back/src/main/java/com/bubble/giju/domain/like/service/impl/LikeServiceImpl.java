@@ -36,7 +36,7 @@ public class LikeServiceImpl implements LikeService {
         );
 
         // TODO: 되는지 확인해야됨
-        List<Like> likeList = likeRepository.findByUser_UserIdAndDeleteIsFalse(UUID.fromString(userId), Sort.by("create_at"));
+        List<Like> likeList = likeRepository.findByUser_UserIdAndDeleteFalseOrderByCreatedAtDesc(UUID.fromString(userId));
 
         return likeList.stream().map(LikeDto.Response::fromEntity).toList();
     }
