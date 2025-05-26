@@ -86,6 +86,7 @@ public class OrderServiceImpl implements OrderService {
                     .price(price*quantity)
                     .quantity(quantity)
                     .order(order)
+                    .region(drink.getRegion())
                     .build();
             //양뱡향 설정
             order.addOrderDetail(orderDetail);
