@@ -157,7 +157,7 @@ public class PaymentServiceImpl implements PaymentService {
     public PaymentCancelResponseDto paymentCancel(CustomPrincipal principal, PaymentCancelRequestDto dto) {
         UUID userId = UUID.fromString(principal.getUserId());
 
-        Order order = orderRepository.findByIdAndUserId(dto.getOrderId(), userId)
+        Order order = orderRepository.findByIdAndUser_UserId(dto.getOrderId(), userId)
                 .orElseThrow(() -> new CustomException(ErrorCode.UNAUTHORIZED_CANCEL_ACCESS));
 
 
