@@ -25,6 +25,7 @@ public class AddressDto {
     @AllArgsConstructor
     @Getter
     public static class Response {
+        private Long addressId;
         private String userId;
 
         private String recipientName;
@@ -41,6 +42,7 @@ public class AddressDto {
 
         public static Response fromEntity(Address address) {
             return new Response(
+                    address.getId(),
                     address.getUser().getUserId().toString(),
                     address.getRecipientName(),
                     address.getPhoneNumber(),
