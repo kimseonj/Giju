@@ -44,7 +44,7 @@ public class PaymentCancelInfo {
     @Column(name = "cashReceip_url")
     private String cashReceiptUrl;
 
-    @OneToOne(fetch = FetchType.LAZY)
+    @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "payment_id", nullable = false, referencedColumnName = "payment_id")
     private Payment payment;
 
