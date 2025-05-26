@@ -27,16 +27,24 @@ public class TossPaymentResponseDto {
 
     private Receipt receipt;
     private CashReceipt cashReceipt;
+    private Card card;
+    private String lastTransactionKey;
 
     @Getter
     @JsonIgnoreProperties(ignoreUnknown = true)
     public static class Receipt {
-        private String receiptUrl;
+        private String url;
     }
 
     @Getter
     @JsonIgnoreProperties(ignoreUnknown = true)
     public static class CashReceipt {
-        private String cashReceiptUrl;
+        private String receiptUrl;
+    }
+
+    @Getter
+    @JsonIgnoreProperties(ignoreUnknown = true)
+    public static class Card {
+        private String approveNo;
     }
 }

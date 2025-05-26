@@ -28,6 +28,7 @@ import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
 import java.time.LocalDateTime;
+import java.time.OffsetDateTime;
 import java.util.List;
 import java.util.UUID;
 import java.util.stream.Collectors;
@@ -91,15 +92,21 @@ public class PaymentServiceImpl implements PaymentService {
         order.updateStatus(OrderStatus.SUCCEEDED);
         orderRepository.save(order);
 
+        LocalDateTime approvedAt = tossResponse.getApprovedAt() != null
+                ? tossResponse.getApprovedAt().toLocalDateTime()
+                : null;
+
         Payment payment = Payment.builder()
                 .paymentKey(tossResponse.getPaymentKey())
                 .amount(tossResponse.getTotalAmount())
                 .paymentMethod(tossResponse.getMethod())
                 .paymentStatus(tossResponse.getStatus())
-                .approvedAt(tossResponse.getApprovedAt() != null ? tossResponse.getApprovedAt().toString() : null)
+                .approvedAt(approvedAt)
+                .transactionKey(tossResponse.getLastTransactionKey())
+                .approveNo(tossResponse.getCard() != null ? tossResponse.getCard().getApproveNo() : null)
+                .receiptUrl(tossResponse.getReceipt() != null ? tossResponse.getReceipt().getUrl() : null)
+                .cashReceiptUrl(tossResponse.getCashReceipt() != null ? tossResponse.getCashReceipt().getReceiptUrl() : null)
                 .order(order)
-                .receiptUrl(tossResponse.getReceipt() != null ? tossResponse.getReceipt().getReceiptUrl() : null)
-                .cashReceiptUrl(tossResponse.getCashReceipt() != null ? tossResponse.getCashReceipt().getCashReceiptUrl() : null)
                 .build();
 
         paymentRepository.save(payment);
@@ -178,7 +185,6 @@ public class PaymentServiceImpl implements PaymentService {
                 .cancelReason(paymentCancelRequestDto.getCancelReason())
                 .cancelAmount(cancelAmount)
                 .canceledAt(LocalDateTime.parse(cancelInfo.getCanceledAt()))
-                .receiptKey(cancelInfo.getReceiptKey())
                 .transactionKey(cancelInfo.getTransactionKey())
                 .cancelStatus(cancelInfo.getCancelStatus())
                 .isFullCancel(isFullCancel)

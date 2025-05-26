@@ -16,10 +16,10 @@ public class PaymentCancelInfo {
 
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
-    @Column(name = "cancel_id")
-    private Long Id;
+    @Column(name = "cancel_id", nullable = false)
+    private Long id;
 
-    @Column(name ="cancel_reason")
+    @Column(name = "cancel_reason", nullable = false)
     private String cancelReason;
 
     @Column(name = "cancel_amount", nullable = false)
@@ -28,17 +28,17 @@ public class PaymentCancelInfo {
     @Column(name = "canceled_at", nullable = false)
     private LocalDateTime canceledAt;
 
-    @Column(name = "receipt_key")
-    private String receiptKey;
-
-    @Column(name = "transaction_key")
+    @Column(name = "transaction_key", nullable = true)
     private String transactionKey;
 
-    @Column(name = "cancel_status")
+    @Column(name = "cancel_status", nullable = false)
     private String cancelStatus;
 
-    @Column(name = "is_full_cancel")
+    @Column(name = "is_full_cancel", nullable = false)
     private boolean isFullCancel;
+
+    @Column(name = "receipt_url", nullable = true)
+    private String receiptUrl;
 
     @OneToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "payment_id", nullable = false, referencedColumnName = "payment_id")
@@ -46,15 +46,15 @@ public class PaymentCancelInfo {
 
     @Builder
     public PaymentCancelInfo(String cancelReason, int cancelAmount, LocalDateTime canceledAt,
-                             String receiptKey, String transactionKey, String cancelStatus,
-                             boolean isFullCancel, Payment payment) {
+                             String transactionKey, String cancelStatus, boolean isFullCancel,
+                             String receiptUrl, Payment payment) {
         this.cancelReason = cancelReason;
         this.cancelAmount = cancelAmount;
         this.canceledAt = canceledAt;
-        this.receiptKey = receiptKey;
         this.transactionKey = transactionKey;
         this.cancelStatus = cancelStatus;
         this.isFullCancel = isFullCancel;
+        this.receiptUrl = receiptUrl;
         this.payment = payment;
     }
 }
