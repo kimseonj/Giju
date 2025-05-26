@@ -12,6 +12,6 @@ import java.util.UUID;
 @Repository
 public interface LikeRepository extends JpaRepository<Like, Long> {
     boolean existsByUser_UserIdAndDrink_id(UUID userId, Long drinkId);
-    List<Like> findByUser_UserIdAndDeleteIsFalse(UUID userUserId, Sort sort);
     Optional<Like> findByUser_UserIdAndId(UUID userUserId, Long id);
+    List<Like> findByUser_UserIdAndDeleteFalseOrderByCreatedAtDesc(UUID uuid);
 }
