@@ -66,42 +66,12 @@ public class PaymentServiceImpl implements PaymentService {
         TossPaymentResponseDto tossResponse = tossClientImpl.confirmPayment(paymentKey, orderId, amount);
 
 
-        //추가 검증
-        if (!orderId.equals(tossResponse.getOrderId()) ||
-                order.getTotalAmount() != tossResponse.getTotalAmount()) {
-
-            // Toss 측에 환불 요청
-            //paymentKey, cancelReason, cancelAmount
-            tossClientImpl.cancelPayment(
-                    tossResponse.getPaymentKey(),
-                    CANCEL_REASON,
-                    tossResponse.getTotalAmount()
-            );
-
-            Payment canceledPayment = saveCanceledPayment(tossResponse, order);
-            paymentCancelInfoRepository.save(PaymentCancelInfo.builder()
-                    .cancelReason(CANCEL_REASON)
-                    .payment(canceledPayment)
-                    .build());
-
-            // 이후 예외 처리
-            throw new CustomException(ErrorCode.INVALID_PAYMENT_VERIFICATION);
-        }
-
-        // Order주문 상태 변경
-        order.updateStatus(OrderStatus.SUCCEEDED);
-        orderRepository.save(order);
-
-        LocalDateTime approvedAt = tossResponse.getApprovedAt() != null
-                ? tossResponse.getApprovedAt().toLocalDateTime()
-                : null;
-
         Payment payment = Payment.builder()
                 .paymentKey(tossResponse.getPaymentKey())
                 .amount(tossResponse.getTotalAmount())
                 .paymentMethod(tossResponse.getMethod())
                 .paymentStatus(tossResponse.getStatus())
-                .approvedAt(approvedAt)
+                .approvedAt(tossResponse.getApprovedAt())
                 .transactionKey(tossResponse.getLastTransactionKey())
                 .approveNo(tossResponse.getCard() != null ? tossResponse.getCard().getApproveNo() : null)
                 .receiptUrl(tossResponse.getReceipt() != null ? tossResponse.getReceipt().getUrl() : null)
@@ -110,6 +80,44 @@ public class PaymentServiceImpl implements PaymentService {
                 .build();
 
         paymentRepository.save(payment);
+
+
+        //추가 검증
+        if (!orderId.equals(tossResponse.getOrderId()) ||
+                order.getTotalAmount() != tossResponse.getTotalAmount()) {
+
+            //결제 취소
+            TossCancelResponseDto cancelResponse = tossClientImpl.cancelPayment(
+                    tossResponse.getPaymentKey(),
+                    CANCEL_REASON,
+                    tossResponse.getTotalAmount()
+            );
+
+            updateCanceledPayment(payment, cancelResponse);
+
+            paymentCancelInfoRepository.save(PaymentCancelInfo.builder()
+                    .cancelReason(CANCEL_REASON)
+                    .payment(payment)
+                    .transactionKey(cancelResponse.getLatestCancel().getTransactionKey())
+                    .canceledAt(cancelResponse.getLatestCancel().getCanceledAt())
+                    .receiptUrl(cancelResponse.getReceipt() != null ? cancelResponse.getReceipt().getUrl() : null)
+                    .cancelAmount(cancelResponse.getLatestCancel().getCancelAmount())
+                    .cancelStatus(cancelResponse.getLatestCancel().getCancelStatus())
+                    .cashReceiptUrl(cancelResponse.getCashReceipt() != null ? cancelResponse.getCashReceipt().getReceiptUrl() : null)
+                    .isFullCancel(true)
+                    .build());
+
+            order.updateStatus(OrderStatus.FAILED);
+            orderRepository.save(order);
+
+            throw new CustomException(ErrorCode.INVALID_PAYMENT_VERIFICATION);
+        }
+
+
+        // Order주문 상태 변경
+        order.updateStatus(OrderStatus.SUCCEEDED);
+        orderRepository.save(order);
+
 
         //결제 성공시 장바구니 삭제
         cartRepository.deleteByUser(order.getUser());
@@ -150,48 +158,44 @@ public class PaymentServiceImpl implements PaymentService {
 
     @Transactional
     @Override
-    public PaymentCancelResponseDto paymentCancel(PaymentCancelRequestDto paymentCancelRequestDto) {
-        Order order = getOrder(paymentCancelRequestDto.getOrderId());
-        Payment payment = paymentRepository.findByOrder(order)
-                .orElseThrow(()-> new CustomException(ErrorCode.PAYMENT_NOT_FOUND));
+    public PaymentCancelResponseDto paymentCancel(PaymentCancelRequestDto dto) {
+        Order order = orderRepository.findById(dto.getOrderId())
+                .orElseThrow(() -> new CustomException(ErrorCode.NON_EXISTENT_ORDER));
 
-        // 취소 금액 합산
-        int cancelAmount = paymentCancelRequestDto.getCanceledItmes().stream()
+        if (order.getOrderStatus() != OrderStatus.SUCCEEDED) {
+            throw new CustomException(ErrorCode.CANNOT_CANCEL_THIS_ORDER);
+        }
+
+        Payment payment = paymentRepository.findByOrder(order)
+                .orElseThrow(() -> new CustomException(ErrorCode.PAYMENT_NOT_FOUND));
+
+        int cancelAmount = dto.getCanceledItems().stream()
                 .mapToInt(CanceledItemDto::getCancelAmount)
                 .sum();
 
-        List<Long> canceledIds = paymentCancelRequestDto.getCanceledItmes().stream()
-                .map(CanceledItemDto::getOrderDetailId)
-                .toList();
-
         boolean isFullCancel = (cancelAmount == payment.getAmount());
 
-        // 취소요청
         TossCancelResponseDto tossResponse = tossClientImpl.cancelPayment(
                 payment.getPaymentKey(),
-                paymentCancelRequestDto.getCancelReason(),
+                dto.getCancelReason(),
                 cancelAmount
         );
 
-        /*
-        * Toss는 취소할 때마다 이전 취소 이력 + 이번 이력까지 전부 배열로 보내주기 때문에
-        * 예 : 상품 4개에서 2개만 취소 후 나머지 2개 추가로 취소 할 경우 그전 이력까지 보여줌
-        * cancels.size()-1 처리
-        * */
-        List<TossCancelInfo> cancels = tossResponse.getCancels();
-        TossCancelInfo cancelInfo = cancels.get(cancels.size() - 1);
+        TossCancelResponseDto.CancelDetail cancelDetail = tossResponse.getCancels().get(tossResponse.getCancels().size() - 1);
 
-        PaymentCancelInfo cancelEntity = PaymentCancelInfo.builder()
-                .cancelReason(paymentCancelRequestDto.getCancelReason())
+        PaymentCancelInfo cancelInfo = PaymentCancelInfo.builder()
+                .cancelReason(dto.getCancelReason())
                 .cancelAmount(cancelAmount)
-                .canceledAt(LocalDateTime.parse(cancelInfo.getCanceledAt()))
-                .transactionKey(cancelInfo.getTransactionKey())
-                .cancelStatus(cancelInfo.getCancelStatus())
+                .canceledAt(cancelDetail.getCanceledAt())
+                .transactionKey(cancelDetail.getTransactionKey())
+                .cancelStatus(cancelDetail.getCancelStatus())
                 .isFullCancel(isFullCancel)
+                .receiptUrl(tossResponse.getReceipt() != null ? tossResponse.getReceipt().getUrl() : null)
+                .cashReceiptUrl(tossResponse.getCashReceipt() != null ? tossResponse.getCashReceipt().getReceiptUrl() : null)
                 .payment(payment)
                 .build();
 
-        paymentCancelInfoRepository.save(cancelEntity);
+        paymentCancelInfoRepository.save(cancelInfo);
 
         if (isFullCancel) {
             order.updateStatus(OrderStatus.CANCELED);
@@ -200,38 +204,14 @@ public class PaymentServiceImpl implements PaymentService {
         }
         orderRepository.save(order);
 
-
-        List<OrderDetail> canceledDetails = orderDetailRepository.findAllById(canceledIds);
-
-        boolean isValid = canceledDetails.stream()
-                .allMatch(detail -> detail.getOrder().getId().equals(order.getId()));
-
-        if (!isValid) {
-            throw new CustomException(ErrorCode.INVALID_CANCEL_ITEM);
-        }
-
-        String orderName = canceledDetails.stream()
-                .map(OrderDetail::getDrinkName)
-                .collect(Collectors.joining(", "));
-
-        List<CanceledItemResponseDto> canceledItemDtos = canceledDetails.stream()
-                .map(detail -> CanceledItemResponseDto.builder()
-                        .drinkName(detail.getDrinkName())
-                        .price(detail.getPrice())
-                        .quantity(detail.getQuantity())
-                        .build())
-                .toList();
-
-
-
         return PaymentCancelResponseDto.builder()
                 .orderId(order.getId())
-                .orderName(orderName)
-                .cancelAmount(cancelAmount)
-                .isFullCancel(isFullCancel)
-                .canceledAt(cancelEntity.getCanceledAt())
-                .receiptUrl("https://merchants.tosspayments.com/web/receipt?receiptKey=" + cancelEntity.getReceiptKey())
-                .canceledItems(canceledItemDtos)
+                .cancelReason(cancelInfo.getCancelReason())
+                .cancelAmount(cancelInfo.getCancelAmount())
+                .isFullCancel(cancelInfo.isFullCancel())
+                .canceledAt(cancelInfo.getCanceledAt())
+                .receiptUrl(cancelInfo.getReceiptUrl())
+                .cashReceiptUrl(cancelInfo.getCashReceiptUrl())
                 .build();
     }
 
@@ -241,19 +221,16 @@ public class PaymentServiceImpl implements PaymentService {
                 .orElseThrow(() -> new CustomException(ErrorCode.NON_EXISTENT_ORDER));
     }
 
-    private Payment saveCanceledPayment(TossPaymentResponseDto response, Order order) {
-        Payment payment = Payment.builder()
-                .paymentKey(response.getPaymentKey())
-                .amount(response.getTotalAmount())
-                .paymentMethod(response.getMethod())
-                .paymentStatus("CANCELED")
-                .approvedAt(response.getApprovedAt() != null ? response.getApprovedAt().toString() : null)
-                .order(order)
-                .receiptUrl(response.getReceipt() != null ? response.getReceipt().getReceiptUrl() : null)
-                .cashReceiptUrl(response.getCashReceipt() != null ? response.getCashReceipt().getCashReceiptUrl() : null)
-                .build();
-        return paymentRepository.save(payment);
-    }
+    private void updateCanceledPayment(Payment payment, TossCancelResponseDto response) {
+        TossCancelResponseDto.CancelDetail latest = response.getLatestCancel();
 
+        payment.cancelWith(
+                latest.getTransactionKey(),
+                response.getReceipt() != null ? response.getReceipt().getUrl() : null,
+                response.getCashReceipt() != null ? response.getCashReceipt().getReceiptUrl() : null
+        );
+
+        paymentRepository.save(payment);
+    }
 
 }

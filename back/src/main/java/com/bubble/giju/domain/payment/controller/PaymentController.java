@@ -43,7 +43,7 @@ public class PaymentController {
     }
 
     @Operation(summary = "결제 취소", description = "선택한 상품 또는 전체 결제 금액을 취소 처리, isFullCancel는 전체 취소인지 아닌지 판별용")
-    @PostMapping("/cancel")
+    @PostMapping("/{order_id}/cancel")
     public ResponseEntity<ApiResponse<PaymentCancelResponseDto>> cancelPayment(@RequestBody PaymentCancelRequestDto paymentCancelRequestDto) {
         PaymentCancelResponseDto cancel = paymentService.paymentCancel(paymentCancelRequestDto);
         ApiResponse<PaymentCancelResponseDto> response = ApiResponse.success("결제 취소 성공",cancel);

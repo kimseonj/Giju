@@ -10,13 +10,13 @@ import java.util.List;
 @NoArgsConstructor
 public class PaymentCancelRequestDto {
     private Long orderId;
-    private List<CanceledItemDto> canceledItmes;
+    private List<CanceledItemDto> canceledItems;
     private String cancelReason;
 
     @Builder
     public PaymentCancelRequestDto (Long orderId, List<CanceledItemDto> canceledItmes, String cancelReason) {
         this.orderId = orderId;
-        this.canceledItmes = canceledItmes;
+        this.canceledItems = canceledItmes;
         this.cancelReason = cancelReason;
     }
 }

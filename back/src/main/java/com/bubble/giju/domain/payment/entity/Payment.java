@@ -8,6 +8,7 @@ import lombok.Getter;
 import lombok.NoArgsConstructor;
 
 import java.time.LocalDateTime;
+import java.time.OffsetDateTime;
 
 @Entity
 @Getter
@@ -32,8 +33,8 @@ public class Payment {
     @Column(name = "payment_status", nullable = false, length = 20)
     private String paymentStatus;
 
-    @Column(name = "approved_at", nullable = false)
-    private LocalDateTime approvedAt;
+    @Column(name = "approved_at", nullable = false, columnDefinition = "TIMESTAMP")
+    private OffsetDateTime approvedAt;
 
     @Column(name = "transaction_key")
     private String transactionKey;
@@ -41,9 +42,12 @@ public class Payment {
     @Column(name = "approve_no")
     private String approveNo;
 
+    // 결제영수증
     @Column(name = "receipt_url")
     private String receiptUrl;
 
+    //Toss에서 결제 수단이 카드가 아닌 계좌이체, 가상계좌, 간편결제 일 경우 영수증
+    // 현금영주승
     @Column(name = "cash_receipt_url")
     private String cashReceiptUrl;
 
@@ -56,7 +60,7 @@ public class Payment {
                    int amount,
                    String paymentMethod,
                    String paymentStatus,
-                   LocalDateTime approvedAt,
+                   OffsetDateTime approvedAt,
                    String transactionKey,
                    String approveNo,
                    String receiptUrl,
@@ -73,4 +77,12 @@ public class Payment {
         this.cashReceiptUrl = cashReceiptUrl;
         this.order = order;
     }
+
+    public void cancelWith(String transactionKey, String receiptUrl, String cashReceiptUrl) {
+        this.paymentStatus = "CANCELED";
+        this.transactionKey = transactionKey;
+        this.receiptUrl = receiptUrl;
+        this.cashReceiptUrl = cashReceiptUrl;
+    }
+
 }

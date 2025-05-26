@@ -39,6 +39,7 @@ public enum ErrorCode {
      * */
     NON_EXISTENT_ORDER("주문이 존재 하지않습니다",HttpStatus.BAD_REQUEST),
 
+
     /**
      * PAYMENT
      * */
@@ -49,6 +50,8 @@ public enum ErrorCode {
     PAYMENT_NOT_FOUND("결제를 찾을 수 없습니다", HttpStatus.BAD_REQUEST),
     INVALID_CANCEL_ITEM("해당 주문에 포함되지 않은 항목을 취소할 수 없습니다", HttpStatus.BAD_REQUEST),
     PAYMENT_CANCEL_FAILED("주문 취소 실패", HttpStatus.BAD_REQUEST),
+    CANNOT_CANCEL_THIS_ORDER("해당 주문은 현재 취소할 수 없는 상태입니다", HttpStatus.BAD_REQUEST),
+
 
     /**
      * Auth
