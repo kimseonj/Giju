@@ -12,6 +12,8 @@ import org.springframework.data.repository.query.Param;
 
 import java.time.LocalDateTime;
 import java.util.List;
+import java.util.Optional;
+import java.util.UUID;
 
 public interface OrderRepository extends JpaRepository<Order, Long> {
     @Query("SELECT o FROM Order o WHERE o.orderStatus = :status AND o.createdAt < :cutoff AND o.isDeleted = false")
@@ -27,6 +29,9 @@ public interface OrderRepository extends JpaRepository<Order, Long> {
     @Modifying
     @Query("DELETE FROM Order o WHERE o.id IN :ids")
     void hardDeleteByOrderIds(@Param("ids") List<Long> ids);
+
+    Optional<Order> findByIdAndUserId(Long orderId, UUID userId);
+
 }
 
 

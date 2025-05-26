@@ -51,6 +51,8 @@ public enum ErrorCode {
     INVALID_CANCEL_ITEM("해당 주문에 포함되지 않은 항목을 취소할 수 없습니다", HttpStatus.BAD_REQUEST),
     PAYMENT_CANCEL_FAILED("주문 취소 실패", HttpStatus.BAD_REQUEST),
     CANNOT_CANCEL_THIS_ORDER("해당 주문은 현재 취소할 수 없는 상태입니다", HttpStatus.BAD_REQUEST),
+    UNAUTHORIZED_CANCEL_ACCESS("해당 주문에 대한 결제 취소 권한이 없습니다", HttpStatus.BAD_REQUEST),
+
 
 
     /**

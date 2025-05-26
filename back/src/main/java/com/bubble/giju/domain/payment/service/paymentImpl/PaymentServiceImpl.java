@@ -158,9 +158,12 @@ public class PaymentServiceImpl implements PaymentService {
 
     @Transactional
     @Override
-    public PaymentCancelResponseDto paymentCancel(PaymentCancelRequestDto dto) {
-        Order order = orderRepository.findById(dto.getOrderId())
-                .orElseThrow(() -> new CustomException(ErrorCode.NON_EXISTENT_ORDER));
+    public PaymentCancelResponseDto paymentCancel(CustomPrincipal principal, PaymentCancelRequestDto dto) {
+        UUID userId = UUID.fromString(principal.getUserId());
+
+        Order order = orderRepository.findByIdAndUserId(dto.getOrderId(), userId)
+                .orElseThrow(() -> new CustomException(ErrorCode.UNAUTHORIZED_CANCEL_ACCESS));
+
 
         if (order.getOrderStatus() != OrderStatus.SUCCEEDED) {
             throw new CustomException(ErrorCode.CANNOT_CANCEL_THIS_ORDER);

@@ -3,12 +3,15 @@ package com.bubble.giju.domain.payment.controller;
 import com.bubble.giju.domain.payment.dto.request.PaymentCancelRequestDto;
 import com.bubble.giju.domain.payment.dto.response.PaymentCancelResponseDto;
 import com.bubble.giju.domain.payment.service.PaymentService;
+import com.bubble.giju.domain.user.dto.CustomPrincipal;
 import com.bubble.giju.global.config.ApiResponse;
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.tags.Tag;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.http.ResponseEntity;
+import org.springframework.security.access.prepost.PreAuthorize;
+import org.springframework.security.core.annotation.AuthenticationPrincipal;
 import org.springframework.web.bind.annotation.*;
 
 @Tag(name = "토스페이먼츠 API")
@@ -16,7 +19,6 @@ import org.springframework.web.bind.annotation.*;
 @RequiredArgsConstructor
 @Slf4j
 @RequestMapping("/api/payment")
-//@PreAuthorize("hasRole('USER')")
 public class PaymentController {
 
     private final PaymentService paymentService;
@@ -42,10 +44,11 @@ public class PaymentController {
         return ResponseEntity.ok("결제 실패" + message + ", 주문 아이디" + orderId);
     }
 
-    @Operation(summary = "결제 취소", description = "선택한 상품 또는 전체 결제 금액을 취소 처리, isFullCancel는 전체 취소인지 아닌지 판별용")
+    @PreAuthorize("hasRole('USER')")
+    @Operation(summary = "결제 취소", description = "선택한 상품 또는 전체 결제 금액을 취소 처리, isFullCancel는 전체 취소인지 아닌지 판별용, 주문상태가 SUCCEEDED 만 사용")
     @PostMapping("/{order_id}/cancel")
-    public ResponseEntity<ApiResponse<PaymentCancelResponseDto>> cancelPayment(@RequestBody PaymentCancelRequestDto paymentCancelRequestDto) {
-        PaymentCancelResponseDto cancel = paymentService.paymentCancel(paymentCancelRequestDto);
+    public ResponseEntity<ApiResponse<PaymentCancelResponseDto>> cancelPayment(@AuthenticationPrincipal CustomPrincipal customPrincipal, @RequestBody PaymentCancelRequestDto paymentCancelRequestDto) {
+        PaymentCancelResponseDto cancel = paymentService.paymentCancel(customPrincipal, paymentCancelRequestDto);
         ApiResponse<PaymentCancelResponseDto> response = ApiResponse.success("결제 취소 성공",cancel);
         return ResponseEntity.ok(response);
     }
