@@ -22,7 +22,7 @@ public interface RegionRankingRepository  extends JpaRepository<OrderDetail, Lon
         JOIN o.user u
         WHERE od.region = :region
         GROUP BY u.name
-        ORDER BY SUM(od.quantity) DESC
+        ORDER BY SUM(od.quantity) DESC, MAX(o.createdAt) DESC
         LIMIT 10
         """)
     List<UserRegionRankingDto> findTop10ByRegion(@Param("region") String region);
