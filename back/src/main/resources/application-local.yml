@@ -31,4 +31,4 @@ spring:
       data-locations: classpath:data.sql
 
 app:
-  base-url: http://localhost:8080
+  base-url: http://43.200.226.212:8080

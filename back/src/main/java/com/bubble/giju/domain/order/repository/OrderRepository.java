@@ -3,6 +3,7 @@ package com.bubble.giju.domain.order.repository;
 
 import com.bubble.giju.domain.order.entity.Order;
 import com.bubble.giju.domain.order.entity.OrderStatus;
+import com.bubble.giju.domain.user.entity.User;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.data.jpa.repository.JpaRepository;
@@ -29,6 +30,9 @@ public interface OrderRepository extends JpaRepository<Order, Long> {
     @Modifying
     @Query("DELETE FROM Order o WHERE o.id IN :ids")
     void hardDeleteByOrderIds(@Param("ids") List<Long> ids);
+
+    List<Order> findAllByUser(User user);
+
 
     Optional<Order> findByIdAndUserId(Long orderId, UUID userId);
 
