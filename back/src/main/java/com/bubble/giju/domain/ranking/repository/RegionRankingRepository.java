@@ -21,6 +21,7 @@ public interface RegionRankingRepository  extends JpaRepository<OrderDetail, Lon
         JOIN od.order o
         JOIN o.user u
         WHERE od.region = :region
+        AND o.orderStatus = 'DELIVERED'
         GROUP BY u.name
         ORDER BY SUM(od.quantity) DESC, MAX(o.createdAt) DESC
         LIMIT 10
