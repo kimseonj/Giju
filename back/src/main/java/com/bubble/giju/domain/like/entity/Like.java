@@ -35,4 +35,9 @@ public class Like {
     public void deleteLike() {
         this.delete = true;
     }
+
+    public void activateLike() {
+        this.delete = false;
+        this.createdAt = LocalDateTime.now();
+    }
 }
