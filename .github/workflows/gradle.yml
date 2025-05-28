@@ -32,6 +32,9 @@ jobs:
     # See: https://github.com/gradle/actions/blob/main/setup-gradle/README.md
     - name: Setup Gradle
       uses: gradle/actions/setup-gradle@af1da67850ed9a4cedd57bfd976089dd991e2582 # v4.0.0
+      with:
+        cache-disabled: true
+        build-scan-publish: false
 
     - name: Grant execute permission for gradlew
       working-directory: ./back
@@ -76,29 +79,30 @@ jobs:
         script_stop: true
         script: "~/startup.sh"
 
-  dependency-submission:
-    runs-on: ubuntu-latest
-    permissions:
-      contents: write
-    steps:
-    - uses: actions/checkout@v4
+## dependency-submisttion job 제거
+  # dependency-submission:
+  #   runs-on: ubuntu-latest
+  #   permissions:
+  #     contents: write
+  #   steps:
+  #   - uses: actions/checkout@v4
     
-    - name: Set up JDK 21
-      uses: actions/setup-java@v4
-      with:
-        java-version: '21'
-        distribution: 'temurin'
+  #   - name: Set up JDK 21
+  #     uses: actions/setup-java@v4
+  #     with:
+  #       java-version: '21'
+  #       distribution: 'temurin'
     
-    # 디렉토리 이동 및 권한 부여
-    - name: Setup Gradle Wrapper
-      run: |
-        cd back
-        chmod +x gradlew
+  #   # 디렉토리 이동 및 권한 부여
+  #   - name: Setup Gradle Wrapper
+  #     run: |
+  #       cd back
+  #       chmod +x gradlew
     
-    # gradle-version 사용하거나 build-root-directory 사용
-    - name: Generate and submit dependency graph
-      uses: gradle/actions/dependency-submission@af1da67850ed9a4cedd57bfd976089dd991e2582
-      with:
-        build-root-directory: back
-        # 또는 Gradle 버전 직접 지정 (Wrapper 대신)
-        # gradle-version: '8.5'
+  #   # gradle-version 사용하거나 build-root-directory 사용
+  #   - name: Generate and submit dependency graph
+  #     uses: gradle/actions/dependency-submission@af1da67850ed9a4cedd57bfd976089dd991e2582
+  #     with:
+  #       build-root-directory: back
+  #       # 또는 Gradle 버전 직접 지정 (Wrapper 대신)
+  #       # gradle-version: '8.5'
