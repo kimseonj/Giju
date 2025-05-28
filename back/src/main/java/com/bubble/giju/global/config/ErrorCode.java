@@ -40,6 +40,8 @@ public enum ErrorCode {
     NON_EXISTENT_ORDER("주문이 존재 하지않습니다",HttpStatus.BAD_REQUEST),
     CANNOT_REFUND_THIS_ORDER("해당 주문은 환불할 수 없는 상태입니다", HttpStatus.BAD_REQUEST),
     INVALID_REFUND_ITEM("유효하지 않은 환불 요청 항목입니다", HttpStatus.BAD_REQUEST),
+    ALREADY_DELETED_ORDER("결제 시간 초과로 소프트삭제도니 주문 입니다",HttpStatus.BAD_REQUEST),
+    JSON_PROCESSING_ERROR("Cart ID 저장 중 올 발생", HttpStatus.BAD_REQUEST),
 
     /**
      * PAYMENT
@@ -54,6 +56,7 @@ public enum ErrorCode {
     UNAUTHORIZED_USER("해당 주문에 대한 권한이 없습니다", HttpStatus.FORBIDDEN),
     CANNOT_CANCEL_THIS_ORDER("해당 주문은 현재 취소할 수 없는 상태입니다", HttpStatus.BAD_REQUEST),
     UNAUTHORIZED_CANCEL_ACCESS("해당 주문에 대한 결제 취소 권한이 없습니다", HttpStatus.BAD_REQUEST),
+    INVALID_ORDER_ID_FORMAT("주문ID 변환 실패", HttpStatus.BAD_REQUEST),
 
     /**
      * Ranking

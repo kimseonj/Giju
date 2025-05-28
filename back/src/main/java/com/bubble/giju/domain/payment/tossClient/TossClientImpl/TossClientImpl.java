@@ -29,10 +29,16 @@ public class TossClientImpl implements TossClient {
     @Value("${toss.secret-key}")
     private String tossSecretKey;
 
+
     @Override
     public TossPaymentResponseDto confirmPayment(String paymentKey, String orderId, int amount) {
         String encodedKey = encodeSecretKey();
-        log.info(" Toss Authorization Header: Basic {}", encodedKey);
+
+
+        //승인 요청 데이터 확인
+        log.info("요청 데이터 → paymentKey: {}, orderId: {}, amount: {}", paymentKey, orderId, amount);
+        TossConfirmRequest requestBody = new TossConfirmRequest(paymentKey, orderId, amount);
+        log.info("HTTP 요청 바디: {}", requestBody); // record이므로 toString() 자동 사용됨
 
         return webClient.post()
                 .uri("/v1/payments/confirm")
