@@ -85,7 +85,7 @@ public class SecurityConfig {
         // 경로별 인가 작업
         http
                 .authorizeHttpRequests(auth -> auth
-                        .requestMatchers("/api/auth/**", "/error","/api/categories").permitAll()
+                        .requestMatchers("/api/auth/**", "/error","/api/categories", "/api/payment/**").permitAll()
                         .requestMatchers("/swagger-ui/**", "/api/swagger-config/**", "/v3/api-docs/**",
                                 "/h2-console/**",
                                 "/favicon.ico",

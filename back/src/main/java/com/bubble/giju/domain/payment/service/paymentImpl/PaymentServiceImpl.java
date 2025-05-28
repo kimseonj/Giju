@@ -59,8 +59,9 @@ public class PaymentServiceImpl implements PaymentService {
         }
 
         // 결제 승인 요청
+        log.info("결제 요청들어감");
         TossPaymentResponseDto tossResponse = tossClientImpl.confirmPayment(paymentKey, orderId, amount);
-
+        log.info("결제 요청완료함");
 
         Payment payment = Payment.builder()
                 .paymentKey(tossResponse.getPaymentKey())

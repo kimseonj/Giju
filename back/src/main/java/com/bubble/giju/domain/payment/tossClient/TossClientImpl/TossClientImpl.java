@@ -14,7 +14,10 @@ import org.springframework.http.MediaType;
 import org.springframework.stereotype.Component;
 import org.springframework.web.reactive.function.client.WebClient;
 
+import java.nio.charset.StandardCharsets;
+import java.util.Base64;
 import java.util.Map;
+import java.util.UUID;
 
 @Slf4j
 @Component
@@ -28,31 +31,40 @@ public class TossClientImpl implements TossClient {
 
     @Override
     public TossPaymentResponseDto confirmPayment(String paymentKey, String orderId, int amount) {
+        String encodedKey = encodeSecretKey();
+        log.info(" Toss Authorization Header: Basic {}", encodedKey);
+
         return webClient.post()
                 .uri("/v1/payments/confirm")
-                .header(HttpHeaders.AUTHORIZATION, "Basic " + encodeSecretKey())
+                .header(HttpHeaders.AUTHORIZATION, "Basic " + encodedKey)
+                .header("Idempotency-Key", UUID.randomUUID().toString())
+                .header("Accept-Language", "ko-KR")
                 .contentType(MediaType.APPLICATION_JSON)
-                // 결제 승인에 필요한 데이터 3개를 JSON으로 보냄
+
                 .bodyValue(new TossConfirmRequest(paymentKey, orderId, amount))
 
                 // 요청을 전송하고 응답을 받을 준비
                 .retrieve()
-                .onStatus(status -> status.is4xxClientError() || status.is5xxServerError(), clientResponse -> {
-                    return clientResponse.bodyToMono(String.class)
-                            .map(errorBody -> {
-                                log.error("Toss 결제 승인 실패: {}", errorBody);
-                                throw new CustomException(ErrorCode.PAYMENT_CONFIRMATION_FAILED);
-                            });
-                })
+                .onStatus(
+                        status -> status.is4xxClientError() || status.is5xxServerError(),
+                        response -> response.bodyToMono(String.class).map(errorBody -> {
+                            log.error(" Toss 결제 승인 실패: {}", errorBody);
+                            throw new CustomException(ErrorCode.PAYMENT_CONFIRMATION_FAILED);
+                        })
+                )
                 .bodyToMono(TossPaymentResponseDto.class)
                 .block();
     }
 
     @Override
     public TossCancelResponseDto cancelPayment(String paymentKey, String cancelReason, int cancelAmount) {
+        String encodedKey = encodeSecretKey();
+
         return webClient.post()
                 .uri("/v1/payments/" + paymentKey + "/cancel")
-                .header(HttpHeaders.AUTHORIZATION, "Basic " + encodeSecretKey())
+                .header(HttpHeaders.AUTHORIZATION, "Basic " + encodedKey)
+                .header("Idempotency-Key", UUID.randomUUID().toString())
+                .header("Accept-Language", "ko-KR")
                 .contentType(MediaType.APPLICATION_JSON)
                 .bodyValue(Map.of(
                         "cancelReason", cancelReason,
@@ -61,13 +73,10 @@ public class TossClientImpl implements TossClient {
                 .retrieve()
                 .onStatus(
                         status -> status.is4xxClientError() || status.is5xxServerError(),
-                        response -> {
-                            return response.bodyToMono(String.class)
-                                    .map(errorBody -> {
-                                        log.error("Toss 결제 취소 실패: {}", errorBody);
-                                        throw new CustomException(ErrorCode.PAYMENT_CANCEL_FAILED);
-                                    });
-                        }
+                        response -> response.bodyToMono(String.class).map(errorBody -> {
+                            log.error(" Toss 결제 취소 실패: {}", errorBody);
+                            throw new CustomException(ErrorCode.PAYMENT_CANCEL_FAILED);
+                        })
                 )
                 .bodyToMono(TossCancelResponseDto.class)
                 .block();
@@ -75,8 +84,10 @@ public class TossClientImpl implements TossClient {
 
 
     private String encodeSecretKey() {
-        return java.util.Base64.getEncoder().encodeToString((tossSecretKey + ":").getBytes());
+        return java.util.Base64.getEncoder()
+                .encodeToString((tossSecretKey + ":").getBytes(StandardCharsets.UTF_8));
     }
+
 
     // Toss 결제 승인 요청에 사용되는 내부 전용 DTO
     private record TossConfirmRequest(String paymentKey, String orderId, int amount) {}
