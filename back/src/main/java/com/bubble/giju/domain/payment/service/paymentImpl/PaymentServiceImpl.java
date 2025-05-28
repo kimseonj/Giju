@@ -1,10 +1,13 @@
 package com.bubble.giju.domain.payment.service.paymentImpl;
 
+import com.bubble.giju.domain.cart.entity.Cart;
 import com.bubble.giju.domain.cart.repository.CartRepository;
 import com.bubble.giju.domain.order.entity.Order;
 
+import com.bubble.giju.domain.order.entity.OrderCartMapping;
 import com.bubble.giju.domain.order.entity.OrderStatus;
 
+import com.bubble.giju.domain.order.repository.OrderCartMappingRepository;
 import com.bubble.giju.domain.order.repository.OrderRepository;
 import com.bubble.giju.domain.payment.dto.request.CanceledItemDto;
 import com.bubble.giju.domain.payment.dto.request.PaymentCancelRequestDto;
@@ -27,6 +30,7 @@ import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
 
+import java.util.List;
 import java.util.UUID;
 
 
@@ -40,6 +44,7 @@ public class PaymentServiceImpl implements PaymentService {
     private final PaymentRepository paymentRepository;
     private final PaymentCancelInfoRepository paymentCancelInfoRepository;
     private final PaymentFailInfoRepository paymentFailInfoRepository;
+    private final OrderCartMappingRepository orderCartMappingRepository;
 
     private static final String CANCEL_REASON = "결제 정보 불일치로 인한 자동 취소";
     private final CartRepository cartRepository;
@@ -83,7 +88,7 @@ public class PaymentServiceImpl implements PaymentService {
 
         //추가 검증
         if (!orderId.equals(tossResponse.getOrderId()) ||
-                order.getTotalAmount() != tossResponse.getTotalAmount()) {
+            order.getTotalAmount() != tossResponse.getTotalAmount()) {
 
             //결제 취소
             TossCancelResponseDto cancelResponse = tossClientImpl.cancelPayment(
@@ -117,9 +122,8 @@ public class PaymentServiceImpl implements PaymentService {
         order.updateStatus(OrderStatus.SUCCEEDED);
         orderRepository.save(order);
 
-
-        //결제 성공시 장바구니 삭제
-        cartRepository.deleteByUser(order.getUser());
+        //장바구니 정리
+        deleteCartsAndMappingsByOrder(order);
     }
 
 
@@ -236,6 +240,16 @@ public class PaymentServiceImpl implements PaymentService {
         // DB에서 주문 조회
         return orderRepository.findById(orderIdLong)
                 .orElseThrow(() -> new CustomException(ErrorCode.NON_EXISTENT_ORDER));
+    }
+
+    private void deleteCartsAndMappingsByOrder(Order order) {
+        List<Cart> cartsToDelete = orderCartMappingRepository.findByOrder(order)
+                .stream()
+                .map(OrderCartMapping::getCart)
+                .toList();
+
+        cartRepository.deleteAll(cartsToDelete);
+        orderCartMappingRepository.deleteByOrder(order);
     }
 
 
