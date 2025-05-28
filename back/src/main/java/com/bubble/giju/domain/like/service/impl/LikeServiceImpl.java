@@ -52,22 +52,27 @@ public class LikeServiceImpl implements LikeService {
                 () -> new CustomException(ErrorCode.NON_EXISTENT_DRINK)
         );
 
-        Optional<Like> optionalLike = likeRepository.findByUser_UserIdAndId(UUID.fromString(userId), drinkId);
+        Optional<Like> optionalLike = likeRepository.findByUser_UserIdAndDrink_Id(UUID.fromString(userId), drinkId);
 
         /*
          * xor 연산
          * 찜 요청 ^ Optional
-         * t ^ t = f
-         * t ^ f = t
-         * f ^ t = t
-         * f ^ f = f
+         * t ^ t = t
+         * t ^ f = f
+         * f ^ t = f
+         * f ^ f = t
          * */
-        if (likeRequest ^ optionalLike.isPresent()) {
+
+        if (likeRequest == optionalLike.isPresent()) {
             throw new CustomException(ErrorCode.INVALID_LIKE);
         }
 
         Like like;
         if (likeRequest) {
+            if (optionalLike.isPresent()) {
+                like = optionalLike.get();
+                like.activateLike();
+            }
             like = Like.builder()
                     .user(user)
                     .drink(drink)
