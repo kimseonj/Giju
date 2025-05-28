@@ -26,8 +26,8 @@ public class TossClientImpl implements TossClient {
 
     private final WebClient webClient;
 
-    //@Value("${toss.secret-key}")
-    private String tossSecretKey = "test_gsk_docs_OaPz8L5KdmQXkzRz3y47BMw6";
+    @Value("${toss.secret-key}")
+    private String tossSecretKey;
 
 
     @Override
@@ -35,7 +35,7 @@ public class TossClientImpl implements TossClient {
         String encodedKey = encodeSecretKey();
 
 
-        // 🔍 [2] 승인 요청 데이터 확인
+        //승인 요청 데이터 확인
         log.info("요청 데이터 → paymentKey: {}, orderId: {}, amount: {}", paymentKey, orderId, amount);
         TossConfirmRequest requestBody = new TossConfirmRequest(paymentKey, orderId, amount);
         log.info("HTTP 요청 바디: {}", requestBody); // record이므로 toString() 자동 사용됨

@@ -135,7 +135,7 @@ INSERT INTO orders (
     deleted_at,
     user_id
 ) VALUES (
-             1,
+             99,
              50000,
              '2025-05-28T02:29:00',
              'PENDING',
@@ -146,6 +146,18 @@ INSERT INTO orders (
              '22222222-2222-2222-2222-222222222224'
          );
 
+
+INSERT INTO order_detail (order_detail_id,
+                          price,
+                          quantity,
+                          drink_name,
+                          region,
+                          order_id,
+                          is_canceled,
+                          is_refund_requested,
+                          is_refunded)
+VALUES (1, 10000, 1, '막걸리', '전라남도', 99, false, false, false),
+       (2, 12000, 1, '감자주', '강원도', 99, false, false, false);
 
 INSERT INTO Orders (
     order_id,
@@ -158,7 +170,7 @@ INSERT INTO Orders (
     deleted_at,
     user_id
 ) VALUES (
-             67,
+             1,
              50000,
              '2025-05-24T16:47:00',
              'PENDING',
@@ -169,17 +181,7 @@ INSERT INTO Orders (
              '11111111-1111-1111-1111-111111111112'
          );
 
-INSERT INTO order_detail (order_detail_id,
-                          price,
-                          quantity,
-                          drink_name,
-                          region,
-                          order_id,
-                          is_canceled,
-                          is_refund_requested,
-                          is_refunded)
-VALUES (1, 10000, 1, '막걸리', '전라남도', 1, false, false, false),
-       (2, 12000, 1, '감자주', '강원도', 1, false, false, false);
+
 
 
 INSERT INTO Orders (order_id,

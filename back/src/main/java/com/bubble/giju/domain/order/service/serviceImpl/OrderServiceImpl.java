@@ -106,7 +106,8 @@ public class OrderServiceImpl implements OrderService {
 
         orderCartMappingRepository.saveAll(mappings);
 
-        String tossOrderId = String.format("ORDER%06d", savedOrder.getId()); //토스페이먼츠서버로 보내기 위해 orderId는 6~64자, 영문 대소문자, 숫자, -, _만 가능 변환
+        String tossOrderId = "ORDER_" + savedOrder.getId() + "_" + UUID.randomUUID();
+        //String tossOrderId = String.format("ORDER%06d", savedOrder.getId()); //토스페이먼츠서버로 보내기 위해 orderId는 6~64자, 영문 대소문자, 숫자, -, _만 가능 변환
 
         return OrderResponseDto.builder()
                 .orderId( tossOrderId)

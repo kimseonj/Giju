@@ -61,9 +61,10 @@ public class PaymentServiceImpl implements PaymentService {
             throw new CustomException(ErrorCode.INVALID_PAYMENT_VERIFICATION);
         }
 
-//        if (order.isDeleted()) {
-//            throw new CustomException(ErrorCode.ALREADY_DELETED_ORDER);
-//        }
+        //soft delete 된 건지 판단
+        if (order.isDeleted()) {
+            throw new CustomException(ErrorCode.ALREADY_DELETED_ORDER);
+        }
 
         // 결제 승인 요청
         log.info("결제 요청들어감");
@@ -220,27 +221,24 @@ public class PaymentServiceImpl implements PaymentService {
                 .build();
     }
 
-
     public Order findOrderByStringId(String orderId) {
-        // 숫자 아닌 문자 모두 제거
-        String orderIdStr = orderId.replaceAll("[^0-9]", "");
+        String[] parts = orderId.split("_");
 
-        if (orderIdStr.isEmpty()) {
-            throw new CustomException(ErrorCode.INVALID_ORDER_ID);
+        if (parts.length < 3) {
+            throw new CustomException(ErrorCode.INVALID_ORDER_ID_FORMAT);
         }
 
-        // Long 타입으로 변환
         Long orderIdLong;
         try {
-            orderIdLong = Long.parseLong(orderIdStr);
+            orderIdLong = Long.parseLong(parts[1]);  // 두 번째 파트가 숫자 ID
         } catch (NumberFormatException e) {
             throw new CustomException(ErrorCode.INVALID_ORDER_ID_FORMAT);
         }
 
-        // DB에서 주문 조회
         return orderRepository.findById(orderIdLong)
                 .orElseThrow(() -> new CustomException(ErrorCode.NON_EXISTENT_ORDER));
     }
+
 
     private void deleteCartsAndMappingsByOrder(Order order) {
         List<Cart> cartsToDelete = orderCartMappingRepository.findByOrder(order)
@@ -265,4 +263,25 @@ public class PaymentServiceImpl implements PaymentService {
         paymentRepository.save(payment);
     }
 
+
+    /*  public Order findOrderByStringId(String orderId) {
+        // 숫자 아닌 문자 모두 제거
+        String orderIdStr = orderId.replaceAll("[^0-9]", "");
+
+        if (orderIdStr.isEmpty()) {
+            throw new CustomException(ErrorCode.INVALID_ORDER_ID);
+        }
+
+        // Long 타입으로 변환
+        Long orderIdLong;
+        try {
+            orderIdLong = Long.parseLong(orderIdStr);
+        } catch (NumberFormatException e) {
+            throw new CustomException(ErrorCode.INVALID_ORDER_ID_FORMAT);
+        }
+
+        // DB에서 주문 조회
+        return orderRepository.findById(orderIdLong)
+                .orElseThrow(() -> new CustomException(ErrorCode.NON_EXISTENT_ORDER));
+    }*/
 }
