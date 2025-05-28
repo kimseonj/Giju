@@ -6,8 +6,10 @@ import com.bubble.giju.domain.drink.entity.Drink;
 import com.bubble.giju.domain.order.dto.request.RefundRequestDto;
 import com.bubble.giju.domain.order.dto.response.*;
 import com.bubble.giju.domain.order.entity.Order;
+import com.bubble.giju.domain.order.entity.OrderCartMapping;
 import com.bubble.giju.domain.order.entity.OrderDetail;
 import com.bubble.giju.domain.order.entity.OrderStatus;
+import com.bubble.giju.domain.order.repository.OrderCartMappingRepository;
 import com.bubble.giju.domain.order.repository.OrderDetailRepository;
 import com.bubble.giju.domain.order.repository.OrderRepository;
 import com.bubble.giju.domain.order.service.OrderService;
@@ -38,6 +40,7 @@ public class OrderServiceImpl implements OrderService {
     private final CartRepository cartRepository;
     private final PaymentRepository paymentRepository;
     private final OrderDetailRepository orderDetailRepository;
+    private final OrderCartMappingRepository orderCartMappingRepository;
 
     @Value("${app.base-url}")
     private String baseUrl;
@@ -75,27 +78,38 @@ public class OrderServiceImpl implements OrderService {
                 .user(user)
                 .build();
 
-        for (Cart cart : cartItems) {
-            Drink drink = cart.getDrink();
-            int price = drink.getPrice();
-            int quantity = cart.getQuantity();
+        // 주문 상세(OrderDetail) 리스트 생성 및 양방향 매핑
+        List<OrderDetail> orderDetails = cartItems.stream()
+                .map(cart -> {
+                    Drink drink = cart.getDrink();
+                    return OrderDetail.builder()
+                            .drinkName(drink.getName())
+                            .price(drink.getPrice() * cart.getQuantity())
+                            .quantity(cart.getQuantity())
+                            .order(order)
+                            .region(drink.getRegion())
+                            .build();
+                })
+                .toList();
 
-            // orderDetail 생성
-            OrderDetail orderDetail = OrderDetail.builder()
-                    .drinkName(drink.getName())
-                    .price(price*quantity)
-                    .quantity(quantity)
-                    .order(order)
-                    .region(drink.getRegion())
-                    .build();
-            //양뱡향 설정
-            order.addOrderDetail(orderDetail);
-        }
+        orderDetails.forEach(order::addOrderDetail); // 양방향 연관관계
+
+        // 주문 저장
         Order savedOrder = orderRepository.save(order);
 
+        List<OrderCartMapping> mappings = cartItems.stream()
+                .map(cart -> OrderCartMapping.builder()
+                        .order(savedOrder)
+                        .cart(cart)
+                        .build())
+                .toList();
+
+        orderCartMappingRepository.saveAll(mappings);
+
+        String tossOrderId = String.format("ORDER%06d", savedOrder.getId()); //토스페이먼츠서버로 보내기 위해 orderId는 6~64자, 영문 대소문자, 숫자, -, _만 가능 변환
 
         return OrderResponseDto.builder()
-                .orderId(savedOrder.getId().toString()) //토스페이먼츠서버로 보내기 위해 String변환
+                .orderId( tossOrderId)
                 .amount(savedOrder.getTotalAmount() + savedOrder.getDeliveryCharge()) // 상품값 + 배달비
                 .orderName(savedOrder.getOrderName())
                 .customerEmail(user.getEmail())

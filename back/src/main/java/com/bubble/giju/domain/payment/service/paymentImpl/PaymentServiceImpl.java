@@ -48,19 +48,17 @@ public class PaymentServiceImpl implements PaymentService {
     @Override
     public void paymentSuccess(String paymentKey, String orderId, int amount) {
 
-        // TossPayment -> orderId 타입이 Long
-        Long orderIdToss = Long.parseLong(orderId);
-        // Order 테이블에서 실제 주문 조회
-        Order order = getOrder(orderIdToss);
+
+        Order order = findOrderByStringId(orderId);
 
         // 결제 버튼 누를때 생성된 Order의 총값 과 리다이렉트 파라미터 비교
         if (order.getTotalAmount() != amount) {
             throw new CustomException(ErrorCode.INVALID_PAYMENT_VERIFICATION);
         }
 
-        if (order.isDeleted()) {
-            throw new CustomException(ErrorCode.ALREADY_DELETED_ORDER);
-        }
+//        if (order.isDeleted()) {
+//            throw new CustomException(ErrorCode.ALREADY_DELETED_ORDER);
+//        }
 
         // 결제 승인 요청
         log.info("결제 요청들어감");
@@ -129,8 +127,7 @@ public class PaymentServiceImpl implements PaymentService {
     @Override
     public void paymentFail(String code, String message, String orderId) {
 
-        Long orderIdToss = Long.parseLong(orderId);
-        Order order = getOrder(orderIdToss);
+        Order order = findOrderByStringId(orderId);
 
         // 실패 상태의 Payment 생성
         Payment payment = Payment.builder()
@@ -220,10 +217,27 @@ public class PaymentServiceImpl implements PaymentService {
     }
 
 
-    private Order getOrder(Long orderId) {
-        return orderRepository.findById(orderId)
+    public Order findOrderByStringId(String orderId) {
+        // 숫자 아닌 문자 모두 제거
+        String orderIdStr = orderId.replaceAll("[^0-9]", "");
+
+        if (orderIdStr.isEmpty()) {
+            throw new CustomException(ErrorCode.INVALID_ORDER_ID);
+        }
+
+        // Long 타입으로 변환
+        Long orderIdLong;
+        try {
+            orderIdLong = Long.parseLong(orderIdStr);
+        } catch (NumberFormatException e) {
+            throw new CustomException(ErrorCode.INVALID_ORDER_ID_FORMAT);
+        }
+
+        // DB에서 주문 조회
+        return orderRepository.findById(orderIdLong)
                 .orElseThrow(() -> new CustomException(ErrorCode.NON_EXISTENT_ORDER));
     }
+
 
     private void updateCanceledPayment(Payment payment, TossCancelResponseDto response) {
         TossCancelResponseDto.CancelDetail latest = response.getLatestCancel();

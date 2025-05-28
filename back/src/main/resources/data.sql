@@ -158,8 +158,8 @@ INSERT INTO Orders (
     deleted_at,
     user_id
 ) VALUES (
-             66,
-             22000,
+             67,
+             50000,
              '2025-05-24T16:47:00',
              'PENDING',
              3000,
