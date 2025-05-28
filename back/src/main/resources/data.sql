@@ -123,24 +123,51 @@ INSERT INTO Delivery_companies (delivery_company_id, delivery_company_name)
 VALUES (100, '택배'),
        (101, '우체국 택배');
 
-INSERT INTO Orders (order_id,
-                    total_amount,
-                    created_at,
-                    order_status,
-                    delivery_charge,
-                    is_deleted,
-                    order_name,
-                    deleted_at,
-                    user_id)
-VALUES (1,
-        22000,
-        '2025-05-24T16:47:00',
-        'PENDING',
-        3000,
-        false,
-        'testuser1의 첫 주문',
-        NULL,
-        '11111111-1111-1111-1111-111111111112');
+
+INSERT INTO orders (
+    order_id,
+    total_amount,
+    created_at,
+    order_status,
+    delivery_charge,
+    is_deleted,
+    order_name,
+    deleted_at,
+    user_id
+) VALUES (
+             1,
+             50000,
+             '2025-05-28T02:29:00',
+             'PENDING',
+             0,
+             false,
+             'testuser4의 테스트 주문',
+             NULL,
+             '22222222-2222-2222-2222-222222222224'
+         );
+
+
+INSERT INTO Orders (
+    order_id,
+    total_amount,
+    created_at,
+    order_status,
+    delivery_charge,
+    is_deleted,
+    order_name,
+    deleted_at,
+    user_id
+) VALUES (
+             66,
+             22000,
+             '2025-05-24T16:47:00',
+             'PENDING',
+             3000,
+             false,
+             'testuser1의 첫 주문',
+             NULL,
+             '11111111-1111-1111-1111-111111111112'
+         );
 
 INSERT INTO order_detail (order_detail_id,
                           price,

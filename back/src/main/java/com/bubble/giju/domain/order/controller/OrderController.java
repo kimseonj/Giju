@@ -61,14 +61,4 @@ public class OrderController {
 
 
 
-    /*
-    @Operation(summary = "주문 상세 조회", description = "특정 주문의 상세 정보를 조회합니다")
-    @GetMapping("/order/{orderId}")
-    public ResponseEntity<OrderDetailResponseDto> orderDetail(
-            @PathVariable Long orderId,
-            @AuthenticationPrincipal CustomPrincipal principal) {
-        OrderDetailResponseDto detail = orderService.getOrderDetail(orderId, principal);
-        return ResponseEntity.ok(detail);
-    }*/
-
 }
