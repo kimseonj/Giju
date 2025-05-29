@@ -60,14 +60,17 @@ public class CartServiceImpl implements CartService {
         if (optionalCart.isPresent()) {
             cart = optionalCart.get();
             cart.increaseQuantity(requestDto.getQuantity());
+            cartRepository.save(cart);
+
         } else {
             cart = Cart.builder()
                     .user(user)
                     .drink(drink)
                     .quantity(requestDto.getQuantity())
                     .build();
+            cartRepository.save(cart);
+
         }
-        cartRepository.save(cart);
 
         int cartTotalPrice = calculateCartTotalPrice(user);
 
