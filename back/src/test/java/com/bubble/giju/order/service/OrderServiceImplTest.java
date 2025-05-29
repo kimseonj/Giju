@@ -5,6 +5,7 @@ import com.bubble.giju.domain.cart.repository.CartRepository;
 import com.bubble.giju.domain.drink.entity.Drink;
 import com.bubble.giju.domain.order.dto.response.OrderResponseDto;
 import com.bubble.giju.domain.order.entity.Order;
+import com.bubble.giju.domain.order.repository.OrderCartMappingRepository;
 import com.bubble.giju.domain.order.repository.OrderRepository;
 import com.bubble.giju.domain.order.service.serviceImpl.OrderServiceImpl;
 import com.bubble.giju.domain.user.dto.CustomPrincipal;
@@ -37,7 +38,7 @@ public class OrderServiceImplTest {
     @Mock private OrderRepository orderRepository;
     @Mock private UserRepository userRepository;
     @Mock private CartRepository cartRepository;
-
+    @Mock private OrderCartMappingRepository orderCartMappingRepository;
     @InjectMocks
     private OrderServiceImpl orderService;
 
