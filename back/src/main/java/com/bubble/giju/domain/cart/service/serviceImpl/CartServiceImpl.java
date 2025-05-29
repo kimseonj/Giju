@@ -43,6 +43,7 @@ public class CartServiceImpl implements CartService {
     @Value("${order.targetPrice}")
     private int targetPrice;
 
+    @Transactional
     @Override
     public CartResponseDto addToCart(AddToCartRequestDto requestDto, CustomPrincipal principal) {
 
@@ -60,14 +61,15 @@ public class CartServiceImpl implements CartService {
         if (optionalCart.isPresent()) {
             cart = optionalCart.get();
             cart.increaseQuantity(requestDto.getQuantity());
+            cartRepository.save(cart);
         } else {
             cart = Cart.builder()
                     .user(user)
                     .drink(drink)
                     .quantity(requestDto.getQuantity())
                     .build();
+            cartRepository.save(cart);
         }
-        cartRepository.save(cart);
 
         int cartTotalPrice = calculateCartTotalPrice(user);
 
