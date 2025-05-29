@@ -64,4 +64,12 @@ public class UserController {
     public List<LikeDto.Response> getLike(@AuthenticationPrincipal CustomPrincipal customPrincipal) {
         return likeService.getLike(customPrincipal.getUserId());
     }
+
+    @Operation(summary = "찜 확인", description = "상품을 들어갔을 때 찜을 확인합니다.")
+    @GetMapping("/api/drinks/{drinkId}/my/wish")
+    public List<LikeDto.Response> getLike(@AuthenticationPrincipal CustomPrincipal customPrincipal, @PathVariable Long drinkId) {
+        likeService.getLike(customPrincipal.getUserId(), drinkId);
+        //        return likeService.getLike(customPrincipal.getUserId(), drinkId);
+        return null;
+    }
 }
