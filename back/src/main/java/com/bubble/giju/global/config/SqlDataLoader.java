@@ -27,6 +27,7 @@ public class SqlDataLoader implements ApplicationRunner {
         List<String> sqlFiles = List.of(
                 "sql/userData.sql",
                 "sql/drinkData.sql",
+                "sql/images.sql",
                 "sql/deliveryCompainesData.sql",
                 "sql/orderData.sql",
                 "sql/likesData.sql",

@@ -22,10 +22,16 @@ public class DataInitializer implements CommandLineRunner {
     //todo 리스트에 추가하여 saveAll로 N+1 해결할 것
     @Override
     public void run(String... args) {
+        List<Category> categoryList=new ArrayList<Category>();
+
         for(String categoryName:categories){
             if(!categoryRepository.existsByName(categoryName)){
-                categoryRepository.save(new Category(categoryName));
+                categoryList.add(new Category(categoryName));
             }
+        }
+
+        if (!categoryList.isEmpty()) {
+            categoryRepository.saveAll(categoryList);
         }
     }
 }
