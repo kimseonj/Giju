@@ -47,8 +47,8 @@ order:
 toss:
   success_url: "/api/payment/success"
   fail_url: "/api/payment/fail"
-#  secret-key: ${TOSS_SECRET_KEY:asdfasdfasdfasdf}
-  secret-key: ${toss-secret:asdfasdfasdfasdf}
+  secret-key: ${TOSS_SECRET_KEY:asdfasdfasdfasdf}
+#  secret-key: ${toss-secret:asdfasdfasdfasdf}
 
 jwt:
   expirationtime:
