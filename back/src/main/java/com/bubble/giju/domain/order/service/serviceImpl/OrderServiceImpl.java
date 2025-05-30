@@ -70,12 +70,17 @@ public class OrderServiceImpl implements OrderService {
         // order 이름
         String orderName = buildOrderName(cartItems);
 
+        //customerkey 생성
+        String customerKey = "user-" + user.getUserId();
+
+
         // order 생성
         Order order = Order.builder()
                 .orderName(orderName)
                 .totalAmount(totalAmount)
                 .deliveryCharge(deliveryCharge)
                 .user(user)
+                .customerKey(customerKey)
                 .build();
 
         // 주문 상세(OrderDetail) 리스트 생성 및 양방향 매핑
@@ -97,6 +102,11 @@ public class OrderServiceImpl implements OrderService {
         // 주문 저장
         Order savedOrder = orderRepository.save(order);
 
+        String tossOrderId = "ORDER_" + savedOrder.getId() + "_" + UUID.randomUUID();
+
+        savedOrder.setTossOrderId(tossOrderId);
+        orderRepository.save(savedOrder);
+
         List<OrderCartMapping> mappings = cartItems.stream()
                 .map(cart -> OrderCartMapping.builder()
                         .order(savedOrder)
@@ -106,11 +116,9 @@ public class OrderServiceImpl implements OrderService {
 
         orderCartMappingRepository.saveAll(mappings);
 
-        String tossOrderId = "ORDER_" + savedOrder.getId() + "_" + UUID.randomUUID();
-        //String tossOrderId = String.format("ORDER%06d", savedOrder.getId()); //토스페이먼츠서버로 보내기 위해 orderId는 6~64자, 영문 대소문자, 숫자, -, _만 가능 변환
 
         return OrderResponseDto.builder()
-                .orderId( tossOrderId)
+                .orderId(tossOrderId)
                 .amount(savedOrder.getTotalAmount() + savedOrder.getDeliveryCharge()) // 상품값 + 배달비
                 .orderName(savedOrder.getOrderName())
                 .customerEmail(user.getEmail())
