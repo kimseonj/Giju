@@ -128,7 +128,9 @@ public class DrinkServiceImpl implements DrinkService {
                 : 0.0;
 
 
-        boolean isLike= likeRepository.existsByUser_UserIdAndDrink_id(userId,drinkId);
+        Optional<Like> optionalLike = likeRepository.findByUser_UserIdAndDrink_Id(userId, drinkId);
+        boolean isLike = optionalLike.filter(like -> !like.isDelete()).isPresent();
+//        boolean isLike= likeRepository.existsByUser_UserIdAndDrink_id(userId,drinkId);
 
         //todo Mapper 이용할것
         DrinkDetailResponseDto drinkDetailResponseDto = DrinkDetailResponseDto.builder()
