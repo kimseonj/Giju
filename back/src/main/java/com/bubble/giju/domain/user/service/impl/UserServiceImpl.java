@@ -15,6 +15,7 @@ import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
 import java.time.LocalDateTime;
+import java.util.ArrayList;
 import java.util.UUID;
 
 @Slf4j
@@ -25,12 +26,15 @@ public class UserServiceImpl implements UserService {
     private final UserRepository userRepository;
     private final BCryptPasswordEncoder bCryptPasswordEncoder;
 
+    private ArrayList arrayList = new ArrayList();
+
     @Override
     @Transactional
     public UserDto.Response save(UserCreateRequest userCreateRequest) {
         if (userRepository.findByLoginId(userCreateRequest.getLoginId()).isPresent()) {
             throw new CustomException(ErrorCode.DUPLICATE_USER_LoginId);
         }
+
 
         User user = User.builder()
                 .loginId(userCreateRequest.getLoginId())
@@ -55,6 +59,9 @@ public class UserServiceImpl implements UserService {
                 () -> new CustomException(ErrorCode.NON_EXISTENT_USER)
         );
 
+        System.out.println(arrayList);
+        arrayList.add("test");
+
         return UserDto.Response.fromEntity(user);
     }
 
@@ -72,6 +79,8 @@ public class UserServiceImpl implements UserService {
 
         user.update(request);
         log.info("Updated user: {}", user); // 변경 확인용 로그
+
+        System.out.println(arrayList);
 
         return UserDto.Response.fromEntity(user);
     }
