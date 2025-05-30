@@ -56,7 +56,7 @@ public class Order {
     private LocalDateTime deletedAt;
 
     //토스페이머츠 orderid 자릿수 6~64까지
-    @Column(name = "toss_order_id", nullable = false, unique = true, length = 64)
+    @Column(name = "toss_order_id", unique = true, length = 64)
     private String tossOrderId;
 
 
