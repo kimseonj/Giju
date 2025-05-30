@@ -41,8 +41,11 @@ public class SecurityConfig {
     public CorsConfigurationSource corsConfigurationSource() {
         CorsConfiguration configuration = new CorsConfiguration();
         // 허용할 오리진(출처) 설정
-        configuration.setAllowedOrigins(new ArrayList<>(List.of("http://localhost:3000",
-                                                        "https://giju.vercel.app/")));
+        configuration.setAllowedOrigins(new ArrayList<>(List.of(
+                "http://localhost:3000",
+                "https://giju.vercel.app",
+                "https://seonjun.store",
+                "http://seonjun.store")));
 
         // 허용할 HTTP 메서드 설정
         configuration.setAllowedMethods(Arrays.asList("GET", "POST", "PATCH", "PUT", "DELETE", "OPTIONS"));
@@ -88,7 +91,7 @@ public class SecurityConfig {
         // 경로별 인가 작업
         http
                 .authorizeHttpRequests(auth -> auth
-                        .requestMatchers("/api/auth/**", "/error","/api/categories","/api/rankings","/api/payment/**","/toss/**").permitAll()
+                        .requestMatchers("/api/auth/**", "/error", "/api/categories", "/api/rankings", "/api/payment/**", "/api/drink/**", "/api/drinks","toss/**").permitAll()
                         .requestMatchers("/swagger-ui/**", "/api/swagger-config/**", "/v3/api-docs/**",
                                 "/h2-console/**",
                                 "/favicon.ico",
