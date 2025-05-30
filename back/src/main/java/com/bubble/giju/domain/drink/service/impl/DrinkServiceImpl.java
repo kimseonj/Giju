@@ -32,10 +32,7 @@ import org.springframework.web.multipart.MultipartFile;
 
 import javax.swing.text.html.Option;
 import java.io.IOException;
-import java.util.ArrayList;
-import java.util.List;
-import java.util.Optional;
-import java.util.UUID;
+import java.util.*;
 
 @Service
 @Transactional
@@ -205,12 +202,20 @@ public class DrinkServiceImpl implements DrinkService {
     }
 
     private DrinkResponseDto buildDrinkResponseDto(Drink drink) {
+        // 썸네일 처리
         DrinkImage thumbnailDrinkImage = drinkImageRepository.findByDrinkIdAndThumbnailIsTrue(drink.getId());
-        String thumbnailUrl = thumbnailDrinkImage.getImage().getUrl();
+        String thumbnailUrl = thumbnailDrinkImage != null && thumbnailDrinkImage.getImage() != null
+                ? thumbnailDrinkImage.getImage().getUrl()
+                : null;
 
-        List<DrinkImage> drinkImageList = drinkImageRepository.findByDrinkIdAndThumbnailIsFalse(drink.getId());
+        // 일반 이미지 리스트 처리
+        List<DrinkImage> drinkImageList = Optional.ofNullable(
+                drinkImageRepository.findByDrinkIdAndThumbnailIsFalse(drink.getId())
+        ).orElse(Collections.emptyList());
+
         List<String> imageList = drinkImageList.stream()
-                .map(img -> img.getImage().getUrl())
+                .map(img -> img.getImage() != null ? img.getImage().getUrl() : null)
+                .filter(Objects::nonNull)
                 .toList();
 
         return DrinkResponseDto.builder()
@@ -222,10 +227,11 @@ public class DrinkServiceImpl implements DrinkService {
                 .volume(drink.getVolume())
                 .is_delete(drink.is_delete())
                 .region(drink.getRegion())
-                .category(new CategoryResponseDto(drink.getCategory().getId(),drink.getCategory().getName()))
+                .category(new CategoryResponseDto(drink.getCategory().getId(), drink.getCategory().getName()))
                 .thumbnailUrl(thumbnailUrl)
                 .drinkImageUrlList(imageList)
                 .build();
     }
+
 
 }
