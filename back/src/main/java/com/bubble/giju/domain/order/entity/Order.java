@@ -55,12 +55,19 @@ public class Order {
     @Column(name = "deleted_at")
     private LocalDateTime deletedAt;
 
-    //토스페이머츠 자리 6~64까지
+    //토스페이머츠 orderid 자릿수 6~64까지
     @Column(name = "toss_order_id", nullable = false, unique = true, length = 64)
     private String tossOrderId;
 
 
-    @Column(name = "customer_key", nullable = false, length = 255)
+    /**
+     * https://docs.tosspayments.com/sdk/v2/js 공식문서
+     * UUID와 같이 충분히 무작위적인 고유 값으로 생성
+     * 영문 대소문자, 숫자, 특수문자 -, _, =, ., @ 중 최소 1개를 포함하는
+     * 최소 2자 이상 최대 50자 이하의 문자열이어야 함
+    **/
+    @Column(name = "customer_key", nullable = false, length = 50)
+
     private String customerKey;
 
 
