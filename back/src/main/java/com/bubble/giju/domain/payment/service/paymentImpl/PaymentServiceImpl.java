@@ -5,6 +5,7 @@ import com.bubble.giju.domain.cart.repository.CartRepository;
 import com.bubble.giju.domain.order.entity.Order;
 
 import com.bubble.giju.domain.order.entity.OrderCartMapping;
+import com.bubble.giju.domain.order.entity.OrderDetail;
 import com.bubble.giju.domain.order.entity.OrderStatus;
 
 import com.bubble.giju.domain.order.repository.OrderCartMappingRepository;
@@ -176,19 +177,33 @@ public class PaymentServiceImpl implements PaymentService {
                 .orElseThrow(() -> new CustomException(ErrorCode.PAYMENT_NOT_FOUND));
 
         int cancelAmount = dto.getCanceledItems().stream()
-                .mapToInt(CanceledItemDto::getCancelAmount)
+                .mapToInt(item -> {
+                    OrderDetail detail = order.getOrderDetails().stream()
+                            .filter(d -> d.getId().equals(item.getOrderDetailId()))
+                            .findFirst()
+                            .orElseThrow(() -> new CustomException(ErrorCode.ORDER_DETAIL_NOT_FOUND));
+
+                    return detail.getPrice();
+                })
                 .sum();
 
-        boolean isFullCancel = (cancelAmount == payment.getAmount());
+        int totalOrderAmount = order.getOrderDetails().stream()
+                .mapToInt(OrderDetail::getPrice)
+                .sum();
 
+        boolean isFullCancel = (cancelAmount == totalOrderAmount);
+
+        // TossPayments 결제 취소 API 호출
         TossCancelResponseDto tossResponse = tossClientImpl.cancelPayment(
                 payment.getPaymentKey(),
                 dto.getCancelReason(),
                 cancelAmount
         );
 
-        TossCancelResponseDto.CancelDetail cancelDetail = tossResponse.getCancels().get(tossResponse.getCancels().size() - 1);
+        TossCancelResponseDto.CancelDetail cancelDetail = tossResponse.getCancels()
+                .get(tossResponse.getCancels().size() - 1);
 
+        // 취소 정보 저장
         PaymentCancelInfo cancelInfo = PaymentCancelInfo.builder()
                 .cancelReason(dto.getCancelReason())
                 .cancelAmount(cancelAmount)
@@ -200,15 +215,16 @@ public class PaymentServiceImpl implements PaymentService {
                 .cashReceiptUrl(tossResponse.getCashReceipt() != null ? tossResponse.getCashReceipt().getReceiptUrl() : null)
                 .payment(payment)
                 .build();
-
         paymentCancelInfoRepository.save(cancelInfo);
 
+        // 주문 상태 업데이트
         if (isFullCancel) {
             order.updateStatus(OrderStatus.CANCELED);
         } else {
             order.updateStatus(OrderStatus.PARTIALLY_CANCELED);
         }
         orderRepository.save(order);
+
 
         return PaymentCancelResponseDto.builder()
                 .orderId(order.getId())

@@ -42,6 +42,7 @@ public enum ErrorCode {
     INVALID_REFUND_ITEM("유효하지 않은 환불 요청 항목입니다", HttpStatus.BAD_REQUEST),
     ALREADY_DELETED_ORDER("결제 시간 초과로 소프트삭제도니 주문 입니다",HttpStatus.BAD_REQUEST),
     JSON_PROCESSING_ERROR("Cart ID 저장 중 올 발생", HttpStatus.BAD_REQUEST),
+    ORDER_DETAIL_NOT_FOUND("주문상세를 찾을 수 없습니다", HttpStatus.BAD_REQUEST),
 
     /**
      * PAYMENT
