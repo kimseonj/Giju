@@ -21,8 +21,8 @@ public class RegionRankingController {
     private final RegionRankingService rankingService;
 
     @GetMapping
-    @Operation(summary = "지역별 랭킹 조회", description = "지역 코드(regionCode)를 기준으로 상위 10명의 사용자 구매 랭킹을 조회 ")
-    public ResponseEntity<RegionRankingResponseDto> getRegionRanking(@RequestParam int regionCode) {
+    @Operation(summary = "지역별 랭킹 조회", description = "지역 코드(regionCode)를 기준으로 상위 10명의 사용자 구매 랭킹을 조회,[GYEONGGI, GANGWON, CHUNGBUK, CHUNGNAM, JEONBUK, JEONNAM, GYEONGBUK, GYEONGNAM, JEJU], 대소문자구분없이 처리")
+    public ResponseEntity<RegionRankingResponseDto> getRegionRanking(@RequestParam String regionCode) {
         Region region = Region.fromCode(regionCode);
         RegionRankingResponseDto response = rankingService.getTop10ByRegion(region.name());
         return ResponseEntity.ok(response);
