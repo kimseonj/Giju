@@ -12,7 +12,6 @@ import com.bubble.giju.global.config.CustomException;
 import com.bubble.giju.global.config.ErrorCode;
 import jakarta.transaction.Transactional;
 import lombok.RequiredArgsConstructor;
-import org.springframework.data.domain.Sort;
 import org.springframework.stereotype.Service;
 
 import java.time.LocalDateTime;
@@ -90,20 +89,5 @@ public class LikeServiceImpl implements LikeService {
         }
 
         return LikeDto.Response.fromEntity(like);
-    }
-
-    @Override
-    public boolean getLike(String userId, Long drinkId) {
-        User user = userRepository.findById(UUID.fromString(userId)).orElseThrow(
-                () -> new CustomException(ErrorCode.NON_EXISTENT_USER)
-        );
-
-        Drink drink = drinkRepository.findById(drinkId).orElseThrow(
-                () -> new CustomException(ErrorCode.NON_EXISTENT_DRINK)
-        );
-
-        Optional<Like> optionalLike = likeRepository.findByUser_UserIdAndDrink_Id(UUID.fromString(userId), drinkId);
-
-        return optionalLike.filter(like -> !like.isDelete()).isPresent();
     }
 }
