@@ -9,11 +9,9 @@ import lombok.NoArgsConstructor;
 public class CanceledItemDto {
 
     private Long orderDetailId; // 부분 취소일 경우 식별
-    private int cancelAmount;
 
     @Builder
-    public CanceledItemDto(Long orderDetailId, int cancelAmount) {
+    public CanceledItemDto(Long orderDetailId) {
         this.orderDetailId = orderDetailId;
-        this.cancelAmount = cancelAmount;
     }
 }

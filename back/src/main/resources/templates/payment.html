@@ -25,7 +25,7 @@
         const coupon = document.getElementById("coupon-box");
         // ------  Initialize widget ------
 
-        const clientKey = "클라이언트 키를 넣어줘";
+        const clientKey = "클라이언트키 입력";
         const tossPayments = TossPayments(clientKey);
         // Logged in customers
         const customerKey = "ne93IVS3YN7kaA_Ag7Dts";
@@ -72,7 +72,7 @@
         // Save the amount and orderId to prevent malicious attempts to change them
         button.addEventListener("click", async function () {
             await widgets.requestPayment({
-                orderId: "ORDER_9999_i1j2k3l4-m5n6-vwxy-ijkl-zabcdefghijk",
+                orderId: "ORDER_30000_i1j2k3l4-m5n6-vwxy-ijkl-zabcdefghijk",
                 orderName: "토스 티셔츠 외 2건",
                 successUrl: "http://localhost:8080/api/payment/success",
                 failUrl: "http://localhost:8080/api/payment/fail",

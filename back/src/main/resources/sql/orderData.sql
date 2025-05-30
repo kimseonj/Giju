@@ -3,8 +3,8 @@
 INSERT INTO Orders (order_id, total_amount, created_at, order_status, delivery_charge, is_deleted, order_name, deleted_at, user_id, toss_order_id, customer_key)
 VALUES
 -- testuser1 (김선준) - 10개 주문
-(1, 6500, '2024-12-10T14:30:00', 'DELIVERED', 3000, false, '느린마을 막걸리', NULL, '11111111-1111-1111-1111-111111111112', 'ORDER_1_a1b2c3d4-e5f6-7890-abcd-ef1234567890', 'user-11111111-1111-1111-1111-111111111112'),
-(2, 29400, '2024-12-15T19:15:00', 'DELIVERED', 3000, false, '복순도가 손막걸리 외 1개', NULL, '11111111-1111-1111-1111-111111111112', 'ORDER_2_b2c3d4e5-f6g7-8901-bcde-f23456789abc', 'user-11111111-1111-1111-1111-111111111112'),
+(1, 15500, '2024-12-10T14:30:00', 'DELIVERED', 3000, false, '느린마을 막걸리', NULL, '11111111-1111-1111-1111-111111111112', 'ORDER_1_a1b2c3d4-e5f6-7890-abcd-ef1234567890', 'user-11111111-1111-1111-1111-111111111112'),
+(2, 14400, '2024-12-15T19:15:00', 'DELIVERED', 3000, false, '복순도가 손막걸리 외 1개', NULL, '11111111-1111-1111-1111-111111111112', 'ORDER_2_b2c3d4e5-f6g7-8901-bcde-f23456789abc', 'user-11111111-1111-1111-1111-111111111112'),
 (3, 41700, '2024-12-25T16:20:00', 'DELIVERED', 0, false, '전주이강주', NULL, '11111111-1111-1111-1111-111111111112', 'ORDER_3_c3d4e5f6-g7h8-9012-cdef-3456789abcde', 'user-11111111-1111-1111-1111-111111111112'),
 (4, 25000, '2025-01-05T11:45:00', 'DELIVERED', 3000, false, '안동소주 일품', NULL, '11111111-1111-1111-1111-111111111112', 'ORDER_4_d4e5f6g7-h8i9-0123-defg-456789abcdef', 'user-11111111-1111-1111-1111-111111111112'),
 (5, 19000, '2025-01-12T15:20:00', 'DELIVERED', 3000, false, '복분자주 선운 외 1개', NULL, '11111111-1111-1111-1111-111111111112', 'ORDER_5_e5f6g7h8-i9j0-1234-efgh-56789abcdefg', 'user-11111111-1111-1111-1111-111111111112'),
@@ -76,13 +76,14 @@ VALUES
 
 
 
+
 -- 주문상세 데이터
 INSERT INTO order_detail (order_detail_id, price, quantity, drink_name, region, order_id, is_canceled, is_refund_requested, is_refunded)
 VALUES
 -- Order 1
 (1, 3500, 1, '느린마을 막걸리', '경기도', 1, false, false, false),
 -- Order 2
-(2, 12000, 1, '복순도가 손막걸리', '충청북도', 2, false, false, false),
+(2, 12000, 1, '복순도가 손막걸리', '충청북도', 1, false, false, false),
 (3, 14400, 2, '담양 죽향도가 대대포', '전라남도', 2, false, false, false),
 -- Order 3
 (4, 38700, 1, '전주이강주', '전라북도', 3, false, false, false),
@@ -176,6 +177,7 @@ VALUES
 (63, 21000, 1, '바다별고래', '전라남도', 58, false, false, false),
 (64, 32000, 1, '제주고소리 증류주', '제주도', 59, false, false, false),
 (65, 24000, 1, '지황약주', '경상북도', 60, false, false, false);
+
 
 ALTER TABLE orders ALTER COLUMN order_id RESTART WITH 61;
 ALTER TABLE order_detail ALTER COLUMN order_detail_id RESTART WITH 66;
