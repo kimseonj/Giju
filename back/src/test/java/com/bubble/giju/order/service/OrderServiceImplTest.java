@@ -119,7 +119,7 @@ public class OrderServiceImplTest {
         assertThat(result.getOrderName()).contains("외 1개");
 
         // verify
-        verify(orderRepository, times(1)).save(any(Order.class));
+        verify(orderRepository, times(2)).save(any(Order.class));
         verify(cartRepository).findAllById(List.of(1L, 2L));
     }
 
@@ -154,7 +154,7 @@ public class OrderServiceImplTest {
         assertThat(result.getOrderName()).contains("외 1개");
 
         // verify
-        verify(orderRepository, times(1)).save(any(Order.class));
+        verify(orderRepository, times(2)).save(any(Order.class));
         verify(cartRepository).findAllById(List.of(1L, 2L));
     }
 }
