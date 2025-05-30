@@ -61,7 +61,9 @@ public enum ErrorCode {
     /**
      * Ranking
      */
+    REGION_CODE_NULL("지역 코드는 필수입니다", HttpStatus.BAD_REQUEST),
     INVALID_REGION_CODE("유효하지 않은 지역입니다", HttpStatus.BAD_REQUEST),
+
 
     /**
      * Auth
