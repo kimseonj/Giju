@@ -55,8 +55,14 @@ public class Order {
     @Column(name = "deleted_at")
     private LocalDateTime deletedAt;
 
-    @Column(name = "used_cart_ids", columnDefinition = "TEXT")
-    private String usedCartIds;
+    //토스페이머츠 자리 6~64까지
+    @Column(name = "toss_order_id", nullable = false, unique = true, length = 64)
+    private String tossOrderId;
+
+
+    @Column(name = "customer_key", nullable = false, length = 255)
+    private String customerKey;
+
 
     @ManyToOne(fetch = FetchType.LAZY) //user 테이블
     @JoinColumn(name = "user_id", nullable = false, referencedColumnName = "user_id")
@@ -69,12 +75,14 @@ public class Order {
     private Payment payment;
 
     @Builder
-    public Order(String orderName ,int totalAmount, int deliveryCharge, User user) {
+    public Order(String orderName ,int totalAmount, int deliveryCharge, User user, String tossOrderId, String customerKey) {
         this.orderName = orderName;
         this.totalAmount = totalAmount;
         this.deliveryCharge = deliveryCharge;
         this.user = user;
         this.orderStatus = OrderStatus.PENDING;
+        this.tossOrderId = tossOrderId;
+        this.customerKey = customerKey;
 
     }
 
@@ -94,13 +102,8 @@ public class Order {
         this.deletedAt = LocalDateTime.now();
     }
 
-    // 주문 생성 시 사용된 Cart ID 리스트를 JSON 문자열로 저장하는 메서드
-    public void setUsedCartIds(List<Long> cartItemIds) {
-        try {
-            ObjectMapper objectMapper = new ObjectMapper();
-            this.usedCartIds = objectMapper.writeValueAsString(cartItemIds);
-        } catch (JsonProcessingException e) {
-            throw new CustomException(ErrorCode.JSON_PROCESSING_ERROR);
-        }
+    public void setTossOrderId(String tossOrderId) {
+        this.tossOrderId = tossOrderId;
     }
+
 }
