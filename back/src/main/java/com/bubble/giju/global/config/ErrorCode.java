@@ -25,6 +25,7 @@ public enum ErrorCode {
 
     //권한 없음
     USER_UNAUTHORIZED("사용자가 권한이없음",HttpStatus.UNAUTHORIZED),
+    THUMBNAIL_IMAGE_NOT_FOUND("해당 상품의 썸네일 이미지를 찾을 수 없습니다",HttpStatus.NOT_FOUND),
 
 
     /**
