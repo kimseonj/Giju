@@ -9,7 +9,10 @@ import com.bubble.giju.domain.cart.entity.Cart;
 import com.bubble.giju.domain.cart.repository.CartRepository;
 import com.bubble.giju.domain.cart.service.serviceImpl.CartServiceImpl;
 import com.bubble.giju.domain.drink.entity.Drink;
+import com.bubble.giju.domain.drink.entity.DrinkImage;
+import com.bubble.giju.domain.drink.repository.DrinkImageRepository;
 import com.bubble.giju.domain.drink.repository.DrinkRepository;
+import com.bubble.giju.domain.image.entity.Image;
 import com.bubble.giju.domain.user.dto.CustomPrincipal;
 import com.bubble.giju.domain.user.entity.User;
 import com.bubble.giju.domain.user.repository.UserRepository;
@@ -45,6 +48,12 @@ public class CartServiceImplTest {
 
     @Mock
     private UserRepository userRepository;
+
+    // drinkImageRepository는 일부 테스트에서만 사용되므로
+    // 사용되지 않아도 예외가 발생하지 않도록 lenient 옵션을 설정함
+    @Mock(lenient = true)
+    private DrinkImageRepository drinkImageRepository;
+
 
     @InjectMocks
     private CartServiceImpl cartService;
@@ -82,6 +91,20 @@ public class CartServiceImplTest {
 
         // 위에서 반환된 userId로 findById 하면 testUser가 반환
         when(userRepository.findById(userId)).thenReturn(Optional.of(testUser));
+
+        Image image = Image.builder()
+                .url("https://example.com/test-image.jpg")
+                .build();
+
+        DrinkImage mockThumbnail = DrinkImage.builder()
+                .drink(testDrink)
+                .image(image)
+                .isThumbnail(true)
+                .build();
+
+        when(drinkImageRepository.findFirstByDrinkAndThumbnailTrue(any()))
+                .thenReturn(Optional.of(mockThumbnail));
+
     }
 
     public class TestUtil {

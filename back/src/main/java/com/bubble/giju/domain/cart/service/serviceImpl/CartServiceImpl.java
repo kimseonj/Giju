@@ -140,6 +140,7 @@ public class CartServiceImpl implements CartService {
 
     @Override
     public void deleteCartItem(List<Long> cartId, CustomPrincipal principal) {
+
         User user = userRepository.findById(UUID.fromString(principal.getUserId()))
                 .orElseThrow(() -> new CustomException(ErrorCode.NON_EXISTENT_USER));
 
