@@ -9,6 +9,7 @@ import com.bubble.giju.domain.cart.entity.Cart;
 import com.bubble.giju.domain.cart.repository.CartRepository;
 import com.bubble.giju.domain.cart.service.CartService;
 import com.bubble.giju.domain.drink.entity.Drink;
+import com.bubble.giju.domain.drink.repository.DrinkImageRepository;
 import com.bubble.giju.domain.drink.repository.DrinkRepository;
 import com.bubble.giju.domain.user.dto.CustomPrincipal;
 import com.bubble.giju.domain.user.entity.User;
@@ -36,6 +37,7 @@ public class CartServiceImpl implements CartService {
     private final CartRepository cartRepository;
     private final DrinkRepository drinkRepository;
     private final UserRepository userRepository;
+    private final DrinkImageRepository drinkImageRepository;
 
     @Value("${order.delivery-charge}")
     private int deliveryCharge;
@@ -120,6 +122,11 @@ public class CartServiceImpl implements CartService {
     // 각 상품의 값
     private CartItemResponseDto toCartItemDto(Cart cart) {
         Drink drink = cart.getDrink();
+
+        String imageUrl = drinkImageRepository.findFirstByDrinkAndThumbnailTrue(drink)
+                .map(drinkImage -> drinkImage.getImage().getUrl())
+                .orElseThrow(() -> new CustomException(ErrorCode.THUMBNAIL_IMAGE_NOT_FOUND));
+
         return CartItemResponseDto.builder()
                 .cartId(cart.getId())
                 .drinkId(drink.getId())
@@ -127,6 +134,7 @@ public class CartServiceImpl implements CartService {
                 .quantity(cart.getQuantity())
                 .unitPrice(drink.getPrice())
                 .totalPrice(drink.getPrice() * cart.getQuantity())
+                .imageUrl(imageUrl)
                 .build();
     }
 
