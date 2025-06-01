@@ -42,7 +42,7 @@ public class LikeServiceImpl implements LikeService {
 
     @Transactional
     @Override
-    public LikeDto.Response toggleLike(String userId, Long drinkId, Boolean likeRequest) {
+    public LikeDto.Response setLike(String userId, Long drinkId, Boolean likeRequest) {
         User user = userRepository.findById(UUID.fromString(userId)).orElseThrow(
                 () -> new CustomException(ErrorCode.NON_EXISTENT_USER)
         );
@@ -51,45 +51,41 @@ public class LikeServiceImpl implements LikeService {
                 () -> new CustomException(ErrorCode.NON_EXISTENT_DRINK)
         );
 
-        Optional<Like> optionalLike = likeRepository.findByUser_UserIdAndDrink_Id(UUID.fromString(userId), drinkId);
+        Like like = likeRepository.findByUser_UserIdAndDrink_Id(UUID.fromString(userId), drinkId).get();
 
-        /*
-         * xor 연산
-         * 찜 요청 ^ Optional
-         * t ^ t = t
-         * t ^ f = f
-         * f ^ t = f
-         * f ^ f = t
-         * */
-
-        if (optionalLike.isPresent()) {
-            if (likeRequest != optionalLike.get().isDelete()) {
-                throw new CustomException(ErrorCode.INVALID_LIKE);
-            }
-        }
-
-        Like like;
         if (likeRequest) {
-            if (optionalLike.isPresent()) {
-                like = optionalLike.get();
-                like.activateLike();
-            } else {
-                like = Like.builder()
-                        .user(user)
-                        .drink(drink)
-                        .delete(false)
-                        .createdAt(LocalDateTime.now())
-                        .build();
-            }
-            likeRepository.save(like);
+            like = handleLike(user, drink, like);
         } else {
-            like = optionalLike.orElseThrow(
-                    () -> new CustomException(ErrorCode.INVALID_LIKE)
-            );
-
-            like.deleteLike();
+            like = handleUnLike(like);
         }
 
         return LikeDto.Response.fromEntity(like);
+    }
+
+    private Like handleLike(User user, Drink drink, Like like) {
+        if (like == null) {
+            return Like.builder()
+                    .user(user)
+                    .drink(drink)
+                    .delete(false)
+                    .createdAt(LocalDateTime.now())
+                    .build();
+        }
+
+        if (like.isDelete()) {
+            like.activateLike();
+            return like;
+        }
+
+        throw new CustomException(ErrorCode.INVALID_LIKE);
+    }
+
+    private Like handleUnLike(Like like) {
+        if (like == null || like.isDelete()) {
+            throw new CustomException(ErrorCode.INVALID_LIKE);
+        }
+
+        like.deleteLike();
+        return like;
     }
 }
