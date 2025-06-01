@@ -15,4 +15,6 @@ public interface DrinkRepository extends JpaRepository<Drink, Long> {
     Page<Drink> findByRegionIsDeleteFalse(String region, Pageable pageable);
     @Query("SELECT d FROM Drink d WHERE d.name LIKE %:name% AND d.is_delete = false")
     Page<Drink> findByNameContainsIAndIs_deleteFalse(String name, Pageable pageable);
+
+    boolean existsByName(String name);
 }

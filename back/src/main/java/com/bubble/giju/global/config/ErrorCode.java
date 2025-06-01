@@ -112,6 +112,17 @@ public enum ErrorCode {
     NON_EXISTENT_DELIVERY_COMPANY("존재하지 않는 택배회사입니다.",HttpStatus.BAD_REQUEST),
 
     /**
+     * drink
+     */
+    EXISTENT_DRINK("이미 존재하는 술 입니다.",HttpStatus.CONFLICT),
+    DELETED_DRINK("삭제된 술입니다.", HttpStatus.GONE),
+
+
+    /**
+     * image
+     */
+    NON_EXISTENT_IMAGE("존재하지 않는 이미지입니다.", HttpStatus.NOT_FOUND),
+    /**
      * Error
      */
     INTERNAL_SERVER_ERROR("서버에러입니다. 백엔드 로그를 확인해주세요", HttpStatus.INTERNAL_SERVER_ERROR),
