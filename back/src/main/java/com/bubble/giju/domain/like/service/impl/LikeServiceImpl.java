@@ -62,8 +62,10 @@ public class LikeServiceImpl implements LikeService {
          * f ^ f = t
          * */
 
-        if (likeRequest == optionalLike.isPresent()) {
-            throw new CustomException(ErrorCode.INVALID_LIKE);
+        if (optionalLike.isPresent()) {
+            if (likeRequest != optionalLike.get().isDelete()) {
+                throw new CustomException(ErrorCode.INVALID_LIKE);
+            }
         }
 
         Like like;
@@ -71,14 +73,14 @@ public class LikeServiceImpl implements LikeService {
             if (optionalLike.isPresent()) {
                 like = optionalLike.get();
                 like.activateLike();
+            } else {
+                like = Like.builder()
+                        .user(user)
+                        .drink(drink)
+                        .delete(false)
+                        .createdAt(LocalDateTime.now())
+                        .build();
             }
-            like = Like.builder()
-                    .user(user)
-                    .drink(drink)
-                    .delete(false)
-                    .createdAt(LocalDateTime.now())
-                    .build();
-
             likeRepository.save(like);
         } else {
             like = optionalLike.orElseThrow(
