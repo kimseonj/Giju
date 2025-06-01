@@ -20,8 +20,8 @@ spring:
   profiles:
     active: local
     group:
-      "prod": "prod, secret, swagger"
-      "local": "local, secret, swagger"
+      "prod": "prod, secret, oauth, swagger"
+      "local": "local, secret, oauth, swagger"
   servlet:
     multipart:
       max-file-size: 20MB

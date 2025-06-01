@@ -11,6 +11,7 @@ import lombok.RequiredArgsConstructor;
 import org.springframework.boot.autoconfigure.security.servlet.PathRequest;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
+import org.springframework.security.config.Customizer;
 import org.springframework.security.config.annotation.authentication.configuration.AuthenticationConfiguration;
 import org.springframework.security.config.annotation.web.builders.HttpSecurity;
 import org.springframework.security.config.annotation.web.configuration.EnableWebSecurity;
@@ -91,12 +92,13 @@ public class SecurityConfig {
         // 경로별 인가 작업
         http
                 .authorizeHttpRequests(auth -> auth
-                        .requestMatchers("/api/auth/**", "/error", "/api/categories", "/api/rankings", "/api/payment/**", "/api/drink/**", "/api/drinks","/toss/**" ).permitAll()
-                        .requestMatchers("/swagger-ui/**", "/api/swagger-config/**", "/v3/api-docs/**",
+                        .requestMatchers("/api/auth/**", "/oauth2/**", "/error",
+                                "/api/categories", "/api/rankings", "/api/payment/**", "/api/drink/**", "/api/drinks",
+                                "/toss/**").permitAll()
+                        .requestMatchers("/swagger-ui/**",
+                                "/api/swagger-config/**",
                                 "/h2-console/**",
                                 "/favicon.ico",
-                                "/error",
-                                "/swagger-ui/**",
                                 "/swagger-resources/**",
                                 "/v3/api-docs/**").permitAll()
                         .requestMatchers(PathRequest.toH2Console()).permitAll()
@@ -111,6 +113,10 @@ public class SecurityConfig {
         http
                 .addFilterAfter(new JWTFilter(jwtUtil), UsernamePasswordAuthenticationFilter.class)
                 .addFilterBefore(new JWTExceptionHandler(), LoginFilter.class); // JWTFilter 앞에 예외 처리 필터 추가
+
+        // OAuth2
+        http
+                .oauth2Login(Customizer.withDefaults());
 
         return http.build();
     }
