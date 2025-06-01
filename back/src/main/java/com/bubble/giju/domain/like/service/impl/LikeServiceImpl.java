@@ -64,12 +64,14 @@ public class LikeServiceImpl implements LikeService {
 
     private Like handleLike(User user, Drink drink, Like like) {
         if (like == null) {
-            return Like.builder()
+            like = Like.builder()
                     .user(user)
                     .drink(drink)
                     .delete(false)
                     .createdAt(LocalDateTime.now())
                     .build();
+
+            return likeRepository.save(like);
         }
 
         if (like.isDelete()) {
