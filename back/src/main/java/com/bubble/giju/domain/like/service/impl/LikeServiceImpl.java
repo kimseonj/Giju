@@ -51,7 +51,7 @@ public class LikeServiceImpl implements LikeService {
                 () -> new CustomException(ErrorCode.NON_EXISTENT_DRINK)
         );
 
-        Like like = likeRepository.findByUser_UserIdAndDrink_Id(UUID.fromString(userId), drinkId).get();
+        Like like = likeRepository.findByUser_UserIdAndDrink_Id(UUID.fromString(userId), drinkId).orElse(null);
 
         if (likeRequest) {
             like = handleLike(user, drink, like);
