@@ -14,8 +14,9 @@ public enum ErrorCode {
     DUPLICATE_USER_LoginId("이미 사용 중인 아이디입니다", HttpStatus.CONFLICT),
     INVALID_USERID("적절하지 않은 사용자 아이디입니다.",HttpStatus.BAD_REQUEST),
 
-    // 이미 사용중인 이메일
+    // 데이저 정합
     DUPLICATE_USER_EMAIL("이미 사용 중인 이메일입니다", HttpStatus.CONFLICT),
+    AGE_RESTRICTION("19세 미만은 가입이 불가능합니다.", HttpStatus.FORBIDDEN),
 
     // 존재하지않는 유저
     NON_EXISTENT_USER("존재하지 않는 유저입니다", HttpStatus.BAD_REQUEST),
@@ -26,7 +27,7 @@ public enum ErrorCode {
     //권한 없음
     USER_UNAUTHORIZED("사용자가 권한이없음",HttpStatus.UNAUTHORIZED),
     THUMBNAIL_IMAGE_NOT_FOUND("해당 상품의 썸네일 이미지를 찾을 수 없습니다",HttpStatus.NOT_FOUND),
-
+    OAUTH2_UNAUTHORIZED("소셜로그인 인증실패", HttpStatus.UNAUTHORIZED),
 
     /**
      * CART
