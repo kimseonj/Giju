@@ -6,5 +6,5 @@ import java.util.List;
 
 public interface LikeService {
     List<LikeDto.Response> getLike(String userId);
-    LikeDto.Response setLike(String userId, Long drinkId, Boolean likeRequest);
+    LikeDto.Response toggleLike(String userId, Long drinkId, Boolean likeRequest);
 }

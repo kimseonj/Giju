@@ -26,12 +26,13 @@ import java.util.UUID;
 
 @RestController
 @RequiredArgsConstructor
-@Tag(name = "술 관련 API")
+@Tag(name = "Drink",description = "술 관련 API")
 public class DrinkController {
 
     private final DrinkService drinkService;
 
-    //todo admin 관련 api가 존재하지않아 임시로 만듦 Valid 어노테이션 통해서 검증도 해야함.
+    //todo admin 관련 api가 존재하지않아 임시로 만듦 Value 어노테이션 통해서 검증도 해야함.
+    //todo ApiResponse 성공은 모두 200 처리? 근데 객체안에 들어있긴함.
     @PostMapping(value = "/api/admin/drink", consumes = MediaType.MULTIPART_FORM_DATA_VALUE)
     @PreAuthorize("hasRole('ADMIN')")
     @Operation(summary = "술(상품)등록",description = "술(상품) 을 등록하는 API")

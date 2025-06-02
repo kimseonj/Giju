@@ -92,7 +92,7 @@ public class OrderServiceImpl implements OrderService {
                             .price(drink.getPrice() * cart.getQuantity())
                             .quantity(cart.getQuantity())
                             .order(order)
-                            .region(String.valueOf(drink.getRegion()))
+                            .region(drink.getRegion())
                             .build();
                 })
                 .toList();
@@ -166,13 +166,8 @@ public class OrderServiceImpl implements OrderService {
                 .filter(order -> {
                     OrderStatus status = order.getOrderStatus();
                     return status == OrderStatus.SUCCEEDED
-                           || status == OrderStatus.DELIVERING
-                           || status == OrderStatus.DELIVERED
-                           || status == OrderStatus.PARTIALLY_CANCELED
-                           || status == OrderStatus.REFUND_REQUESTED
-                           || status == OrderStatus.PARTIALLY_REFUND_REQUESTED
-                           || status == OrderStatus.REFUNDED
-                           || status == OrderStatus.PARTIALLY_REFUNDED;
+                            || status == OrderStatus.PARTIALLY_CANCELED
+                            || status == OrderStatus.CANCELED;
                 })
                 .toList();
 

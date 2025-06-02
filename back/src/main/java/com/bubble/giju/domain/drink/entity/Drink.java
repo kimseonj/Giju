@@ -2,7 +2,6 @@ package com.bubble.giju.domain.drink.entity;
 
 import com.bubble.giju.domain.category.entity.Category;
 import com.bubble.giju.domain.drink.dto.DrinkUpdateRequestDto;
-import com.bubble.giju.domain.ranking.enums.Region;
 import jakarta.persistence.*;
 import lombok.AccessLevel;
 import lombok.Builder;
@@ -18,7 +17,7 @@ import lombok.NoArgsConstructor;
 public class Drink {
 
     @Id
-    @GeneratedValue(strategy = GenerationType.IDENTITY)
+    @GeneratedValue
     @Column(name = "drink_id",nullable = false, updatable = false)
     private Long id;
 
@@ -35,43 +34,41 @@ public class Drink {
     @Column(name = "drink_volume",nullable = false)
     private int volume;
     @Column(name = "drink_is_delete",nullable = false)
-    private boolean deleted;
-    @Enumerated(EnumType.STRING)
+    private boolean is_delete;
     @Column(name = "drink_region",nullable = false,length = 10)
-    private Region region;
+    private String region;
 
     @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name="category_id",nullable = false)
     private Category category;
 
     @Builder
-    public Drink (Long id ,String name,int price,int stock,double alcoholContent,int volume,boolean is_delete,Region region,Category category){
+    public Drink (Long id ,String name,int price,int stock,double alcoholContent,int volume,boolean is_delete,String region,Category category){
         this.id = id;
         this.name = name;
         this.price = price;
         this.stock = stock;
         this.alcoholContent = alcoholContent;
         this.volume = volume;
-        this.deleted = is_delete;
+        this.is_delete = is_delete;
         this.region = region;
         this.category = category;
     }
 
     public boolean is_delete()
     {
-        return this.deleted;
+        return this.is_delete;
     }
 
     public void updateDelete(boolean is_delete)
     {
-        this.deleted = is_delete;
+        this.is_delete = is_delete;
     }
 
     public void update(DrinkUpdateRequestDto dto, Category category) {
         this.price = dto.getPrice();
         this.stock = dto.getStock();
-        this.region = Region.fromName(dto.getRegion());
-
+        this.region = dto.getRegion();
         this.category = category;
     }
 

@@ -19,6 +19,7 @@ public class DataInitializer implements CommandLineRunner {
         this.categoryRepository = categoryRepository;
     }
 
+    //todo 리스트에 추가하여 saveAll로 N+1 해결할 것
     @Override
     public void run(String... args) {
         List<Category> categoryList=new ArrayList<Category>();

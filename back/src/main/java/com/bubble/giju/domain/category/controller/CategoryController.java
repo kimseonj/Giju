@@ -13,7 +13,7 @@ import java.util.List;
 
 @RestController
 @RequiredArgsConstructor
-@Tag(name = "카테고리 API")
+@Tag(name = "Category", description = "카테고리 관련 API")
 public class CategoryController {
 
     public final CategoryService categoryService;

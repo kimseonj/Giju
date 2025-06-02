@@ -13,17 +13,16 @@ import lombok.Builder;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 import org.springframework.data.annotation.CreatedDate;
-
+import org.springframework.data.jpa.domain.support.AuditingEntityListener;
 
 import java.time.LocalDateTime;
-import java.time.OffsetDateTime;
-import java.time.ZoneId;
 import java.util.ArrayList;
 import java.util.List;
 
 @Entity
 @Getter
 @NoArgsConstructor(access = AccessLevel.PROTECTED)
+@EntityListeners(AuditingEntityListener.class)
 @Table(name = "orders") // Order은 sql 예약어 orders로 변경함
 public class Order {
 
@@ -36,8 +35,9 @@ public class Order {
     @Column(name = "total_amount" , nullable = false )
     private int totalAmount;
 
-    @Column(name = "created_at", nullable = false, updatable = false, columnDefinition = "TIMESTAMP")
-    private OffsetDateTime createdAt;
+    @CreatedDate // DB생성시 -자동으로 설정
+    @Column(name = "created_at" , nullable = false, updatable = false)
+    private LocalDateTime createdAt;
 
     @Enumerated(EnumType.STRING)
     @Column(name = "order_status", nullable = false)
@@ -90,7 +90,7 @@ public class Order {
         this.orderStatus = OrderStatus.PENDING;
         this.tossOrderId = tossOrderId;
         this.customerKey = customerKey;
-        this.createdAt = OffsetDateTime.now(ZoneId.of("Asia/Seoul"));
+
     }
 
 
