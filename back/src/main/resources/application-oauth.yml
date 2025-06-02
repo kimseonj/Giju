@@ -13,7 +13,8 @@ spring:
             client-id: ${CLIENT_ID:defaultfordevalsjfielsjfinaajfowinblxiejfwoihbya}
             client-secret: ${CLIENT_SECRET:defaultfordevalsjfielsjfinaajfowinblxiejfwoihbya}
             client-authentication-method: client_secret_post
-            redirect-uri: http://localhost:8080/login/oauth2/code/kakao
+            # redirect-uri: http://localhost:8080/login/oauth2/code/kakao
+            redirect-uri: https://seonjun.store/login/oauth2/code/kakao
             authorization-grant-type: authorization_code
             client-name: kakao
             scope:
