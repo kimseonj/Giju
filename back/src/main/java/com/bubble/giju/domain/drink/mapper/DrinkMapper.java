@@ -20,7 +20,7 @@ public class DrinkMapper {
                 .alcoholContent(drink.getAlcoholContent())
                 .volume(drink.getVolume())
                 .is_delete(drink.is_delete())
-                .region(drink.getRegion())
+                .region(String.valueOf(drink.getRegion()))
                 .category(new CategoryResponseDto(drink.getCategory().getId(), drink.getCategory().getName()))
                 .thumbnailUrl(thumbnailUrl)
                 .drinkImageUrlList(drinkImageUrlList)

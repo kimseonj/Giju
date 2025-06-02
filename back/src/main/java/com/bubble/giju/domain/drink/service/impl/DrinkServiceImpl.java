@@ -18,6 +18,7 @@ import com.bubble.giju.domain.image.repository.ImageRepository;
 import com.bubble.giju.domain.image.service.ImageService;
 import com.bubble.giju.domain.like.entity.Like;
 import com.bubble.giju.domain.like.repository.LikeRepository;
+import com.bubble.giju.domain.ranking.enums.Region;
 import com.bubble.giju.domain.review.entity.Review;
 import com.bubble.giju.domain.review.repository.ReviewRepository;
 import com.bubble.giju.global.config.CustomException;
@@ -119,7 +120,7 @@ public class DrinkServiceImpl implements DrinkService {
 
     @Override
     public Page<DrinkDetailResponseDto> findDrinks(String type, String keyword, int pageNum,UUID userUuid) {
-        if(type == null || type.isBlank()|| keyword==null || keyword.isBlank())
+        if(type == null || type.isBlank())
         {
             throw new CustomException(ErrorCode.MISSING_REQUIRED_VALUE);
         }
@@ -129,9 +130,15 @@ public class DrinkServiceImpl implements DrinkService {
         Pageable pageable = PageRequest.of(pageNum, pageSize);
 
         Page<Drink> drinkPage = switch (type) {
-            case "category" -> drinkRepository.findByCategoryIdIAndIs_deleteFalse(Integer.parseInt(keyword), pageable);
-            case "region" -> drinkRepository.findByRegionIsDeleteFalse(keyword, pageable);
-            case "name" -> drinkRepository.findByNameContainsIAndIs_deleteFalse(keyword, pageable);
+            case "category" -> drinkRepository.findByCategoryIdAndDeletedFalse(Integer.parseInt(keyword), pageable);
+            case "region" -> drinkRepository.findByRegionAndDeletedFalse(Region.fromName(keyword), pageable);
+            case "name" -> {
+                if (keyword.isBlank()) {
+                    yield drinkRepository.findByDeletedFalseOrderByNameAsc(pageable);
+                } else {
+                    yield drinkRepository.findByNameContainsAndDeletedFalse(keyword, pageable);
+                }
+            }
             default -> throw new CustomException(ErrorCode.UNSUPPORTED_SEARCH_TYPE);
         };
 
@@ -207,7 +214,7 @@ public class DrinkServiceImpl implements DrinkService {
                 .stock(dto.getStock())
                 .alcoholContent(dto.getAlcoholContent())
                 .volume(dto.getVolume())
-                .region(dto.getRegion())
+                .region(Region.fromName(dto.getRegion()))
                 .is_delete(false)
                 .category(category)
                 .build();
@@ -256,7 +263,7 @@ public class DrinkServiceImpl implements DrinkService {
                 .alcoholContent(drink.getAlcoholContent())
                 .volume(drink.getVolume())
                 .is_delete(drink.is_delete())
-                .region(drink.getRegion())
+                .region(String.valueOf((drink.getRegion())))
                 .category(new CategoryResponseDto(drink.getCategory().getId(), drink.getCategory().getName()))
                 .thumbnailUrl(thumbnailUrl)
                 .drinkImageUrlList(imageUrls)

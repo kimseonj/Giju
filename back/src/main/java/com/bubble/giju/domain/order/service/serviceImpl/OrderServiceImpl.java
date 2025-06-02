@@ -92,7 +92,7 @@ public class OrderServiceImpl implements OrderService {
                             .price(drink.getPrice() * cart.getQuantity())
                             .quantity(cart.getQuantity())
                             .order(order)
-                            .region(drink.getRegion())
+                            .region(String.valueOf(drink.getRegion()))
                             .build();
                 })
                 .toList();
