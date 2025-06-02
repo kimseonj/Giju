@@ -30,6 +30,7 @@ public class SqlDataLoader implements ApplicationRunner {
                 "sql/images.sql",
                 "sql/deliveryCompainesData.sql",
                 "sql/orderData.sql",
+                "sql/paymentData.sql",
                 "sql/likesData.sql",
                 "sql/reviews.sql"
         );
