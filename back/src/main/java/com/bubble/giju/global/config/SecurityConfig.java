@@ -1,6 +1,8 @@
 package com.bubble.giju.global.config;
 
+import com.bubble.giju.domain.user.service.CustomOAuth2UserService;
 import com.bubble.giju.global.jwt.*;
+import com.bubble.giju.global.oauth2.CustomOAuth2SuccessHandler;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import io.swagger.v3.oas.models.Components;
 import io.swagger.v3.oas.models.OpenAPI;
@@ -35,6 +37,8 @@ public class SecurityConfig {
     private final AuthenticationConfiguration authenticationConfiguration;
     private final JWTUtil jwtUtil;
     private final CookieUtil cookieUtil;
+    private final CustomOAuth2UserService customOAuth2UserService;
+    private final CustomOAuth2SuccessHandler customOAuth2SuccessHandler;
 
     // CORS Configuration을 Bean으로 등록
     @Bean
@@ -91,12 +95,13 @@ public class SecurityConfig {
         // 경로별 인가 작업
         http
                 .authorizeHttpRequests(auth -> auth
-                        .requestMatchers("/api/auth/**", "/error", "/api/categories", "/api/rankings", "/api/payment/**", "/api/drink/**", "/api/drinks","/toss/**","/api/regions" ).permitAll()
-                        .requestMatchers("/swagger-ui/**", "/api/swagger-config/**", "/v3/api-docs/**",
+                        .requestMatchers("/", "/api/auth/**", "/oauth2/**", "/error",
+                                "/api/categories", "/api/rankings", "/api/payment/**", "/api/drink/**", "/api/drinks",
+                                "/toss/**", "/api/regions").permitAll()
+                        .requestMatchers("/swagger-ui/**",
+                                "/api/swagger-config/**",
                                 "/h2-console/**",
                                 "/favicon.ico",
-                                "/error",
-                                "/swagger-ui/**",
                                 "/swagger-resources/**",
                                 "/v3/api-docs/**").permitAll()
                         .requestMatchers(PathRequest.toH2Console()).permitAll()
@@ -111,6 +116,15 @@ public class SecurityConfig {
         http
                 .addFilterAfter(new JWTFilter(jwtUtil), UsernamePasswordAuthenticationFilter.class)
                 .addFilterBefore(new JWTExceptionHandler(), LoginFilter.class); // JWTFilter 앞에 예외 처리 필터 추가
+
+        // OAuth2 설정
+        http
+                .oauth2Login(oauth2 -> oauth2
+                        .userInfoEndpoint(userInfoEndpointConfig -> userInfoEndpointConfig
+                                .userService(customOAuth2UserService))
+                        .successHandler(customOAuth2SuccessHandler)
+                        .failureUrl("/login?error")
+                );
 
         return http.build();
     }
