@@ -98,11 +98,13 @@ public class SecurityConfig {
                 .authorizeHttpRequests(auth -> auth
                         .requestMatchers("/", "/api/auth/**", "/oauth2/**", "/error",
                                 "/api/categories", "/api/rankings", "/api/payment/**", "/api/drink/**", "/api/drinks",
-                                "/toss/**").permitAll()
+                                "/toss/**","/api/regions").permitAll()
                         .requestMatchers("/swagger-ui/**",
                                 "/api/swagger-config/**",
                                 "/h2-console/**",
                                 "/favicon.ico",
+                                "/error",
+                                "/swagger-ui/**",
                                 "/swagger-resources/**",
                                 "/v3/api-docs/**").permitAll()
                         .requestMatchers(PathRequest.toH2Console()).permitAll()
