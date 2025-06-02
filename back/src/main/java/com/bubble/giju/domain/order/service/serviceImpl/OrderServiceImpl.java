@@ -166,8 +166,13 @@ public class OrderServiceImpl implements OrderService {
                 .filter(order -> {
                     OrderStatus status = order.getOrderStatus();
                     return status == OrderStatus.SUCCEEDED
-                            || status == OrderStatus.PARTIALLY_CANCELED
-                            || status == OrderStatus.CANCELED;
+                           || status == OrderStatus.DELIVERING
+                           || status == OrderStatus.DELIVERED
+                           || status == OrderStatus.PARTIALLY_CANCELED
+                           || status == OrderStatus.REFUND_REQUESTED
+                           || status == OrderStatus.PARTIALLY_REFUND_REQUESTED
+                           || status == OrderStatus.REFUNDED
+                           || status == OrderStatus.PARTIALLY_REFUNDED;
                 })
                 .toList();
 
