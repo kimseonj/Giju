@@ -1,9 +1,5 @@
 package com.bubble.giju.domain.user.dto;
 
-import com.bubble.giju.global.config.CustomException;
-import com.bubble.giju.global.config.ErrorCode;
-
-import java.time.LocalDate;
 import java.time.LocalDateTime;
 import java.util.Map;
 import java.util.Optional;

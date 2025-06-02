@@ -66,9 +66,7 @@ public class CustomOAuth2UserService extends DefaultOAuth2UserService {
 
             userRepository.save(user);
 
-            CustomPrincipal customPrincipal = new CustomPrincipal(user);
-
-            return customPrincipal;
+            return new CustomPrincipal(user);
         } else {
             return new CustomPrincipal(optionalUser.orElseThrow(() -> new CustomException(ErrorCode.OAUTH2_UNAUTHORIZED)));
         }
