@@ -42,11 +42,12 @@ public class Review {
     private int score;
 
     @Builder
-    public Review(User user, Drink drink, Order order, Image image, String content) {
+    public Review(User user, Drink drink, Order order, Image image, String content, int score) {
         this.user = user;
         this.drink = drink;
         this.order = order;
         this.image = image;
         this.content = content;
+        this.score = score;
     }
 }
