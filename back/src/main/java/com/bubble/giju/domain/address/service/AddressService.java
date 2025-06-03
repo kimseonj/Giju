@@ -9,4 +9,5 @@ public interface AddressService {
     List<AddressDto.Response> getAddress(String userId);
     AddressDto.Response updateAddress(String userId, Long addressId, AddressDto.Request request);
     Long deleteAddress(String userId, Long addressId);
+    AddressDto.Response getDefaultAddress(String userId);
 }
