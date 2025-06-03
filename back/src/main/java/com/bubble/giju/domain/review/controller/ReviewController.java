@@ -35,4 +35,11 @@ public class ReviewController {
     public List<ReviewDto.Response> getReviewsByDrinkId(@PathVariable Long drinkId) {
         return reviewService.getReviewsByDrinkId(drinkId);
     }
+
+    @Operation(summary = "술에 대한 별점 가져오기", description = "술 상세페이지에 보여질 별점을 가져옵니다.")
+    @GetMapping("/drinks/{drinkId}")
+    public String getReviewScoreByDrinkId(@PathVariable Long drinkId) {
+        return reviewService.getReviewScoreByDrinkId(drinkId);
+    }
+
 }

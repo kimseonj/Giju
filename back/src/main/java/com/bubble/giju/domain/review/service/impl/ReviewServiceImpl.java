@@ -69,4 +69,17 @@ public class ReviewServiceImpl implements ReviewService {
 
         return allByDrinkId.stream().map(ReviewDto.Response::fromEntity).toList();
     }
+
+    @Override
+    public String getReviewScoreByDrinkId(Long drinkId) {
+        Drink drink = drinkRepository.findById(drinkId).orElseThrow(
+                () -> new CustomException(ErrorCode.NON_EXISTENT_DRINK)
+        );
+
+        List<Review> allByDrinkId = reviewRepository.findAllByDrink_Id(drinkId);
+
+        double averageScore = allByDrinkId.stream().mapToInt(Review::getScore).average().orElse(0.0);
+
+        return String.format("%.1f", averageScore);
+    }
 }
