@@ -70,7 +70,7 @@ public class UserController {
 
     @Operation(summary = "기본 배송지 불러오기", description = "회원의 기본 배송지를 불러옵니다.")
     @GetMapping("/me/addresses/default")
-    public AddressDto.Response getDefaultAddress(@AuthenticationPrincipal CustomPrincipal customPrincipal) {
-        return addressService.getDefaultAddress(customPrincipal.getUserId());
+    public ResponseEntity<AddressDto.Response> getDefaultAddress(@AuthenticationPrincipal CustomPrincipal customPrincipal) {
+        return ResponseEntity.ok(addressService.getDefaultAddress(customPrincipal.getUserId()));
     }
 }
