@@ -15,6 +15,7 @@ import com.bubble.giju.global.config.ErrorCode;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 
+import java.util.List;
 import java.util.UUID;
 
 @RequiredArgsConstructor
@@ -59,7 +60,13 @@ public class ReviewServiceImpl implements ReviewService {
     }
 
     @Override
-    public void getReviewsByDrinkId(Long drinkId) {
+    public List<ReviewDto.Response> getReviewsByDrinkId(Long drinkId) {
+        Drink drink = drinkRepository.findById(drinkId).orElseThrow(
+                () -> new CustomException(ErrorCode.NON_EXISTENT_DRINK)
+        );
 
+        List<Review> allByDrinkId = reviewRepository.findAllByDrink_Id(drinkId);
+
+        return allByDrinkId.stream().map(ReviewDto.Response::fromEntity).toList();
     }
 }

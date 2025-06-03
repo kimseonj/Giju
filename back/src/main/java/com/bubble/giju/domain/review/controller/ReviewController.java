@@ -9,6 +9,8 @@ import lombok.RequiredArgsConstructor;
 import org.springframework.security.core.annotation.AuthenticationPrincipal;
 import org.springframework.web.bind.annotation.*;
 
+import java.util.List;
+
 @Tag(name = "리뷰 API", description = "일반 사용자 리뷰 관련 API")
 @RequiredArgsConstructor
 @RequestMapping("/api/reviews")
@@ -23,8 +25,14 @@ public class ReviewController {
                              @PathVariable Long orderId,
                              @RequestParam Long drinkId,
                              @RequestBody ReviewDto.Request reviewRequest
-                             ) {
+    ) {
 
         reviewService.create(customPrincipal.getUserId(), orderId, drinkId, reviewRequest);
+    }
+
+    @Operation(summary = "술에 대한 리뷰 불러오기", description = "술 상세페이지에서 리뷰를 불러옵니다.")
+    @GetMapping("/drinks/{drinkId}")
+    public List<ReviewDto.Response> getReviewsByDrinkId(@PathVariable Long drinkId) {
+        return reviewService.getReviewsByDrinkId(drinkId);
     }
 }
