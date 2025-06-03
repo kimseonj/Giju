@@ -1,5 +1,7 @@
 package com.bubble.giju.domain.user.controller;
 
+import com.bubble.giju.domain.address.dto.AddressDto;
+import com.bubble.giju.domain.address.service.AddressService;
 import com.bubble.giju.domain.like.dto.LikeDto;
 import com.bubble.giju.domain.like.service.LikeService;
 import com.bubble.giju.domain.user.dto.CustomPrincipal;
@@ -25,6 +27,7 @@ public class UserController {
 
     private final UserService userService;
     private final LikeService likeService;
+    private final AddressService addressService;
 
     // read
     @Operation(summary = "회원 불러오기", description = "현재 로그인한 회원의 정보를 불러옵니다.")
@@ -63,5 +66,11 @@ public class UserController {
     @GetMapping("/me/wishlist")
     public List<LikeDto.Response> getLike(@AuthenticationPrincipal CustomPrincipal customPrincipal) {
         return likeService.getLike(customPrincipal.getUserId());
+    }
+
+    @Operation(summary = "기본 배송지 불러오기", description = "회원의 기본 배송지를 불러옵니다.")
+    @GetMapping("/me/addresses/default")
+    public AddressDto.Response getDefaultAddress(@AuthenticationPrincipal CustomPrincipal customPrincipal) {
+        return addressService.getDefaultAddress(customPrincipal.getUserId());
     }
 }
