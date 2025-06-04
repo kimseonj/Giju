@@ -15,6 +15,7 @@ public class ReviewDto {
     }
 
     @AllArgsConstructor
+    @Getter
     public static class Response {
         String userName;
         String content;

@@ -28,7 +28,7 @@ public class ReviewServiceImpl implements ReviewService {
     private final OrderRepository orderRepository;
 
     @Override
-    public void create(String userId, Long orderId, Long drinkId, ReviewDto.Request reviewRequest) {
+    public ReviewDto.Response create(String userId, Long orderId, Long drinkId, ReviewDto.Request reviewRequest) {
         User user = userRepository.findById(UUID.fromString(userId)).orElseThrow(
                 () -> new CustomException(ErrorCode.USER_UNAUTHORIZED)
         );
@@ -38,7 +38,7 @@ public class ReviewServiceImpl implements ReviewService {
         );
 
         // Todo: order 상태 점검 필요해 보임
-        Order order = orderRepository.findById(orderId).orElseThrow(
+        Order order = orderRepository.findByIdAndUser_UserId(orderId, UUID.fromString(userId)).orElseThrow(
                 () -> new CustomException(ErrorCode.NON_EXISTENT_ORDER)
         );
 
@@ -56,7 +56,9 @@ public class ReviewServiceImpl implements ReviewService {
                 .score(reviewRequest.getScore())
                 .build();
 
-        reviewRepository.save(review);
+        Review save = reviewRepository.save(review);
+
+        return ReviewDto.Response.fromEntity(save);
     }
 
     @Override

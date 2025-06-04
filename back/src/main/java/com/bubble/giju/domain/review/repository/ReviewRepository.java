@@ -13,8 +13,6 @@ public interface ReviewRepository extends JpaRepository<Review, Long> {
     @Query("SELECT COALESCE(SUM(r.score), 0) FROM Review r WHERE r.drink.id = :drinkId")
     long findSumScoreByDrinkId(Long drinkId);
     long countByDrinkId(Long drinkId);
-
     List<Review> findAllByDrink_Id(Long drinkId);
-
     List<Review> findAllByUser_UserId(UUID userUserId);
 }
