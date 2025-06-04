@@ -29,6 +29,9 @@ public enum ErrorCode {
     THUMBNAIL_IMAGE_NOT_FOUND("해당 상품의 썸네일 이미지를 찾을 수 없습니다",HttpStatus.NOT_FOUND),
     OAUTH2_UNAUTHORIZED("소셜로그인 인증실패", HttpStatus.UNAUTHORIZED),
 
+    // ROLE
+    NON_EXISTENT_ROLE("존재하지 않는 Role 입니다.", HttpStatus.BAD_REQUEST),
+
     /**
      * CART
      * */

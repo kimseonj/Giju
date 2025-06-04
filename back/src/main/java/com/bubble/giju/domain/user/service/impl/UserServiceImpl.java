@@ -3,7 +3,6 @@ package com.bubble.giju.domain.user.service.impl;
 import com.bubble.giju.domain.user.dto.UserCreateRequest;
 import com.bubble.giju.domain.user.dto.UserDto;
 import com.bubble.giju.domain.user.entity.User;
-import com.bubble.giju.domain.user.enums.Role;
 import com.bubble.giju.domain.user.repository.UserRepository;
 import com.bubble.giju.domain.user.service.UserService;
 import com.bubble.giju.global.config.CustomException;
@@ -15,7 +14,6 @@ import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
 import java.time.LocalDateTime;
-import java.util.ArrayList;
 import java.util.UUID;
 
 @Slf4j
@@ -26,15 +24,12 @@ public class UserServiceImpl implements UserService {
     private final UserRepository userRepository;
     private final BCryptPasswordEncoder bCryptPasswordEncoder;
 
-    private ArrayList arrayList = new ArrayList();
-
     @Override
     @Transactional
     public UserDto.Response save(UserCreateRequest userCreateRequest) {
         if (userRepository.findByLoginId(userCreateRequest.getLoginId()).isPresent()) {
             throw new CustomException(ErrorCode.DUPLICATE_USER_LoginId);
         }
-
 
         User user = User.builder()
                 .loginId(userCreateRequest.getLoginId())
@@ -43,7 +38,7 @@ public class UserServiceImpl implements UserService {
                 .email(userCreateRequest.getEmail())
                 .phoneNumber(userCreateRequest.getPhoneNumber())
                 .birthday(userCreateRequest.getBirthDay())
-                .role(Role.valueOf(userCreateRequest.getRole().toUpperCase()))
+                .role(userCreateRequest.getRole())
                 .createdAt(LocalDateTime.now())
                 .build();
 
@@ -58,9 +53,6 @@ public class UserServiceImpl implements UserService {
         User user = userRepository.findById(UUID.fromString(userId)).orElseThrow(
                 () -> new CustomException(ErrorCode.NON_EXISTENT_USER)
         );
-
-        System.out.println(arrayList);
-        arrayList.add("test");
 
         return UserDto.Response.fromEntity(user);
     }
@@ -79,8 +71,6 @@ public class UserServiceImpl implements UserService {
 
         user.update(request);
         log.info("Updated user: {}", user); // 변경 확인용 로그
-
-        System.out.println(arrayList);
 
         return UserDto.Response.fromEntity(user);
     }
