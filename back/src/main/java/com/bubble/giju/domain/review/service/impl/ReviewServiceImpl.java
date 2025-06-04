@@ -71,6 +71,16 @@ public class ReviewServiceImpl implements ReviewService {
     }
 
     @Override
+    public List<ReviewDto.Response> getReviewsByUserId(String userId) {
+        userRepository.findById(UUID.fromString(userId)).orElseThrow(
+                () -> new CustomException(ErrorCode.USER_UNAUTHORIZED)
+        );
+
+        return reviewRepository.findAllByUser_UserId(UUID.fromString(userId)).stream()
+                .map(ReviewDto.Response::fromEntity).toList();
+    }
+
+    @Override
     public String getReviewScoreByDrinkId(Long drinkId) {
         Drink drink = drinkRepository.findById(drinkId).orElseThrow(
                 () -> new CustomException(ErrorCode.NON_EXISTENT_DRINK)

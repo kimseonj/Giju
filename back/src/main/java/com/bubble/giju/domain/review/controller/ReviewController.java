@@ -36,10 +36,15 @@ public class ReviewController {
         return reviewService.getReviewsByDrinkId(drinkId);
     }
 
+    @Operation(summary = "유저에 대한 리뷰 불러오기", description = "유저에 대한 모든 리뷰를 불러옵니다.")
+    @GetMapping("/")
+    public List<ReviewDto.Response> getReviews(@AuthenticationPrincipal CustomPrincipal customPrincipal) {
+        return reviewService.getReviewsByUserId(customPrincipal.getUserId());
+    }
+
     @Operation(summary = "술에 대한 별점 가져오기", description = "술 상세페이지에 보여질 별점을 가져옵니다.")
     @GetMapping("/drinks/{drinkId}")
     public String getReviewScoreByDrinkId(@PathVariable Long drinkId) {
         return reviewService.getReviewScoreByDrinkId(drinkId);
     }
-
 }

@@ -7,5 +7,6 @@ import java.util.List;
 public interface ReviewService {
     void create(String userId, Long orderId, Long drinkId, ReviewDto.Request reviewRequest);
     List<ReviewDto.Response> getReviewsByDrinkId(Long drinkId);
+    List<ReviewDto.Response> getReviewsByUserId(String userId);
     String getReviewScoreByDrinkId(Long drinkId);
 }
