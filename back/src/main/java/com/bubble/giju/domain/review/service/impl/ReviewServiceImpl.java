@@ -83,7 +83,7 @@ public class ReviewServiceImpl implements ReviewService {
     }
 
     @Override
-    public String getReviewScoreByDrinkId(Long drinkId) {
+    public Double getReviewScoreByDrinkId(Long drinkId) {
         Drink drink = drinkRepository.findById(drinkId).orElseThrow(
                 () -> new CustomException(ErrorCode.NON_EXISTENT_DRINK)
         );
@@ -92,6 +92,6 @@ public class ReviewServiceImpl implements ReviewService {
 
         double averageScore = allByDrinkId.stream().mapToInt(Review::getScore).average().orElse(0.0);
 
-        return String.format("%.1f", averageScore);
+        return Double.valueOf(String.format("%.1f", averageScore));
     }
 }

@@ -52,7 +52,7 @@ public class ReviewController {
 
     @Operation(summary = "술에 대한 별점 가져오기", description = "술 상세페이지에 보여질 별점을 가져옵니다.")
     @GetMapping("/drinks/{drinkId}/scores")
-    public String getReviewScoreByDrinkId(@PathVariable Long drinkId) {
+    public Double getReviewScoreByDrinkId(@PathVariable Long drinkId) {
         return reviewService.getReviewScoreByDrinkId(drinkId);
     }
 }
