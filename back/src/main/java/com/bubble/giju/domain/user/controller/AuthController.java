@@ -14,6 +14,7 @@ import io.swagger.v3.oas.annotations.tags.Tag;
 import jakarta.servlet.http.Cookie;
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
+import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
@@ -30,7 +31,7 @@ public class AuthController {
 
     @Operation(summary = "회원가입", description = "회원가입입니다.")
     @PostMapping("/register")
-    public ResponseEntity<ApiResponse<UserDto.Response>> createUser(@RequestBody UserCreateRequest userCreateRequest) {
+    public ResponseEntity<ApiResponse<UserDto.Response>> createUser(@Valid @RequestBody UserCreateRequest userCreateRequest) {
         System.out.println(userCreateRequest);
 
         UserDto.Response response = userService.save(userCreateRequest);

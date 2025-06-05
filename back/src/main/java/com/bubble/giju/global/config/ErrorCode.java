@@ -29,6 +29,9 @@ public enum ErrorCode {
     THUMBNAIL_IMAGE_NOT_FOUND("해당 상품의 썸네일 이미지를 찾을 수 없습니다",HttpStatus.NOT_FOUND),
     OAUTH2_UNAUTHORIZED("소셜로그인 인증실패", HttpStatus.UNAUTHORIZED),
 
+    // ROLE
+    NON_EXISTENT_ROLE("존재하지 않는 Role 입니다.", HttpStatus.BAD_REQUEST),
+
     /**
      * CART
      * */
@@ -72,7 +75,7 @@ public enum ErrorCode {
      * Auth
      */
     // Json파싱 실패
-    INVALID_LOGIN_JSON("적절하지 않은 로그인 요청입니다", HttpStatus.BAD_REQUEST),
+    INVALID_LOGIN_JSON("적절하지 않은 로그인 요청입니다. loginId와 password로 요청을 보내주세요.", HttpStatus.BAD_REQUEST),
     // 로그인 실패
     LOGIN_UNAUTHORIZED("로그인 실패", HttpStatus.UNAUTHORIZED),
 
