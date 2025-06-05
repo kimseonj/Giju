@@ -59,8 +59,8 @@ public class UserServiceImpl implements UserService {
 
     @Transactional
     @Override
-    public UserDto.Response update(String userId, UserDto.Request request) {
-//        if (!userId.equals(request.getUserId())) {
+    public UserDto.Response update(String userId, UserDto.UserRequest userRequest) {
+//        if (!userId.equals(userRequest.getUserId())) {
         // Todo: 질문. 어느정도까지 자세히 에러를 분류할 것 인가? 프론트를 위한 에러?
 //            throw new CustomException(ErrorCode.NON_EXISTENT_USER);
 //        }
@@ -69,7 +69,7 @@ public class UserServiceImpl implements UserService {
                 () -> new CustomException(ErrorCode.NON_EXISTENT_USER)
         );
 
-        user.update(request);
+        user.update(userRequest);
         log.info("Updated user: {}", user); // 변경 확인용 로그
 
         return UserDto.Response.fromEntity(user);

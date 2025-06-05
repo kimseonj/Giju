@@ -2,6 +2,7 @@ package com.bubble.giju.domain.user.dto;
 
 import com.bubble.giju.domain.user.enums.Role;
 import com.fasterxml.jackson.annotation.JsonFormat;
+import io.swagger.v3.oas.annotations.media.Schema;
 import jakarta.validation.constraints.Email;
 import jakarta.validation.constraints.NotBlank;
 import jakarta.validation.constraints.NotNull;
@@ -25,6 +26,7 @@ public class UserCreateRequest {
     private String email;
     @NotBlank(message = "전화번호는 필수입니다.")
     private String phoneNumber;
+    @Schema(example = "20020904", type = "string")
     @NotNull(message = "생년월일은 필수입니다.")
     @JsonFormat(shape = JsonFormat.Shape.STRING, pattern = "yyyyMMdd", timezone = "Asia/Seoul")
     @DateTimeFormat(pattern = "yyyyMMdd")
