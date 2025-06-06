@@ -60,7 +60,7 @@ public class CustomOAuth2SuccessHandler extends SimpleUrlAuthenticationSuccessHa
 
 
 //        String domain = "giju-front.vercel.app";
-        String backendDomain = "seonjun.shop"; // 백엔드 도메인
+        String backendDomain = "seonjun.store"; // 백엔드 도메인
         ResponseCookie refreshCookie = cookieUtil.createRefreshCookie("refresh", refreshToken, backendDomain);
         ResponseCookie accessCookie = cookieUtil.createRefreshCookie("access", accessToken, backendDomain);
 
