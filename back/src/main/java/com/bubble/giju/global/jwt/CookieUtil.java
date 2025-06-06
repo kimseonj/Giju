@@ -23,11 +23,11 @@ public class CookieUtil {
 
     public ResponseCookie createRefreshCookie(String key, String value, String domain) {
         return ResponseCookie.from(key, value)
-                .domain(domain)
+//                .domain(domain)
                 .path("/")
-                .sameSite("None")
+//                .sameSite("None")
                 .httpOnly(true)
-                .secure(true)
+//                .secure(true)
                 .maxAge(refreshTime)
                 .build();
     }
