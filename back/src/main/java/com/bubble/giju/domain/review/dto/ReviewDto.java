@@ -9,20 +9,20 @@ import lombok.NoArgsConstructor;
 public class ReviewDto {
 
     @Getter
-    public static class Request {
+    public static class ReviewRequest {
         String content;
         int score;
     }
 
     @AllArgsConstructor
     @Getter
-    public static class Response {
+    public static class ReviewResponse {
         String userName;
         String content;
         int score;
 
-        public static Response fromEntity(Review review) {
-            Response response = new Response(
+        public static ReviewResponse fromEntity(Review review) {
+            ReviewResponse response = new ReviewResponse(
                     review.getUser().getName(),
                     review.getContent(),
                     review.getScore()

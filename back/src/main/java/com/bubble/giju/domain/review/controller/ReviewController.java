@@ -28,10 +28,10 @@ public class ReviewController {
     public ResponseEntity<ApiResponse> createReview(@AuthenticationPrincipal CustomPrincipal customPrincipal,
                                                     @PathVariable Long orderId,
                                                     @RequestParam Long drinkId,
-                                                    @RequestBody ReviewDto.Request reviewRequest
+                                                    @RequestBody ReviewDto.ReviewRequest reviewRequest
     ) {
 
-        ReviewDto.Response response = reviewService.create(customPrincipal.getUserId(), orderId, drinkId, reviewRequest);
+        ReviewDto.ReviewResponse response = reviewService.create(customPrincipal.getUserId(), orderId, drinkId, reviewRequest);
         ApiResponse apiResponse = ApiResponse.success("리뷰작성이 완료되었습니다.", response);
 
         return ResponseEntity.ok(apiResponse);
@@ -40,13 +40,13 @@ public class ReviewController {
     @Operation(summary = "유저에 대한 리뷰 불러오기", description = "유저에 대한 모든 리뷰를 불러옵니다.")
     @PreAuthorize("hasRole('USER')")
     @GetMapping("/my")
-    public List<ReviewDto.Response> getReviews(@AuthenticationPrincipal CustomPrincipal customPrincipal) {
+    public List<ReviewDto.ReviewResponse> getReviews(@AuthenticationPrincipal CustomPrincipal customPrincipal) {
         return reviewService.getReviewsByUserId(customPrincipal.getUserId());
     }
 
     @Operation(summary = "술에 대한 리뷰 불러오기", description = "술 상세페이지에서 리뷰를 불러옵니다.")
     @GetMapping("/drinks/{drinkId}")
-    public List<ReviewDto.Response> getReviewsByDrinkId(@PathVariable Long drinkId) {
+    public List<ReviewDto.ReviewResponse> getReviewsByDrinkId(@PathVariable Long drinkId) {
         return reviewService.getReviewsByDrinkId(drinkId);
     }
 

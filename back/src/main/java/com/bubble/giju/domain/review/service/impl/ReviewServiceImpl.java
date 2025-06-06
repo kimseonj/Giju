@@ -28,7 +28,7 @@ public class ReviewServiceImpl implements ReviewService {
     private final OrderRepository orderRepository;
 
     @Override
-    public ReviewDto.Response create(String userId, Long orderId, Long drinkId, ReviewDto.Request reviewRequest) {
+    public ReviewDto.ReviewResponse create(String userId, Long orderId, Long drinkId, ReviewDto.ReviewRequest reviewRequest) {
         User user = userRepository.findById(UUID.fromString(userId)).orElseThrow(
                 () -> new CustomException(ErrorCode.USER_UNAUTHORIZED)
         );
@@ -58,28 +58,28 @@ public class ReviewServiceImpl implements ReviewService {
 
         Review save = reviewRepository.save(review);
 
-        return ReviewDto.Response.fromEntity(save);
+        return ReviewDto.ReviewResponse.fromEntity(save);
     }
 
     @Override
-    public List<ReviewDto.Response> getReviewsByDrinkId(Long drinkId) {
+    public List<ReviewDto.ReviewResponse> getReviewsByDrinkId(Long drinkId) {
         Drink drink = drinkRepository.findById(drinkId).orElseThrow(
                 () -> new CustomException(ErrorCode.NON_EXISTENT_DRINK)
         );
 
         List<Review> allByDrinkId = reviewRepository.findAllByDrink_Id(drinkId);
 
-        return allByDrinkId.stream().map(ReviewDto.Response::fromEntity).toList();
+        return allByDrinkId.stream().map(ReviewDto.ReviewResponse::fromEntity).toList();
     }
 
     @Override
-    public List<ReviewDto.Response> getReviewsByUserId(String userId) {
+    public List<ReviewDto.ReviewResponse> getReviewsByUserId(String userId) {
         userRepository.findById(UUID.fromString(userId)).orElseThrow(
                 () -> new CustomException(ErrorCode.USER_UNAUTHORIZED)
         );
 
         return reviewRepository.findAllByUser_UserId(UUID.fromString(userId)).stream()
-                .map(ReviewDto.Response::fromEntity).toList();
+                .map(ReviewDto.ReviewResponse::fromEntity).toList();
     }
 
     @Override
