@@ -26,8 +26,6 @@ public class UserServiceImpl implements UserService {
     private final UserRepository userRepository;
     private final BCryptPasswordEncoder bCryptPasswordEncoder;
 
-    private ArrayList arrayList = new ArrayList();
-
     @Override
     @Transactional
     public UserDto.Response save(UserCreateRequest userCreateRequest) {
@@ -59,9 +57,6 @@ public class UserServiceImpl implements UserService {
                 () -> new CustomException(ErrorCode.NON_EXISTENT_USER)
         );
 
-        System.out.println(arrayList);
-        arrayList.add("test");
-
         return UserDto.Response.fromEntity(user);
     }
 
@@ -79,8 +74,6 @@ public class UserServiceImpl implements UserService {
 
         user.update(request);
         log.info("Updated user: {}", user); // 변경 확인용 로그
-
-        System.out.println(arrayList);
 
         return UserDto.Response.fromEntity(user);
     }

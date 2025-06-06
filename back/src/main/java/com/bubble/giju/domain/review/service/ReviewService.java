@@ -5,8 +5,8 @@ import com.bubble.giju.domain.review.dto.ReviewDto;
 import java.util.List;
 
 public interface ReviewService {
-    ReviewDto.Response create(String userId, Long orderId, Long drinkId, ReviewDto.Request reviewRequest);
-    List<ReviewDto.Response> getReviewsByDrinkId(Long drinkId);
-    List<ReviewDto.Response> getReviewsByUserId(String userId);
+    ReviewDto.ReviewResponse create(String userId, Long orderId, Long drinkId, ReviewDto.ReviewRequest reviewRequest);
+    List<ReviewDto.ReviewResponse> getReviewsByDrinkId(Long drinkId);
+    List<ReviewDto.ReviewResponse> getReviewsByUserId(String userId);
     Double getReviewScoreByDrinkId(Long drinkId);
 }
