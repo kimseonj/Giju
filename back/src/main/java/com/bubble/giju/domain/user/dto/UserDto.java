@@ -1,9 +1,13 @@
 package com.bubble.giju.domain.user.dto;
 
 import com.bubble.giju.domain.user.entity.User;
+import com.fasterxml.jackson.annotation.JsonFormat;
+import io.swagger.v3.oas.annotations.media.Schema;
+import jakarta.validation.constraints.Email;
 import lombok.AllArgsConstructor;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
+import org.springframework.format.annotation.DateTimeFormat;
 
 import java.time.LocalDate;
 import java.time.LocalDateTime;
@@ -12,11 +16,15 @@ import java.time.LocalDateTime;
 public class UserDto {
 
     @Getter
-    public static class Request {
+    public static class UserRequest {
         String userId;
         String name;
+        @Email
         String email;
         String phoneNumber;
+        @Schema(example = "20020904", type = "string")
+        @JsonFormat(shape = JsonFormat.Shape.STRING, pattern = "yyyyMMdd", timezone = "Asia/Seoul")
+        @DateTimeFormat(pattern = "yyyyMMdd")
         LocalDate birthday;
     }
 
