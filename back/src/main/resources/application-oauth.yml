@@ -10,7 +10,7 @@ spring:
             user-name-attribute: id
         registration:
           kakao:
-            client-id: ${CLIENT_ID:defaultfordevalsjfielsjfinaajfowinblxiejfwoihbya}Add commentMore actions
+            client-id: ${CLIENT_ID:defaultfordevalsjfielsjfinaajfowinblxiejfwoihbya}
             client-secret: ${CLIENT_SECRET:defaultfordevalsjfielsjfinaajfowinblxiejfwoihbya}
             client-authentication-method: client_secret_post
             redirect-uri: ${REDIRECT_URI:http://localhost:8080/login/oauth2/code/kakao}
