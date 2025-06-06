@@ -1,8 +1,6 @@
 package com.bubble.giju.global.oauth2;
 
 import com.bubble.giju.domain.user.dto.CustomPrincipal;
-import com.bubble.giju.domain.user.dto.LoginDto;
-import com.bubble.giju.global.config.ApiResponse;
 import com.bubble.giju.global.jwt.CookieUtil;
 import com.bubble.giju.global.jwt.JWTUtil;
 import com.fasterxml.jackson.databind.ObjectMapper;
@@ -11,7 +9,9 @@ import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.http.HttpStatus;
+import org.springframework.http.ResponseCookie;
 import org.springframework.security.core.Authentication;
 import org.springframework.security.core.GrantedAuthority;
 import org.springframework.security.web.authentication.SimpleUrlAuthenticationSuccessHandler;
@@ -29,9 +29,12 @@ public class CustomOAuth2SuccessHandler extends SimpleUrlAuthenticationSuccessHa
     private final JWTUtil jwtUtil;
     private final CookieUtil cookieUtil;
     private final ObjectMapper objectMapper;
+    @Value("${front.uri}")
+    private String FRONT_URI;
 
     @Override
     public void onAuthenticationSuccess(HttpServletRequest request, HttpServletResponse response, Authentication authentication) throws IOException, ServletException {
+        log.info("------ OAuth SuccessHandler 진입 ---------");
         CustomPrincipal principal = (CustomPrincipal) authentication.getPrincipal();
 
         String username = principal.getUsername();
@@ -53,18 +56,20 @@ public class CustomOAuth2SuccessHandler extends SimpleUrlAuthenticationSuccessHa
         response.setContentType("application/json");
         response.setCharacterEncoding("UTF-8");
         response.addHeader("access", accessToken);
-        response.addCookie(cookieUtil.createCookie("refresh", refreshToken));
-        response.addCookie(cookieUtil.createCookie("access", accessToken));
-        response.setStatus(HttpStatus.OK.value());
+//        response.addCookie(cookieUtil.createCookie("refresh", refreshToken));
+//        response.addCookie(cookieUtil.createCookie("access", accessToken));
 
-        log.info("access : {}", accessToken);
-        log.info("refresh : {}", refreshToken);
 
-        response.sendRedirect("http://localhost:3000/oauth/success");
+//        String domain = "giju-front.vercel.app";
+        String backendDomain = "seonjun.store"; // 백엔드 도메인
+        ResponseCookie refreshCookie = cookieUtil.createResponseCookie("refresh", refreshToken, backendDomain);
+        ResponseCookie accessCookie = cookieUtil.createResponseCookie("access", accessToken, backendDomain);
 
-//        LoginDto.LoginResponse loginResponse = LoginDto.LoginResponse.of(accessToken, refreshToken);
-//        ApiResponse<LoginDto.LoginResponse> apiResponse = ApiResponse.success("로그인 성공", loginResponse);
-//
-//        objectMapper.writeValue(response.getWriter(), apiResponse);
+        // 응답에 쿠키 추가
+        response.setHeader("Set-Cookie", accessCookie.toString());
+        response.addHeader("Set-Cookie", refreshCookie.toString());
+
+        log.info("------ OAuth SuccessHandler 종료 ---------");
+        response.sendRedirect("https://giju.vercel.app/oauth/success");
     }
 }

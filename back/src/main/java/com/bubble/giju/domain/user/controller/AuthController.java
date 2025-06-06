@@ -93,8 +93,9 @@ public class AuthController {
         log.info("쿠키에서 읽은 refresh 토큰: {}", refreshToken != null ? "존재함" : "없음");
 
         if (accessToken != null && refreshToken != null) {
-            response.addCookie(cookieUtil.deleteCookie("access"));
-//            response.addCookie(cookieUtil.deleteCookie("refresh"));
+            String backendDomain = "seonjun.store"; // 백엔드 도메인
+            response.addHeader("Set-Cookie", cookieUtil.deleteResponseCookie("access", backendDomain).toString());
+            response.setHeader("Set-Cookie", cookieUtil.deleteResponseCookie("refresh", backendDomain).toString());
             log.info("모든 인증 쿠키 삭제 완료");
 
             LoginDto.LoginResponse loginResponse = LoginDto.LoginResponse.of(accessToken, refreshToken);

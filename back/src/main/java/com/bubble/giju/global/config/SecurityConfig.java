@@ -48,6 +48,7 @@ public class SecurityConfig {
         configuration.setAllowedOrigins(new ArrayList<>(List.of(
                 "http://localhost:3000",
                 "https://giju.vercel.app",
+                "https://giju-front.vercel.app",
                 "https://seonjun.store",
                 "http://seonjun.store")));
 
