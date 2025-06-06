@@ -10,6 +10,7 @@ import jakarta.servlet.ServletException;
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
 import lombok.RequiredArgsConstructor;
+import lombok.extern.slf4j.Slf4j;
 import org.springframework.http.HttpStatus;
 import org.springframework.security.core.Authentication;
 import org.springframework.security.core.GrantedAuthority;
@@ -20,6 +21,7 @@ import java.io.IOException;
 import java.util.Collection;
 import java.util.Iterator;
 
+@Slf4j
 @RequiredArgsConstructor
 @Component
 public class CustomOAuth2SuccessHandler extends SimpleUrlAuthenticationSuccessHandler {
@@ -52,11 +54,17 @@ public class CustomOAuth2SuccessHandler extends SimpleUrlAuthenticationSuccessHa
         response.setCharacterEncoding("UTF-8");
         response.addHeader("access", accessToken);
         response.addCookie(cookieUtil.createCookie("refresh", refreshToken));
+        response.addCookie(cookieUtil.createCookie("access", accessToken));
         response.setStatus(HttpStatus.OK.value());
 
-        LoginDto.LoginResponse loginResponse = LoginDto.LoginResponse.of(accessToken, refreshToken);
-        ApiResponse<LoginDto.LoginResponse> apiResponse = ApiResponse.success("로그인 성공", loginResponse);
+        log.info("access : {}", accessToken);
+        log.info("refresh : {}", refreshToken);
 
-        objectMapper.writeValue(response.getWriter(), apiResponse);
+        response.sendRedirect("http://localhost:3000/oauth/success");
+
+//        LoginDto.LoginResponse loginResponse = LoginDto.LoginResponse.of(accessToken, refreshToken);
+//        ApiResponse<LoginDto.LoginResponse> apiResponse = ApiResponse.success("로그인 성공", loginResponse);
+//
+//        objectMapper.writeValue(response.getWriter(), apiResponse);
     }
 }
