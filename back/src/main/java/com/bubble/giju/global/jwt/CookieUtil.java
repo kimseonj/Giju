@@ -2,6 +2,7 @@ package com.bubble.giju.global.jwt;
 
 import jakarta.servlet.http.Cookie;
 import org.springframework.beans.factory.annotation.Value;
+import org.springframework.http.ResponseCookie;
 import org.springframework.stereotype.Component;
 
 @Component
@@ -18,6 +19,17 @@ public class CookieUtil {
 //        cookie.setSecure(true); // https 사용
 
         return cookie;
+    }
+
+    public ResponseCookie createRefreshCookie(String key, String value, String domain) {
+        return ResponseCookie.from(key, value)
+                .domain(domain)
+                .path("/")
+                .sameSite("None")
+                .httpOnly(true)
+                .secure(true)
+                .maxAge(refreshTime)
+                .build();
     }
 
     public Cookie deleteCookie(String key) {

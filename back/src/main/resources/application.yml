@@ -59,6 +59,3 @@ jwt:
 springdoc:
   show-login-endpoint: true
 
-  logging:
-    level:
-      com.bubble.giju: DEBUG
