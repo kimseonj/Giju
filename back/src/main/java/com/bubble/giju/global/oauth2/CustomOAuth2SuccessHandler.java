@@ -34,6 +34,7 @@ public class CustomOAuth2SuccessHandler extends SimpleUrlAuthenticationSuccessHa
 
     @Override
     public void onAuthenticationSuccess(HttpServletRequest request, HttpServletResponse response, Authentication authentication) throws IOException, ServletException {
+        log.info("------ OAuth SuccessHandler 진입 ---------");
         CustomPrincipal principal = (CustomPrincipal) authentication.getPrincipal();
 
         String username = principal.getUsername();
@@ -61,13 +62,14 @@ public class CustomOAuth2SuccessHandler extends SimpleUrlAuthenticationSuccessHa
 
 //        String domain = "giju-front.vercel.app";
         String backendDomain = "seonjun.store"; // 백엔드 도메인
-        ResponseCookie refreshCookie = cookieUtil.createRefreshCookie("refresh", refreshToken, backendDomain);
-        ResponseCookie accessCookie = cookieUtil.createRefreshCookie("access", accessToken, backendDomain);
+        ResponseCookie refreshCookie = cookieUtil.createResponseCookie("refresh", refreshToken, backendDomain);
+        ResponseCookie accessCookie = cookieUtil.createResponseCookie("access", accessToken, backendDomain);
 
         // 응답에 쿠키 추가
         response.setHeader("Set-Cookie", accessCookie.toString());
         response.addHeader("Set-Cookie", refreshCookie.toString());
 
+        log.info("------ OAuth SuccessHandler 종료 ---------");
         response.sendRedirect("https://giju.vercel.app/oauth/success");
     }
 }

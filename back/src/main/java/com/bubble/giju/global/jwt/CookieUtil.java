@@ -21,7 +21,7 @@ public class CookieUtil {
         return cookie;
     }
 
-    public ResponseCookie createRefreshCookie(String key, String value, String domain) {
+    public ResponseCookie createResponseCookie(String key, String value, String domain) {
         return ResponseCookie.from(key, value)
                 .domain(domain)
                 .path("/")
@@ -38,5 +38,16 @@ public class CookieUtil {
         cookie.setPath("/");
 
         return cookie;
+    }
+
+    public ResponseCookie deleteResponseCookie(String key, String domain) {
+        return ResponseCookie.from(key, "")
+                .domain(domain)
+                .path("/")
+                .sameSite("None")
+                .httpOnly(true)
+                .secure(true)
+                .maxAge(0)  // 즉시 만료
+                .build();
     }
 }
