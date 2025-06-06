@@ -65,7 +65,7 @@ public class UserController {
 
     @Operation(summary = "찜목록 불러오기", description = "회원이 찜한 상품들을 불러옵니다.")
     @GetMapping("/me/wishlist")
-    public List<LikeDto.Response> getLike(@AuthenticationPrincipal CustomPrincipal customPrincipal) {
+    public List<LikeDto.LikeResponse> getLike(@AuthenticationPrincipal CustomPrincipal customPrincipal) {
         return likeService.getLike(customPrincipal.getUserId());
     }
 

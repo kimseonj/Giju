@@ -16,7 +16,6 @@ import org.springframework.stereotype.Service;
 
 import java.time.LocalDateTime;
 import java.util.List;
-import java.util.Optional;
 import java.util.UUID;
 
 @RequiredArgsConstructor
@@ -29,7 +28,7 @@ public class LikeServiceImpl implements LikeService {
 
     @Transactional
     @Override
-    public List<LikeDto.Response> getLike(String userId) {
+    public List<LikeDto.LikeResponse> getLike(String userId) {
         userRepository.findById(UUID.fromString(userId)).orElseThrow(
                 () -> new CustomException(ErrorCode.NON_EXISTENT_USER)
         );
@@ -37,12 +36,12 @@ public class LikeServiceImpl implements LikeService {
         // TODO: 되는지 확인해야됨
         List<Like> likeList = likeRepository.findByUser_UserIdAndDeleteFalseOrderByCreatedAtDesc(UUID.fromString(userId));
 
-        return likeList.stream().map(LikeDto.Response::fromEntity).toList();
+        return likeList.stream().map(LikeDto.LikeResponse::fromEntity).toList();
     }
 
     @Transactional
     @Override
-    public LikeDto.Response setLike(String userId, Long drinkId, Boolean likeRequest) {
+    public LikeDto.LikeResponse setLike(String userId, Long drinkId, Boolean likeRequest) {
         User user = userRepository.findById(UUID.fromString(userId)).orElseThrow(
                 () -> new CustomException(ErrorCode.NON_EXISTENT_USER)
         );
@@ -59,7 +58,7 @@ public class LikeServiceImpl implements LikeService {
             like = handleUnLike(like);
         }
 
-        return LikeDto.Response.fromEntity(like);
+        return LikeDto.LikeResponse.fromEntity(like);
     }
 
     private Like handleLike(User user, Drink drink, Like like) {
