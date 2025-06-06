@@ -68,6 +68,6 @@ public class CustomOAuth2SuccessHandler extends SimpleUrlAuthenticationSuccessHa
         response.setHeader("Set-Cookie", accessCookie.toString());
         response.addHeader("Set-Cookie", refreshCookie.toString());
 
-        response.sendRedirect("https://giju-front.vercel.app/oauth/success");
+        response.sendRedirect("https://giju.vercel.app/oauth/success");
     }
 }
