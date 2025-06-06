@@ -93,8 +93,8 @@ public class AuthController {
         log.info("쿠키에서 읽은 refresh 토큰: {}", refreshToken != null ? "존재함" : "없음");
 
         if (accessToken != null && refreshToken != null) {
-//            response.addCookie(cookieUtil.deleteCookie("access"));
-//            response.addCookie(cookieUtil.deleteCookie("refresh"));
+            response.addCookie(cookieUtil.deleteCookie("access"));
+            response.addCookie(cookieUtil.deleteCookie("refresh"));
             log.info("모든 인증 쿠키 삭제 완료");
 
             LoginDto.LoginResponse loginResponse = LoginDto.LoginResponse.of(accessToken, refreshToken);
