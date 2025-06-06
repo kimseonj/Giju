@@ -59,7 +59,7 @@ public class CustomOAuth2SuccessHandler extends SimpleUrlAuthenticationSuccessHa
 //        response.addCookie(cookieUtil.createCookie("access", accessToken));
 
 
-        String domian = "giju.vercel.app";
+        String domian = "giju-front.vercel.app";
         ResponseCookie refreshCookie = cookieUtil.createRefreshCookie("refresh", refreshToken, domian);
         ResponseCookie accessCookie = cookieUtil.createRefreshCookie("access", accessToken, domian);
 
