@@ -62,39 +62,11 @@ public class CustomOAuth2SuccessHandler extends SimpleUrlAuthenticationSuccessHa
         String domian = "giju.vercel.app";
         ResponseCookie refreshCookie = cookieUtil.createRefreshCookie("refresh", refreshToken, domian);
         ResponseCookie accessCookie = cookieUtil.createRefreshCookie("access", accessToken, domian);
-//
-//        response.addHeader("Set-Cookie", accessCookie.toString());
-//        response.addHeader("Set-Cookie", refreshCookie.toString());
-//
-//        response.setStatus(HttpStatus.OK.value());
-//
-//        log.info("access : {}", accessCookie);
-//        log.info("refresh : {}", refreshCookie);
-//
-//        response.sendRedirect(FRONT_URI + "/oauth/success");
 
         // 응답에 쿠키 추가
         response.addHeader("Set-Cookie", accessCookie.toString());
         response.addHeader("Set-Cookie", refreshCookie.toString());
 
-        // JSON 응답 전송
-        response.setContentType("application/json");
-        response.setCharacterEncoding("UTF-8");
-
-        // 응답 데이터 객체 생성
-        var responseData = new java.util.HashMap<String, Object>();
-        var data = new java.util.HashMap<String, String>();
-        data.put("access", accessToken);
-        data.put("refresh", refreshToken);
-        responseData.put("status", "success");
-        responseData.put("data", data);
-
-        // JSON 문자열로 변환 후 전송
-        objectMapper.writeValue(response.getWriter(), responseData);
-
-//        LoginDto.LoginResponse loginResponse = LoginDto.LoginResponse.of(accessToken, refreshToken);
-//        ApiResponse<LoginDto.LoginResponse> apiResponse = ApiResponse.success("로그인 성공", loginResponse);
-//
-//        objectMapper.writeValue(response.getWriter(), apiResponse);
+        response.sendRedirect("https://giju-front.vercel.app");
     }
 }

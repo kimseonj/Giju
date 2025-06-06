@@ -33,5 +33,5 @@ app:
   base-url: https://giju.vercel.app
 
 front:
-  uri: ${FRONT_URI:https://giju.vercel.app}
+  uri: ${FRONT_URI:https://giju-front.vercel.app}
 #  uri: ${FRONT_URI:http://localhost:3000}
