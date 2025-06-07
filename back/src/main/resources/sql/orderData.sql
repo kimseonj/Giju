@@ -76,7 +76,6 @@ VALUES
 
 
 
-
 -- 주문상세 데이터
 INSERT INTO order_detail (order_detail_id, price, quantity, drink_name, region, order_id, is_canceled, is_refund_requested, is_refunded)
 VALUES

@@ -32,11 +32,11 @@ public class Order {
     @Column(name = "order_id")
     private Long id;
 
-    // BigDecimal 추흐 할인, 쿠폰 등 추가시 변경
+    // BigDecimal 추후 할인, 쿠폰 등 추가시 변경
     @Column(name = "total_amount" , nullable = false )
     private int totalAmount;
 
-    @Column(name = "created_at", nullable = false, updatable = false, columnDefinition = "TIMESTAMP")
+    @Column(name = "created_at", nullable = false, updatable = false)
     private OffsetDateTime createdAt;
 
     @Enumerated(EnumType.STRING)
@@ -53,7 +53,7 @@ public class Order {
     private String orderName;
 
     @Column(name = "deleted_at")
-    private LocalDateTime deletedAt;
+    private  OffsetDateTime deletedAt;
 
     //토스페이머츠 orderid 자릿수 6~64까지
     @Column(name = "toss_order_id", unique = true, length = 64)
@@ -106,7 +106,7 @@ public class Order {
 
     public void softDelete() {
         this.isDeleted = true;
-        this.deletedAt = LocalDateTime.now();
+        this.deletedAt =  OffsetDateTime.now();
     }
 
     public void setTossOrderId(String tossOrderId) {

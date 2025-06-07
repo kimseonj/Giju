@@ -58,7 +58,7 @@ public class PaymentServiceImpl implements PaymentService {
         Order order = findOrderByStringId(orderId);
 
         // 결제 버튼 누를때 생성된 Order의 총값 과 리다이렉트 파라미터 비교
-        if (order.getTotalAmount() != amount) {
+        if ((order.getTotalAmount()+order.getDeliveryCharge()) != amount) {
             throw new CustomException(ErrorCode.INVALID_PAYMENT_VERIFICATION);
         }
 

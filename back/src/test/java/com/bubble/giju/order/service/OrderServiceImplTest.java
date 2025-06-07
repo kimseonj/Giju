@@ -76,6 +76,9 @@ public class OrderServiceImplTest {
         drink2 = Drink.builder().id(2L).name("홍주").price(10000).build();
         log.info("drink2: name={}, id={}, price={}", drink2.getName(), drink2.getId(), drink2.getPrice());
 
+        ReflectionTestUtils.setField(orderService, "deliveryCharge", 3000);
+        ReflectionTestUtils.setField(orderService, "targetPrice", 30000);
+
     }
 
     @Test

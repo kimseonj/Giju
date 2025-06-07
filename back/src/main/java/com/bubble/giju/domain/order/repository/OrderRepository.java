@@ -12,6 +12,7 @@ import org.springframework.data.jpa.repository.Query;
 import org.springframework.data.repository.query.Param;
 
 import java.time.LocalDateTime;
+import java.time.OffsetDateTime;
 import java.util.List;
 import java.util.Optional;
 import java.util.UUID;
@@ -20,12 +21,12 @@ public interface OrderRepository extends JpaRepository<Order, Long> {
     @Query("SELECT o FROM Order o WHERE o.orderStatus = :status AND o.createdAt < :cutoff AND o.isDeleted = false")
     Page<Order> findByOrderStatusAndCreatedAtBeforeAndIsDeletedFalse(
             @Param("status") OrderStatus status,
-            @Param("cutoff") LocalDateTime cutoff,
+            @Param("cutoff") OffsetDateTime cutoff,
             Pageable pageable
     );
 
     @Query("SELECT o.id FROM Order o WHERE o.isDeleted = true AND o.deletedAt < :cutoff")
-    List<Long> findIdsBySoftDeletedBefore(@Param("cutoff") LocalDateTime cutoff);
+    List<Long> findIdsBySoftDeletedBefore(@Param("cutoff") OffsetDateTime cutoff);
 
     @Modifying
     @Query("DELETE FROM Order o WHERE o.id IN :ids")
