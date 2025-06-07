@@ -1,6 +1,8 @@
 package com.bubble.giju.domain.order.service;
 
+import com.bubble.giju.domain.order.dto.request.DirectOrderRequestDto;
 import com.bubble.giju.domain.order.dto.request.RefundRequestDto;
+import com.bubble.giju.domain.order.dto.response.DirectOrderResponseDto;
 import com.bubble.giju.domain.order.dto.response.OrderHistoryResonseDto;
 import com.bubble.giju.domain.order.dto.response.OrderResponseDto;
 import com.bubble.giju.domain.order.dto.response.RefundResponseDto;
@@ -11,6 +13,7 @@ import java.util.List;
 public interface OrderService {
     OrderResponseDto createOrder(List<Long> cartItemIds, CustomPrincipal customPrincipal);
     List<OrderHistoryResonseDto> getOrderHistory(CustomPrincipal customPrincipal);
-    RefundResponseDto requestRefund(RefundRequestDto requestDto, CustomPrincipal principal);
-
+    RefundResponseDto requestRefund(RefundRequestDto requestDto, CustomPrincipal customPrincipal);
+    DirectOrderResponseDto getDirectBuyInfo(Long drinkId, int quantity, CustomPrincipal  customPrincipal);
+    OrderResponseDto createDirectOrder(DirectOrderRequestDto directOrderRequestDto, CustomPrincipal customPrincipal);
 }
