@@ -10,6 +10,7 @@ import org.springframework.transaction.PlatformTransactionManager;
 import org.springframework.transaction.support.TransactionTemplate;
 
 import java.time.LocalDateTime;
+import java.time.OffsetDateTime;
 import java.util.List;
 
 @Component
@@ -33,7 +34,7 @@ public class OrderHardDeleteScheduler {
 
     @Scheduled(cron = "0 0 3 * * ?")
     public void hardDeleteExpiredSoftDeletedOrders() {
-        LocalDateTime cutoff = LocalDateTime.now().minusDays(orderDeltedCycle);
+        OffsetDateTime cutoff = OffsetDateTime.now().minusDays(orderDeltedCycle);
 
         // 30일 이상 soft delete된 주문 id 조회 ->  불필요한 쿼리 실행을 막기 위함
         List<Long> orderIdsToDelete = orderRepository.findIdsBySoftDeletedBefore(cutoff);
