@@ -28,12 +28,12 @@ public class ReviewServiceImpl implements ReviewService {
     private final OrderRepository orderRepository;
 
     @Override
-    public ReviewDto.ReviewResponse create(String userId, Long orderId, Long drinkId, ReviewDto.ReviewRequest reviewRequest) {
+    public ReviewDto.ReviewResponse create(String userId, Long orderId, String drinkName, ReviewDto.ReviewRequest reviewRequest) {
         User user = userRepository.findById(UUID.fromString(userId)).orElseThrow(
                 () -> new CustomException(ErrorCode.USER_UNAUTHORIZED)
         );
 
-        Drink drink = drinkRepository.findById(drinkId).orElseThrow(
+        Drink drink = drinkRepository.findByName(drinkName).orElseThrow(
                 () -> new CustomException(ErrorCode.NON_EXISTENT_DRINK)
         );
 
@@ -44,7 +44,7 @@ public class ReviewServiceImpl implements ReviewService {
 
         // orderDetails에서 drinkName으로 주문한 상품인지 검증
         order.getOrderDetails().stream()
-                .filter(detail -> detail.getDrinkName().equals(drink.getName()))
+                .filter(detail -> detail.getDrinkName().equals(drinkName))
                 .findFirst()
                 .orElseThrow(() -> new CustomException(ErrorCode.ORDER_DETAIL_NOT_FOUND));
 
