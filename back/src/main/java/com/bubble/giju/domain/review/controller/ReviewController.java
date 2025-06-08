@@ -27,11 +27,11 @@ public class ReviewController {
     @PostMapping("/orders/{orderId}")
     public ResponseEntity<ApiResponse> createReview(@AuthenticationPrincipal CustomPrincipal customPrincipal,
                                                     @PathVariable Long orderId,
-                                                    @RequestParam Long drinkId,
+                                                    @RequestParam String drinkName,
                                                     @RequestBody ReviewDto.ReviewRequest reviewRequest
     ) {
 
-        ReviewDto.ReviewResponse response = reviewService.create(customPrincipal.getUserId(), orderId, drinkId, reviewRequest);
+        ReviewDto.ReviewResponse response = reviewService.create(customPrincipal.getUserId(), orderId, drinkName, reviewRequest);
         ApiResponse apiResponse = ApiResponse.success("리뷰작성이 완료되었습니다.", response);
 
         return ResponseEntity.ok(apiResponse);
