@@ -20,8 +20,8 @@ spring:
   profiles:
     active: local
     group:
-      "prod": "prod, secret, swagger"
-      "local": "local, secret, swagger"
+      "prod": "prod, oauth, swagger"
+      "local": "local, oauth, swagger, secret"
   servlet:
     multipart:
       max-file-size: 20MB
@@ -59,6 +59,3 @@ jwt:
 springdoc:
   show-login-endpoint: true
 
-  logging:
-    level:
-      com.bubble.giju: DEBUG

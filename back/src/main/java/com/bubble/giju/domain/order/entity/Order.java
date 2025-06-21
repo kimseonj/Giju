@@ -13,16 +13,17 @@ import lombok.Builder;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 import org.springframework.data.annotation.CreatedDate;
-import org.springframework.data.jpa.domain.support.AuditingEntityListener;
+
 
 import java.time.LocalDateTime;
+import java.time.OffsetDateTime;
+import java.time.ZoneId;
 import java.util.ArrayList;
 import java.util.List;
 
 @Entity
 @Getter
 @NoArgsConstructor(access = AccessLevel.PROTECTED)
-@EntityListeners(AuditingEntityListener.class)
 @Table(name = "orders") // Order은 sql 예약어 orders로 변경함
 public class Order {
 
@@ -31,13 +32,12 @@ public class Order {
     @Column(name = "order_id")
     private Long id;
 
-    // BigDecimal 추흐 할인, 쿠폰 등 추가시 변경
+    // BigDecimal 추후 할인, 쿠폰 등 추가시 변경
     @Column(name = "total_amount" , nullable = false )
     private int totalAmount;
 
-    @CreatedDate // DB생성시 -자동으로 설정
-    @Column(name = "created_at" , nullable = false, updatable = false)
-    private LocalDateTime createdAt;
+    @Column(name = "created_at", nullable = false, updatable = false)
+    private OffsetDateTime createdAt;
 
     @Enumerated(EnumType.STRING)
     @Column(name = "order_status", nullable = false)
@@ -53,7 +53,7 @@ public class Order {
     private String orderName;
 
     @Column(name = "deleted_at")
-    private LocalDateTime deletedAt;
+    private  OffsetDateTime deletedAt;
 
     //토스페이머츠 orderid 자릿수 6~64까지
     @Column(name = "toss_order_id", unique = true, length = 64)
@@ -90,7 +90,7 @@ public class Order {
         this.orderStatus = OrderStatus.PENDING;
         this.tossOrderId = tossOrderId;
         this.customerKey = customerKey;
-
+        this.createdAt = OffsetDateTime.now(ZoneId.of("Asia/Seoul"));
     }
 
 
@@ -106,7 +106,7 @@ public class Order {
 
     public void softDelete() {
         this.isDeleted = true;
-        this.deletedAt = LocalDateTime.now();
+        this.deletedAt =  OffsetDateTime.now();
     }
 
     public void setTossOrderId(String tossOrderId) {

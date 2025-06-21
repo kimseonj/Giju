@@ -3,6 +3,8 @@ package com.bubble.giju.domain.order.service.serviceImpl;
 import com.bubble.giju.domain.cart.entity.Cart;
 import com.bubble.giju.domain.cart.repository.CartRepository;
 import com.bubble.giju.domain.drink.entity.Drink;
+import com.bubble.giju.domain.drink.repository.DrinkRepository;
+import com.bubble.giju.domain.order.dto.request.DirectOrderRequestDto;
 import com.bubble.giju.domain.order.dto.request.RefundRequestDto;
 import com.bubble.giju.domain.order.dto.response.*;
 import com.bubble.giju.domain.order.entity.Order;
@@ -41,6 +43,7 @@ public class OrderServiceImpl implements OrderService {
     private final PaymentRepository paymentRepository;
     private final OrderDetailRepository orderDetailRepository;
     private final OrderCartMappingRepository orderCartMappingRepository;
+    private final DrinkRepository drinkRepository;
 
     @Value("${app.base-url}")
     private String baseUrl;
@@ -50,6 +53,12 @@ public class OrderServiceImpl implements OrderService {
 
     @Value("${toss.fail_url}")
     private String failUrl;
+
+    @Value("${order.delivery-charge}")
+    private int deliveryCharge;
+
+    @Value("${order.targetPrice}")
+    private int targetPrice;
 
 
     @Transactional
@@ -128,6 +137,124 @@ public class OrderServiceImpl implements OrderService {
                 .build();
     }
 
+
+    /**
+     * 바로구매 결제 상세 정보 조회
+     * - 상품 상세 페이지에서 사용자가 수량을 선택 후 "바로구매" 버튼 클릭 시 호출됨
+     * - Drink ID와 수량을 기반으로 가격, 배달비, 총 결제금액 계산
+     *
+     * @param drinkId   구매하려는 전통주 ID
+     * @param quantity  구매 수량
+     * @param customPrincipal 현재 로그인한 사용자 정보
+     * @return DirectOrderInfoDto 결제 상세 정보 응답 객체
+     */
+    @Transactional(readOnly = true)
+    @Override
+    public DirectOrderResponseDto getDirectBuyInfo(Long drinkId, int quantity, CustomPrincipal customPrincipal) {
+
+        // 사용자 조회
+        User user = userRepository.findById(UUID.fromString(customPrincipal.getUserId()))
+                .orElseThrow(() -> new CustomException(ErrorCode.NON_EXISTENT_USER));
+
+        // 전통주 상품 조회
+        Drink drink = drinkRepository.findById(drinkId)
+                .orElseThrow(() -> new CustomException(ErrorCode.NON_EXISTENT_DRINK));
+
+        // 단가 및 총액 계산
+        int pricePerUnit = drink.getPrice();
+        int totalPrice = pricePerUnit * quantity;
+
+        // 배달비 계산 (3만 원 이상 무료배송)
+        int appliedDeliveryCharge = calculateDeliveryCharge(totalPrice);
+
+        // 결제 상세 응답 DTO 구성
+        return DirectOrderResponseDto.builder()
+                .drinkId(drink.getId())
+                .drinkName(drink.getName())
+                .pricePerUnit(pricePerUnit)
+                .quantity(quantity)
+                .totalPrice(totalPrice)
+                .deliveryCharge(appliedDeliveryCharge)
+                .totalAmount(totalPrice + appliedDeliveryCharge)
+                .build();
+    }
+
+
+    /**
+     * [바로 구매 주문 생성 메서드]
+     * - 장바구니를 거치지 않고 상품 상세 페이지에서 바로 구매하는 주문을 생성
+     *
+     * 요청 값
+     * - drinkId: 구매할 상품 ID
+     * - quantity: 구매 수량
+     *
+     * 반환 값
+     * - tossOrderId : orderId대신 토스 결제를 위한 tossOrderId 반환
+     * - amount : 물건 총값 + 택배비
+     * - orderName : 주문 이름
+     * - customerEmail : 사용자 이메일
+     * - customerName : 사용자 이름
+     * - successUrl: 결제성공시 리다이렉트 api
+     * - failUrl: 결제 실패시 리다이렉트 api
+     */
+    @Transactional
+    @Override
+    public OrderResponseDto createDirectOrder(DirectOrderRequestDto directOrderRequestDto, CustomPrincipal principal) {
+
+        // 사용자 조회
+        User user = userRepository.findById(UUID.fromString(principal.getUserId()))
+                .orElseThrow(() -> new CustomException(ErrorCode.NON_EXISTENT_USER));
+
+        // 상품 조회
+        Drink drink = drinkRepository.findById(directOrderRequestDto.getDrinkId())
+                .orElseThrow(() -> new CustomException(ErrorCode.NON_EXISTENT_DRINK));
+
+        // 가격 및 배달비 계산
+        int totalAmount = drink.getPrice() * directOrderRequestDto.getQuantity();
+        int deliveryCharge = calculateDeliveryCharge(totalAmount);
+
+        // 4. 주문 정보 구성
+        String orderName = drink.getName();
+        String customerKey = "user-" + user.getUserId();
+
+        // 주문 객체 생성
+        Order order = Order.builder()
+                .orderName(orderName)
+                .totalAmount(totalAmount)
+                .deliveryCharge(deliveryCharge)
+                .user(user)
+                .customerKey(customerKey)
+                .build();
+
+        // 주문 상세 생성 및 연관관계 매핑
+        OrderDetail orderDetail = OrderDetail.builder()
+                .drinkName(drink.getName())
+                .price(totalAmount)
+                .quantity(directOrderRequestDto.getQuantity())
+                .order(order)
+                .region(String.valueOf(drink.getRegion()))
+                .build();
+
+        order.addOrderDetail(orderDetail);
+        Order savedOrder = orderRepository.save(order);
+
+        String tossOrderId = "ORDER_" + savedOrder.getId() + "_" + UUID.randomUUID();
+        savedOrder.setTossOrderId(tossOrderId);
+        orderRepository.save(savedOrder);
+
+        return OrderResponseDto.builder()
+                .orderId(tossOrderId)
+                .amount(savedOrder.getTotalAmount() + savedOrder.getDeliveryCharge())
+                .orderName(savedOrder.getOrderName())
+                .customerEmail(user.getEmail())
+                .customerName(user.getName())
+                .successUrl(baseUrl + successUrl)
+                .failUrl(baseUrl + failUrl)
+                .build();
+    }
+
+
+
     // 선택된 물 건 총값 계산
     private int calculateTotalAmount(List<Cart> cartItems) {
         return cartItems.stream()
@@ -145,12 +272,9 @@ public class OrderServiceImpl implements OrderService {
                 : drinks.get(0).getName() + " 외 " + (drinks.size() - 1) + "개";
     }
 
-    // 3만원 이상 물건 구매시 배달비 무료!
-    @Value("${order.delivery-charge}")
-    private int deliveryCharge;
 
     private int calculateDeliveryCharge(int totalAmount) {
-        return totalAmount >= 30000 ? 0 : deliveryCharge;
+        return totalAmount >= targetPrice ? 0 : deliveryCharge;
     }
 
 
@@ -166,8 +290,13 @@ public class OrderServiceImpl implements OrderService {
                 .filter(order -> {
                     OrderStatus status = order.getOrderStatus();
                     return status == OrderStatus.SUCCEEDED
-                            || status == OrderStatus.PARTIALLY_CANCELED
-                            || status == OrderStatus.CANCELED;
+                           || status == OrderStatus.DELIVERING
+                           || status == OrderStatus.DELIVERED
+                           || status == OrderStatus.PARTIALLY_CANCELED
+                           || status == OrderStatus.REFUND_REQUESTED
+                           || status == OrderStatus.PARTIALLY_REFUND_REQUESTED
+                           || status == OrderStatus.REFUNDED
+                           || status == OrderStatus.PARTIALLY_REFUNDED;
                 })
                 .toList();
 

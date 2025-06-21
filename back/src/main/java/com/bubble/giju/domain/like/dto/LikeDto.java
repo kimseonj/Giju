@@ -10,13 +10,13 @@ public class LikeDto {
 
     @AllArgsConstructor
     @Getter
-    public static class Response {
+    public static class LikeResponse {
         String userId;
         Long drinkId;
         LocalDateTime createdAt;
 
-        public static Response fromEntity(Like like) {
-            return new Response(
+        public static LikeResponse fromEntity(Like like) {
+            return new LikeResponse(
                     like.getUser().getUserId().toString(),
                     like.getDrink().getId(),
                     like.getCreatedAt()
