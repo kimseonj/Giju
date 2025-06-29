@@ -1,6 +1,5 @@
 package com.bubble.giju.domain.region.controller;
 
-import com.bubble.giju.domain.ranking.enums.Region;
 import com.bubble.giju.domain.region.dto.RegionResponseDto;
 import com.bubble.giju.domain.region.service.RegionService;
 import com.bubble.giju.global.config.ApiResponse;
@@ -11,7 +10,6 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.RestController;
 
-import java.util.ArrayList;
 import java.util.List;
 
 @RestController
