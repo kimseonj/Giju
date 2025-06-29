@@ -3,6 +3,7 @@ package com.bubble.giju.domain.category.service.impl;
 import com.bubble.giju.domain.category.dto.CategoryResponseDto;
 import com.bubble.giju.domain.category.entity.Category;
 import com.bubble.giju.domain.category.repository.CategoryRepository;
+import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockito.InjectMocks;
@@ -25,6 +26,7 @@ class CategoryServiceImplTest {
 
     @Mock
     private CategoryRepository categoryRepository;
+    @DisplayName("카테고리 리스트 조회 성공 테스트")
     @Test
     void getAllCategories() {
         //given

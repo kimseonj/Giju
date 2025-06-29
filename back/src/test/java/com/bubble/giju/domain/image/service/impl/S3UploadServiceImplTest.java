@@ -3,6 +3,7 @@ package com.bubble.giju.domain.image.service.impl;
 import com.amazonaws.services.s3.AmazonS3;
 import com.amazonaws.services.s3.model.ObjectMetadata;
 import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockito.*;
@@ -38,6 +39,7 @@ class S3UploadServiceImplTest {
         }
     }
 
+    @DisplayName("S3 이용한 단일 파일 업로드 성공 테스트")
     @Test
     void upload_shouldUploadFileAndReturnUrl() throws IOException {
         // given
@@ -63,6 +65,7 @@ class S3UploadServiceImplTest {
         tempFile.delete();
     }
 
+    @DisplayName("S3 이용한 여러 파일 업로드 성공 테스트")
     @Test
     void uploadAll_shouldUploadMultipleFiles() throws IOException {
         // given

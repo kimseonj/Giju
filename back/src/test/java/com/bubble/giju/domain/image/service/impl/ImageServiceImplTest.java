@@ -4,6 +4,7 @@ import com.bubble.giju.domain.image.entity.Image;
 import com.bubble.giju.domain.image.repository.ImageRepository;
 import com.bubble.giju.domain.image.service.S3UploadService;
 import com.bubble.giju.util.ImageUtils;
+import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockito.InjectMocks;
@@ -35,6 +36,7 @@ class ImageServiceImplTest {
     @Mock
     public ImageUtils imageUtils;
 
+    @DisplayName("단일 파일 업로드 성공 테스트")
     @Test
     void uploadFile_shouldReturnUrlAndSaveImage() throws IOException {
         // given
@@ -63,6 +65,8 @@ class ImageServiceImplTest {
             verify(imageRepository).save(any(Image.class));
         }
     }
+
+    @DisplayName("여러 파일 업로드 성공 테스트")
     @Test
     void uploadFiles_shouldReturnUrlListAndSaveImages() throws IOException {
         // given
