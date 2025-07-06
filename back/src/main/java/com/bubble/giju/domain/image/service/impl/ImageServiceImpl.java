@@ -21,7 +21,10 @@ public class ImageServiceImpl implements ImageService {
 
     public final S3UploadService s3UploadService;
     public final ImageRepository imageRepository;
-    
+
+    /*
+    * 파일 하나를 저장하는 메서드
+    * */
     @Override
     public String uploadFile(MultipartFile file) throws IOException {
 
@@ -32,6 +35,9 @@ public class ImageServiceImpl implements ImageService {
         return url;
     }
 
+    /*
+    * 파일 여러개를 저장하는 메서드
+    * */
     @Override
     public List<String> uploadFiles(List<MultipartFile> files) throws IOException {
         List<File> resizeFiles = ImageUtils.resizeAll(files,800,800);
