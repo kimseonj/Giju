@@ -51,6 +51,9 @@ public class DrinkServiceImpl implements DrinkService {
     private final LikeRepository likeRepository;
     private final DrinkMapper drinkMapper;
 
+    /*
+    * 상품(술) 저장하는 메서드
+    * */
     @Override
     public DrinkResponseDto saveDrink(DrinkRequestDto drinkRequestDto, List<MultipartFile> files, MultipartFile thumbnail) throws IOException {
         //카테고리 가져옴
@@ -70,18 +73,24 @@ public class DrinkServiceImpl implements DrinkService {
         return toDrinkResponseDto(drink, drinkImages);
 
     }
-
+    /*
+     * 상품(술) 삭제하는 메서드
+     * */
     //todo  @Where + @SQLDelete로 자동 처리??
     @Override
     public DrinkResponseDto deleteDrink(Long drinkId) {
         return updateDrinkDeleteStatus(drinkId, true);
     }
-
+    /*
+     * 상품(술) 데이터 되살리는 메서드
+     * */
     @Override
     public DrinkResponseDto restoreDrink(Long drinkId) {
         return updateDrinkDeleteStatus(drinkId, false);
     }
-
+    /*
+     * 상품(술) 정보 수정하는 메서드
+     * */
     @Override
     public DrinkResponseDto updateDrink(Long drinkId,DrinkUpdateRequestDto drinkUpdateRequestDto) {
         Drink drink = drinkRepository.findById(drinkId).orElseThrow(()-> new CustomException(ErrorCode.NON_EXISTENT_DRINK));
@@ -92,7 +101,9 @@ public class DrinkServiceImpl implements DrinkService {
         drink = drinkRepository.save(drink);
         return buildDrinkResponseDto(drink);
     }
-
+    /*
+     * 상품(술) 단일 조회 메서드
+     * */
     @Override
     public DrinkDetailResponseDto findById(Long drinkId, UUID userId) {
         Drink drink = drinkRepository.findById(drinkId).orElseThrow(()->new CustomException(ErrorCode.NON_EXISTENT_DRINK));
@@ -117,7 +128,14 @@ public class DrinkServiceImpl implements DrinkService {
 
         return drinkMapper.toDrinkDetailResponseDto(drinkResponseDto,reviewScore,reviewCount,isLike);
     }
-
+    /*
+     * 상품(술) 검색 메서드
+     * type : category(카테고리), region(지역) , name(이름)
+     * keyword : 검색하고자 하는 키워드
+     * - category : 1 , 2 등 category Id 를 기준으로 한 값
+     * - region : String 으로 지역 기준으로 한 값이지만 Enum으로 존재하지 않는 값이라면 오류를 냄
+     * - name : String 으로 Like 연산을 통해 조회하게됨
+     * */
     @Override
     public Page<DrinkDetailResponseDto> findDrinks(String type, String keyword, int pageNum,UUID userUuid) {
         if(type == null || type.isBlank())
@@ -165,7 +183,9 @@ public class DrinkServiceImpl implements DrinkService {
         }
         return new PageImpl<>(dtoList, pageable, drinkPage.getTotalElements());
     }
-
+    /*
+     * 상품(술) 삭제 메서드
+     * */
     private DrinkResponseDto updateDrinkDeleteStatus(Long drinkId, boolean isDeleted) {
         Drink drink = drinkRepository.findById(drinkId)
                 .orElseThrow(() -> new CustomException(ErrorCode.NON_EXISTENT_DRINK));
@@ -175,22 +195,30 @@ public class DrinkServiceImpl implements DrinkService {
 
         return buildDrinkResponseDto(drink);
     }
-
+    /*
+     * 카테고리 존재하는지 확인하는 메서드
+     * */
     private Category getCategoryOrThrow(int categoryId) {
         return categoryRepository.findById(categoryId)
                 .orElseThrow(() -> new CustomException(ErrorCode.NONEXISTENT_CATEGORY));
     }
-
+    /*
+     * 상품(술) 이름 생성 메서드
+     * */
     private String generateDrinkName(DrinkRequestDto dto) {
         return dto.getName() + " " + dto.getAlcoholContent() + "% " + dto.getVolume() + "mL";
     }
-
+    /*
+     * 이미 존재하는 상품(술)인지 확인하는 메서드
+     * */
     private void validateDuplicateDrink(String drinkName) {
         if (drinkRepository.existsByName(drinkName)) {
             throw new CustomException(ErrorCode.EXISTENT_DRINK);
         }
     }
-
+    /*
+     * 상품(술) DTO 변환 메서드
+     * */
     private DrinkResponseDto buildDrinkResponseDto(Drink drink) {
         DrinkImage thumbnailDrinkImage = drinkImageRepository.findByDrinkIdAndThumbnailIsTrue(drink.getId());
         String thumbnailUrl = (thumbnailDrinkImage != null && thumbnailDrinkImage.getImage() != null)
@@ -206,7 +234,9 @@ public class DrinkServiceImpl implements DrinkService {
         return drinkMapper.toDrinkResponseDto(drink, thumbnailUrl, imageList);
     }
 
-
+    /*
+     * 상품(술) Entity 변환 메서드
+     * */
     private Drink toDrinkEntity(DrinkRequestDto dto, Category category, String drinkName) {
         return Drink.builder()
                 .name(drinkName)
@@ -219,6 +249,9 @@ public class DrinkServiceImpl implements DrinkService {
                 .category(category)
                 .build();
     }
+    /*
+    * 이미지 생성 및 저장 메서드
+    * */
     private List<DrinkImage> createDrinkImages(Drink drink, List<MultipartFile> files, MultipartFile thumbnail) throws IOException {
         List<DrinkImage> result = new ArrayList<>();
 
@@ -238,11 +271,16 @@ public class DrinkServiceImpl implements DrinkService {
 
         return result;
     }
-
+    /*
+    * 이미 존재하는 url인지 확인하는 메서드
+    * */
     private Image getImageOrThrow(String url) {
         return Optional.ofNullable(imageRepository.findByUrl(url))
                 .orElseThrow(() -> new CustomException(ErrorCode.NON_EXISTENT_IMAGE));
     }
+    /*
+    * 상품(술) DTO 변환 메서드
+    * */
     private DrinkResponseDto toDrinkResponseDto(Drink drink, List<DrinkImage> images) {
         String thumbnailUrl = images.stream()
                 .filter(DrinkImage::isThumbnail)
