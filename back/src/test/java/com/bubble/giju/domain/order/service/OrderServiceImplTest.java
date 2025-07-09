@@ -1,4 +1,4 @@
-package com.bubble.giju.order.service;
+package com.bubble.giju.domain.order.service;
 
 import com.bubble.giju.domain.cart.entity.Cart;
 import com.bubble.giju.domain.cart.repository.CartRepository;
