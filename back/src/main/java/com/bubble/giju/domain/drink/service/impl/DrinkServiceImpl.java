@@ -58,18 +58,14 @@ public class DrinkServiceImpl implements DrinkService {
     public DrinkResponseDto saveDrink(DrinkRequestDto drinkRequestDto, List<MultipartFile> files, MultipartFile thumbnail) throws IOException {
         //카테고리 가져옴
         Category category = getCategoryOrThrow(drinkRequestDto.getCategoryId());
-        log.debug("카테고리 가져옴");
         String drinkName= generateDrinkName(drinkRequestDto);
 
         validateDuplicateDrink(drinkName);
-        log.debug("상품 이름 확인");
         //술 엔티티 만듦
         Drink drink =toDrinkEntity(drinkRequestDto,category,drinkName);
         drinkRepository.save(drink);
-        log.debug("상품저장");
         List<DrinkImage> drinkImages = createDrinkImages(drink, files, thumbnail);
         drinkImageRepository.saveAll(drinkImages);
-        log.debug("술 이미지 저장 성공");
         return toDrinkResponseDto(drink, drinkImages);
 
     }
@@ -110,6 +106,7 @@ public class DrinkServiceImpl implements DrinkService {
         //단일 조회이기 때문에 false면 가져오는것이 아닌, 에러를 던지도록 함
         if(drink.is_delete())
         {
+            log.error("삭제한 상품(술) 정보를 요청했습니다.");
             throw new CustomException(ErrorCode.DELETED_DRINK);
         }
 
