@@ -37,7 +37,7 @@ public enum ErrorCode {
      * */
     NON_EXISTENT_DRINK("해당 술은 존재 하지않음",HttpStatus.BAD_REQUEST),
     NON_EXISTENT_CART("장바구니가 존재하지 않습니다", HttpStatus.BAD_REQUEST),
-    INVALID_QUANTITY("유요하지 않은 수량입니다",HttpStatus.BAD_REQUEST),
+    INVALID_QUANTITY("유효하지 않은 수량입니다",HttpStatus.BAD_REQUEST),
 
     /**
      * ORDER

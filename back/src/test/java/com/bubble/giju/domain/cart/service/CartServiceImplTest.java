@@ -1,4 +1,4 @@
-package com.bubble.giju.cart.service;
+package com.bubble.giju.domain.cart.service;
 
 import com.bubble.giju.domain.cart.dto.request.AddToCartRequestDto;
 import com.bubble.giju.domain.cart.dto.request.UpdateQuantityRequestDto;
@@ -7,7 +7,7 @@ import com.bubble.giju.domain.cart.dto.response.CartListResponseDto;
 import com.bubble.giju.domain.cart.dto.response.CartResponseDto;
 import com.bubble.giju.domain.cart.entity.Cart;
 import com.bubble.giju.domain.cart.repository.CartRepository;
-import com.bubble.giju.domain.cart.service.serviceImpl.CartServiceImpl;
+import com.bubble.giju.domain.cart.service.impl.CartServiceImpl;
 import com.bubble.giju.domain.drink.entity.Drink;
 import com.bubble.giju.domain.drink.entity.DrinkImage;
 import com.bubble.giju.domain.drink.repository.DrinkImageRepository;
@@ -16,6 +16,7 @@ import com.bubble.giju.domain.image.entity.Image;
 import com.bubble.giju.domain.user.dto.CustomPrincipal;
 import com.bubble.giju.domain.user.entity.User;
 import com.bubble.giju.domain.user.repository.UserRepository;
+import com.bubble.giju.global.config.CustomException;
 import lombok.extern.slf4j.Slf4j;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.DisplayName;
@@ -33,6 +34,7 @@ import java.util.Optional;
 import java.util.UUID;
 
 import static org.assertj.core.api.Assertions.assertThat;
+import static org.assertj.core.api.AssertionsForClassTypes.assertThatThrownBy;
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.Mockito.*;
 
@@ -51,9 +53,8 @@ public class CartServiceImplTest {
 
     // drinkImageRepository는 일부 테스트에서만 사용되므로
     // 사용되지 않아도 예외가 발생하지 않도록 lenient 옵션을 설정함
-    @Mock(lenient = true)
+    @Mock
     private DrinkImageRepository drinkImageRepository;
-
 
     @InjectMocks
     private CartServiceImpl cartService;
@@ -102,7 +103,7 @@ public class CartServiceImplTest {
                 .isThumbnail(true)
                 .build();
 
-        when(drinkImageRepository.findFirstByDrinkAndThumbnailTrue(any()))
+        lenient().when(drinkImageRepository.findFirstByDrinkAndThumbnailTrue(any()))
                 .thenReturn(Optional.of(mockThumbnail));
 
     }
@@ -150,13 +151,6 @@ public class CartServiceImplTest {
                 .quantity(count)
                 .build();
 
-//        // Cart 클래스에서 "id"라는 필드를 꺼내고
-//        Field idField = Cart.class.getDeclaredField("id");
-//        // private 접근이지만 강제로 열어서
-//        idField.setAccessible(true);
-//
-//        // 특정 객체(savedCart)에 id = 1L 값을 집어넣음
-//        idField.set(savedCart, 1L); // 테스트용 임의 ID 부여
 
         TestUtil.setId(savedCart, 1L);
 
@@ -359,6 +353,37 @@ public class CartServiceImplTest {
     }
 
     @Test
+    @DisplayName("상품수량 변경 - 수량이 1 이하일 때 예외 발생")
+    void updateQuantityInvalidQuantity() {
+        // given
+        Long cartId = 1L;
+        int invalidQuantity = 0;
+
+        Cart cart = Cart.builder()
+                .user(testUser)
+                .drink(testDrink)
+                .quantity(5)
+                .build();
+
+        TestUtil.setId(cart, cartId);
+
+        when(cartRepository.findById(cartId)).thenReturn(Optional.of(cart));
+
+        UpdateQuantityRequestDto requestDto = UpdateQuantityRequestDto.builder()
+                .quantity(invalidQuantity)
+                .build();
+
+
+        // when & then
+        assertThatThrownBy(() ->
+                cartService.updateQuantity(cartId, requestDto, customPrincipal)
+        )
+                .isInstanceOf(CustomException.class)
+                .hasMessageContaining("유효하지 않은 수량입니다");
+    }
+
+
+    @Test
     @DisplayName("선택된 장바구니를 삭제")
     void deleteCartItem() {
         // given
@@ -389,7 +414,7 @@ public class CartServiceImplTest {
         // when
         log.info("삭제 전 장바구니 개수: {}", cartRepository.findAllByUser(testUser).size());
         cartService.deleteCartItem(cartIds, customPrincipal);
-        // when(cartRepository.findAllByUser(testUser)).thenReturn(List.of());
+
         log.info("삭제 후 장바구니 개수: {}", cartRepository.findAllByUser(testUser).size());
 
         // then
@@ -400,8 +425,6 @@ public class CartServiceImplTest {
     @DisplayName("장바구니에 들어있는 상품들 조회")
     void getCartItems() {
         // given
-        List<Long> cartIds = List.of(1L, 2L, 3L);
-
         Drink drink1 = Drink.builder()
                 .id(5L)
                 .name("서울의밤")
@@ -571,7 +594,7 @@ public class CartServiceImplTest {
         CartListResponseDto response = cartService.getBuyCartList(selectedCartIds, customPrincipal);
 
         assertThat(response.getItems()).hasSize(2);
-        assertThat(response.getDeliveryCharge()).isEqualTo(0);
+        assertThat(response.getDeliveryCharge()).isZero();
         assertThat(response.getTotalPrice()).isEqualTo(40000); // 24000 + 16000
         assertThat(response.getTotalPriceWithDelivery()).isEqualTo(40000);
 
