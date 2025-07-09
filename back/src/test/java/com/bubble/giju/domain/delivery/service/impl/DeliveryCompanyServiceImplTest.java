@@ -1,9 +1,9 @@
 package com.bubble.giju.domain.delivery.service.impl;
 
+import com.bubble.giju.domain.delivery.dto.DeliveryCompanyResponseDto;
 import com.bubble.giju.domain.delivery.dto.DeliveryCompanyUpdateRequestDto;
 import com.bubble.giju.domain.delivery.entity.DeliveryCompany;
 import com.bubble.giju.domain.delivery.repository.DeliveryCompanyRepository;
-import org.junit.jupiter.api.Disabled;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
@@ -51,9 +51,23 @@ class DeliveryCompanyServiceImplTest {
     }
 
     @DisplayName("택배회사 정보 삭제 성공 테스트")
-    @Disabled
     @Test
     void deleteById() {
+        //given
+        DeliveryCompany deliveryCompany= new DeliveryCompany("우체국");
+        ReflectionTestUtils.setField(deliveryCompany, "id", 1);
+        //when
+        when(deliveryCompanyRepository.existsById(1)).thenReturn(true);
+        when(deliveryCompanyRepository.findById(1)).thenReturn(Optional.of(deliveryCompany));
+        DeliveryCompanyResponseDto deliveryCompanyResponseDto = deliveryCompanyService.deleteById(1);
+        //then
+        verify(deliveryCompanyRepository).delete(deliveryCompany);
+        assertNotNull(deliveryCompanyResponseDto);
+        assertEquals(deliveryCompanyResponseDto.getDeliveryCompanyId(), deliveryCompany.getId());
+        assertEquals(deliveryCompanyResponseDto.getDeliveryCompanyName(), deliveryCompany.getName());
+
+
+
     }
 
     @DisplayName("택배회사 정보 수정 성공 테스트")
