@@ -1,21 +1,19 @@
-package com.bubble.giju.domain.payment.tossClient.TossClientImpl;
+package com.bubble.giju.domain.payment.tossclient.impl;
 
 import com.bubble.giju.domain.payment.dto.response.TossCancelResponseDto;
 import com.bubble.giju.domain.payment.dto.response.TossPaymentResponseDto;
-import com.bubble.giju.domain.payment.tossClient.TossClient;
+import com.bubble.giju.domain.payment.tossclient.TossClient;
 import com.bubble.giju.global.config.CustomException;
 import com.bubble.giju.global.config.ErrorCode;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.http.HttpHeaders;
-import org.springframework.http.HttpStatus;
 import org.springframework.http.MediaType;
 import org.springframework.stereotype.Component;
 import org.springframework.web.reactive.function.client.WebClient;
 
 import java.nio.charset.StandardCharsets;
-import java.util.Base64;
 import java.util.Map;
 import java.util.UUID;
 
