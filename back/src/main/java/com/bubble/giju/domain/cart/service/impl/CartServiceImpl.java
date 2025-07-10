@@ -44,6 +44,7 @@ public class CartServiceImpl implements CartService {
     @Value("${order.targetPrice}")
     private int targetPrice;
 
+
     /**
      * 사용자의 장바구니에 상품을 추가
      * 이미 장바구니에 존재하는 상품이면 수량을 증가시키고,
@@ -53,6 +54,7 @@ public class CartServiceImpl implements CartService {
      * @param principal 로그인한 사용자 정보
      * @return 추가된 항목 정보와 전체 장바구니 총합을 담은 응답 DTO
      */
+    @Transactional
     @Override
     public CartResponseDto addToCart(AddToCartRequestDto requestDto, CustomPrincipal principal) {
 
