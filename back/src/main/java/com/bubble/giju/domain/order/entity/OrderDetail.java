@@ -1,7 +1,6 @@
 package com.bubble.giju.domain.order.entity;
 
 
-import com.bubble.giju.domain.user.entity.User;
 import jakarta.persistence.*;
 import lombok.AccessLevel;
 import lombok.Builder;
