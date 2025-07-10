@@ -1,4 +1,4 @@
-package com.bubble.giju.domain.order.service.serviceImpl;
+package com.bubble.giju.domain.order.service.impl;
 
 import com.bubble.giju.domain.cart.entity.Cart;
 import com.bubble.giju.domain.cart.repository.CartRepository;
@@ -55,12 +55,24 @@ public class OrderServiceImpl implements OrderService {
     private String failUrl;
 
     @Value("${order.delivery-charge}")
-    private int deliveryCharge;
+    private int deliveryFee;
 
     @Value("${order.targetPrice}")
     private int targetPrice;
 
 
+    /**
+     * 장바구니 기반 주문 생성
+     * - 사용자가 장바구니에서 선택한 상품들을 주문으로 생성
+     * - 각 장바구니 항목의 상품 정보와 수량을 기반으로 주문 상세(OrderDetail) 생성
+     * - 주문 총액, 배달비, 주문명, 고객 Key 생성 및 주문 저장
+     * - 결제 서비스 연동용 고유 주문 ID 생성
+     * - 주문과 장바구니 매핑 정보 저장
+     *
+     * @param cartItemIds    주문에 포함할 장바구니 항목 ID 리스트
+     * @param principal      현재 로그인한 사용자 정보
+     * @return OrderResponseDto  생성된 주문에 대한 결제 요청 정보
+     */
     @Transactional
     @Override
     public OrderResponseDto createOrder(List<Long> cartItemIds, CustomPrincipal principal) {
@@ -152,9 +164,6 @@ public class OrderServiceImpl implements OrderService {
     @Override
     public DirectOrderResponseDto getDirectBuyInfo(Long drinkId, int quantity, CustomPrincipal customPrincipal) {
 
-        // 사용자 조회
-        User user = userRepository.findById(UUID.fromString(customPrincipal.getUserId()))
-                .orElseThrow(() -> new CustomException(ErrorCode.NON_EXISTENT_USER));
 
         // 전통주 상품 조회
         Drink drink = drinkRepository.findById(drinkId)
@@ -274,10 +283,18 @@ public class OrderServiceImpl implements OrderService {
 
 
     private int calculateDeliveryCharge(int totalAmount) {
-        return totalAmount >= targetPrice ? 0 : deliveryCharge;
+        return totalAmount >= targetPrice ? 0 : deliveryFee;
     }
 
-
+    /**
+     * 주문 내역 조회
+     * - 현재 로그인한 사용자의 주문 내역을 조회
+     * - 주문 상태가 결제 성공, 배송 중, 배송 완료, 부분 취소, 환불 관련 상태인 주문만 필터링
+     * - 각 주문의 상세 항목(OrderDetail)과 결제 정보(Payment) 포함
+     *
+     * @param principal 현재 로그인한 사용자 정보
+     * @return List<OrderHistoryResonseDto> 사용자의 주문 내역 리스트
+     */
     @Transactional(readOnly = true)
     @Override
     public List<OrderHistoryResonseDto> getOrderHistory(CustomPrincipal principal) {
@@ -328,8 +345,19 @@ public class OrderServiceImpl implements OrderService {
                 .toList();
     }
 
-
+    /**
+     * 주문 환불 요청 처리
+     * - 로그인한 사용자가 특정 주문의 일부 항목에 대해 환불을 요청
+     * - 주문 소유자 검증, 배송완료 상태 여부 확인
+     * - 환불 요청 대상 OrderDetail 항목 검증 (이미 취소/환불 요청되지 않았는지)
+     * - OrderDetail 상태를 환불요청 상태로 업데이트
+     *
+     * @param requestDto  환불 요청 정보 (주문 ID 및 환불할 주문 상세 ID 목록)
+     * @param principal   현재 로그인한 사용자 정보
+     * @return RefundResponseDto  환불 요청이 처리된 주문 상세 항목 정보
+     */
     @Transactional
+    @Override
     public RefundResponseDto requestRefund(RefundRequestDto requestDto, CustomPrincipal principal) {
         UUID userId = UUID.fromString(principal.getUserId());
 

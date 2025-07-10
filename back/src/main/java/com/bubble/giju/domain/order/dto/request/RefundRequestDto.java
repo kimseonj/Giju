@@ -10,11 +10,11 @@ import java.util.List;
 @NoArgsConstructor
 public class RefundRequestDto {
     private Long orderId;
-    private List<Long> OrderDetailId;
+    private List<Long> orderDetailId;
 
     @Builder
-    public RefundRequestDto(Long orderId, List<Long> OrderDetailId) {
+    public RefundRequestDto(Long orderId, List<Long> orderDetailId) {
         this.orderId = orderId;
-        this.OrderDetailId = OrderDetailId;
+        this.orderDetailId = orderDetailId;
     }
 }

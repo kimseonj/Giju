@@ -57,9 +57,8 @@ public class OrderHardDeleteScheduler {
              *  트랜잭션 블럭을 벗어나면 자동으로 commit됨
              *  만약 예외가 발생하면 자동으로 rollback됨
              */
-            txTemplate.executeWithoutResult(status -> {
-                orderRepository.hardDeleteByOrderIds(chunk);
-            });
+            txTemplate.executeWithoutResult(status -> orderRepository.hardDeleteByOrderIds(chunk));
+
             log.info("[HardDelete] {} ~ {}번 주문 삭제 처리 완료", i + 1, i + chunk.size());
         }
 
