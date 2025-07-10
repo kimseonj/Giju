@@ -22,9 +22,9 @@ public class LikeController {
     @Operation(summary = "찜하기", description = "회원이 빈하트를 누르면 찜하기 됩니다.")
     @PostMapping("/{drinkId}/wishlist")
     public ResponseEntity<ApiResponse<?>> addLike(@AuthenticationPrincipal CustomPrincipal customPrincipal, @PathVariable Long drinkId) {
-        LikeDto.Response response = likeService.toggleLike(customPrincipal.getUserId(), drinkId, true);
+        LikeDto.LikeResponse likeResponse = likeService.setLike(customPrincipal.getUserId(), drinkId, true);
 
-        ApiResponse<LikeDto.Response> apiResponse = ApiResponse.success("찜하기 성공 완료", response);
+        ApiResponse<LikeDto.LikeResponse> apiResponse = ApiResponse.success("찜하기 성공 완료", likeResponse);
 
         return ResponseEntity.ok(apiResponse);
     }
@@ -32,9 +32,9 @@ public class LikeController {
     @Operation(summary = "찜하기", description = "회원이 채워진하트를 누르면 찜하기 취소 됩니다.")
     @DeleteMapping("/{drinkId}/wishlist")
     public ResponseEntity<ApiResponse<?>> deleteLike(@AuthenticationPrincipal CustomPrincipal customPrincipal, @PathVariable Long drinkId) {
-        LikeDto.Response response = likeService.toggleLike(customPrincipal.getUserId(), drinkId, false);
+        LikeDto.LikeResponse likeResponse = likeService.setLike(customPrincipal.getUserId(), drinkId, false);
 
-        ApiResponse<LikeDto.Response> apiResponse = ApiResponse.success("찜하기 취소 완료", response);
+        ApiResponse<LikeDto.LikeResponse> apiResponse = ApiResponse.success("찜하기 취소 완료", likeResponse);
 
         return ResponseEntity.ok(apiResponse);
     }

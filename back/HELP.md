@@ -7,8 +7,8 @@ For further reference, please consider the following sections:
 * [Official Gradle documentation](https://docs.gradle.org)
 * [Spring Boot Gradle Plugin Reference Guide](https://docs.spring.io/spring-boot/3.4.5/gradle-plugin)
 * [Create an OCI image](https://docs.spring.io/spring-boot/3.4.5/gradle-plugin/packaging-oci-image.html)
-* [Spring Data JDBC](https://docs.spring.io/spring-boot/3.4.5/reference/data/sql.html#data.sql.jdbc)
-* [Spring Data JPA](https://docs.spring.io/spring-boot/3.4.5/reference/data/sql.html#data.sql.jpa-and-spring-data)
+* [Spring Data JDBC](https://docs.spring.io/spring-boot/3.4.5/reference/data/sql.html#data1.sql.jdbc)
+* [Spring Data JPA](https://docs.spring.io/spring-boot/3.4.5/reference/data/sql.html#data1.sql.jpa-and-spring-data)
 * [Spring Web](https://docs.spring.io/spring-boot/3.4.5/reference/web/servlet.html)
 
 ### Guides

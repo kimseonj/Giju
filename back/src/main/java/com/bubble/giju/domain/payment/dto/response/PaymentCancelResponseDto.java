@@ -13,7 +13,6 @@ import java.time.OffsetDateTime;
 @Builder
 public class PaymentCancelResponseDto {
     private Long orderId;
-    private String paymentKey;
     private int cancelAmount;
     private String cancelReason;
     private boolean isFullCancel;

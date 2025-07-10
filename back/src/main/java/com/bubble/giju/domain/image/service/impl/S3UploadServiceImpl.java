@@ -26,6 +26,9 @@ public class S3UploadServiceImpl implements S3UploadService {
     @Value("${aws.s3.bucket}")
     private String bucket;
 
+    /*
+    * AWS의 S3를 이용하여 파일 하나를 저장하는 메서드
+    * */
     @Override
     public String upload(File file) throws IOException {
         String fileName = file.getName(); // UUID + 확장자 조합 추천
@@ -42,6 +45,9 @@ public class S3UploadServiceImpl implements S3UploadService {
         return amazonS3.getUrl(bucket, fileName).toString();
     }
 
+    /*
+     * AWS의 S3를 이용하여 파일 여러개를 저장하는 메서드
+     * */
     @Override
     public List<String> uploadAll(List<File> files) throws IOException {
         List<String> urls = new ArrayList<>();

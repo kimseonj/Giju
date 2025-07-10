@@ -1,0 +1,170 @@
+/* eslint-disable */
+@import url("https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap");
+@import "tailwindcss";
+
+/* 사용자 정의 테마 토큰 */
+@theme {
+  /* 컬러: 메인 */
+  --color-main: #0e2e40;
+  --color-point: #ecf0b7;
+  --color-white: #ffffff;
+
+  /* 컬러: 서브 */
+  --color-sub-dark: #7d7d7d;
+  --color-sub-light: #dcdcdc;
+
+  /* 폰트 */
+  --font-inter: "Inter", sans-serif;
+  --font-pretendard: "pretendard", sans-serif;
+  --font-noh: "optique-display", sans-serif;
+  --font-jj: "jjblackrose", sans-serif;
+}
+
+/* 리셋 및 기본 레이아웃 */
+@layer base {
+  *,
+  ::before,
+  ::after {
+    @apply border-0;
+    box-sizing: border-box;
+  }
+
+  html,
+  body {
+    @apply h-full m-0 p-0 overflow-x-hidden;
+    font-family: var(--font-inter);
+  }
+
+  body {
+    @apply leading-normal;
+  }
+
+  body > div {
+    @apply min-h-screen flex flex-col;
+  }
+
+  main {
+    @apply flex-1;
+  }
+
+  a {
+    color: inherit;
+    text-decoration: none;
+  }
+
+  /* 추가: input과 textarea의 placeholder에 대한 폰트 및 색상 설정 */
+  input::placeholder,
+  textarea::placeholder {
+    /* font-family: var(--font-pretendard), "Pretendard", var(--font-noh), var(--font-jj), "Inter", sans-serif; */
+    color: var(--color-sub-dark);
+    opacity: 1;
+  }
+
+  /* Chrome, Safari, Edge, Opera */
+  input[type="number"]::-webkit-outer-spin-button,
+  input[type="number"]::-webkit-inner-spin-button {
+    -webkit-appearance: none;
+    margin: 0;
+  }
+  /* Firefox */
+  input[type="number"] {
+    -moz-appearance: textfield;
+  }
+}
+
+/* 커스텀 유틸리티: 색상 */
+@layer utilities {
+  .text-main {
+    color: var(--color-main);
+  }
+  .bg-main {
+    background-color: var(--color-main);
+  }
+
+  .text-point {
+    color: var(--color-point);
+  }
+  .bg-point {
+    background-color: var(--color-point);
+  }
+
+  .text-sub-dark {
+    color: var(--color-sub-dark);
+  }
+  .bg-sub-dark {
+    background-color: var(--color-sub-dark);
+  }
+
+  .text-sub-light {
+    color: var(--color-sub-light);
+  }
+  .bg-sub-light {
+    background-color: var(--color-sub-light);
+  }
+
+  .text-white {
+    color: var(--color-white);
+  }
+  .bg-white {
+    background-color: var(--color-white);
+  }
+}
+
+/* 커스텀 유틸리티: 폰트 */
+@layer utilities {
+  .font-jj {
+    font-family: var(--font-jj) !important;
+  }
+
+  .font-noh {
+    font-family: var(--font-noh) !important;
+  }
+
+  .font-pretendard {
+    font-family: var(--font-pretendard) !important;
+  }
+
+  .font-36pt {
+    font-size: 2.25rem;
+  }
+  .font-32pt {
+    font-size: 2rem;
+  }
+  .font-21pt {
+    font-size: 1.3125rem;
+  }
+  .font-18pt {
+    font-size: 1.125rem;
+  }
+  .font-16pt {
+    font-size: 1rem;
+  }
+
+  .weight-extrabold {
+    font-weight: 800 !important;
+  }
+
+  .weight-bold {
+    font-weight: 700 !important;
+  }
+
+  .weight-medium {
+    font-weight: 500 !important;
+  }
+
+  .weight-light {
+    font-weight: 300 !important;
+  }
+}
+
+.jj-title {
+  font-family: jjblackrose, sans-serif;
+  font-style: normal;
+  font-weight: 400;
+  font-size: 36pt;
+  color: #0e2e40;
+}
+
+input.search-placeholder-fix::placeholder {
+  font-family: optique-display, sans-serif !important;
+}

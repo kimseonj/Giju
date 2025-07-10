@@ -9,11 +9,13 @@ import com.bubble.giju.domain.user.repository.UserRepository;
 import com.bubble.giju.global.config.CustomException;
 import com.bubble.giju.global.config.ErrorCode;
 import jakarta.transaction.Transactional;
+import jakarta.validation.constraints.Null;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Service;
 
 import java.util.List;
+import java.util.Optional;
 import java.util.UUID;
 
 @Slf4j
@@ -110,5 +112,14 @@ public class AddressServiceImpl implements AddressService {
         return addressId;
     }
 
+    @Override
+    public AddressDto.Response getDefaultAddress(String userId) {
+        userRepository.findById(UUID.fromString(userId)).orElseThrow(
+                () -> new CustomException(ErrorCode.USER_UNAUTHORIZED)
+        );
 
+        return addressRepository.findByUser_UserIdAndDefaultAddressTrue(UUID.fromString(userId))
+                .map(AddressDto.Response::fromEntity)
+                .orElse(null);
+    }
 }

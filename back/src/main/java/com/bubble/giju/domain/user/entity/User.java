@@ -53,11 +53,11 @@ public class User {
         return userId.toString();
     }
 
-    public void update(UserDto.Request request) {
-        this.name = request.getName() != null ? request.getName() : this.name;
-        this.email = request.getEmail() != null ? request.getEmail() : this.email;
-        this.phoneNumber = request.getPhoneNumber() != null ? request.getPhoneNumber() : this.phoneNumber;
-        this.birthday = request.getBirthday() != null ? request.getBirthday() : this.birthday;
+    public void update(UserDto.UserRequest userRequest) {
+        this.name = userRequest.getName() != null ? userRequest.getName() : this.name;
+        this.email = userRequest.getEmail() != null ? userRequest.getEmail() : this.email;
+        this.phoneNumber = userRequest.getPhoneNumber() != null ? userRequest.getPhoneNumber() : this.phoneNumber;
+        this.birthday = userRequest.getBirthday() != null ? userRequest.getBirthday() : this.birthday;
     }
 
     @Override

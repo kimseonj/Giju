@@ -12,12 +12,10 @@ import com.bubble.giju.global.config.CustomException;
 import com.bubble.giju.global.config.ErrorCode;
 import jakarta.transaction.Transactional;
 import lombok.RequiredArgsConstructor;
-import org.springframework.data.domain.Sort;
 import org.springframework.stereotype.Service;
 
 import java.time.LocalDateTime;
 import java.util.List;
-import java.util.Optional;
 import java.util.UUID;
 
 @RequiredArgsConstructor
@@ -30,7 +28,7 @@ public class LikeServiceImpl implements LikeService {
 
     @Transactional
     @Override
-    public List<LikeDto.Response> getLike(String userId) {
+    public List<LikeDto.LikeResponse> getLike(String userId) {
         userRepository.findById(UUID.fromString(userId)).orElseThrow(
                 () -> new CustomException(ErrorCode.NON_EXISTENT_USER)
         );
@@ -38,12 +36,12 @@ public class LikeServiceImpl implements LikeService {
         // TODO: 되는지 확인해야됨
         List<Like> likeList = likeRepository.findByUser_UserIdAndDeleteFalseOrderByCreatedAtDesc(UUID.fromString(userId));
 
-        return likeList.stream().map(LikeDto.Response::fromEntity).toList();
+        return likeList.stream().map(LikeDto.LikeResponse::fromEntity).toList();
     }
 
     @Transactional
     @Override
-    public LikeDto.Response toggleLike(String userId, Long drinkId, Boolean likeRequest) {
+    public LikeDto.LikeResponse setLike(String userId, Long drinkId, Boolean likeRequest) {
         User user = userRepository.findById(UUID.fromString(userId)).orElseThrow(
                 () -> new CustomException(ErrorCode.NON_EXISTENT_USER)
         );
@@ -52,27 +50,19 @@ public class LikeServiceImpl implements LikeService {
                 () -> new CustomException(ErrorCode.NON_EXISTENT_DRINK)
         );
 
-        Optional<Like> optionalLike = likeRepository.findByUser_UserIdAndDrink_Id(UUID.fromString(userId), drinkId);
+        Like like = likeRepository.findByUser_UserIdAndDrink_Id(UUID.fromString(userId), drinkId).orElse(null);
 
-        /*
-         * xor 연산
-         * 찜 요청 ^ Optional
-         * t ^ t = t
-         * t ^ f = f
-         * f ^ t = f
-         * f ^ f = t
-         * */
-
-        if (likeRequest == optionalLike.isPresent()) {
-            throw new CustomException(ErrorCode.INVALID_LIKE);
+        if (likeRequest) {
+            like = handleLike(user, drink, like);
+        } else {
+            like = handleUnLike(like);
         }
 
-        Like like;
-        if (likeRequest) {
-            if (optionalLike.isPresent()) {
-                like = optionalLike.get();
-                like.activateLike();
-            }
+        return LikeDto.LikeResponse.fromEntity(like);
+    }
+
+    private Like handleLike(User user, Drink drink, Like like) {
+        if (like == null) {
             like = Like.builder()
                     .user(user)
                     .drink(drink)
@@ -80,15 +70,23 @@ public class LikeServiceImpl implements LikeService {
                     .createdAt(LocalDateTime.now())
                     .build();
 
-            likeRepository.save(like);
-        } else {
-            like = optionalLike.orElseThrow(
-                    () -> new CustomException(ErrorCode.INVALID_LIKE)
-            );
-
-            like.deleteLike();
+            return likeRepository.save(like);
         }
 
-        return LikeDto.Response.fromEntity(like);
+        if (like.isDelete()) {
+            like.activateLike();
+            return like;
+        }
+
+        throw new CustomException(ErrorCode.INVALID_LIKE);
+    }
+
+    private Like handleUnLike(Like like) {
+        if (like == null || like.isDelete()) {
+            throw new CustomException(ErrorCode.INVALID_LIKE);
+        }
+
+        like.deleteLike();
+        return like;
     }
 }

@@ -13,7 +13,7 @@ import java.util.List;
 
 @RestController
 @RequiredArgsConstructor
-@Tag(name = "Category", description = "카테고리 관련 API")
+@Tag(name = "카테고리 API")
 public class CategoryController {
 
     public final CategoryService categoryService;
@@ -22,7 +22,7 @@ public class CategoryController {
     @Operation(summary = "카테고리 조회", description = "모든 카테고리들을 조회합니다.")
     @GetMapping("/api/categories")
     public ResponseEntity<List<CategoryResponseDto>> getAllCategories() {
-        List<CategoryResponseDto> categoryResponseDtos = categoryService.getAllCategories();
-        return ResponseEntity.status(HttpStatus.OK).body(categoryResponseDtos);
+        List<CategoryResponseDto> categoryResponseDtoList = categoryService.getAllCategories();
+        return ResponseEntity.status(HttpStatus.OK).body(categoryResponseDtoList);
     }
 }

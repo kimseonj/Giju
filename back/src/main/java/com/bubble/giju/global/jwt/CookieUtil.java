@@ -2,6 +2,7 @@ package com.bubble.giju.global.jwt;
 
 import jakarta.servlet.http.Cookie;
 import org.springframework.beans.factory.annotation.Value;
+import org.springframework.http.ResponseCookie;
 import org.springframework.stereotype.Component;
 
 @Component
@@ -20,11 +21,33 @@ public class CookieUtil {
         return cookie;
     }
 
+    public ResponseCookie createResponseCookie(String key, String value, String domain) {
+        return ResponseCookie.from(key, value)
+                .domain(domain)
+                .path("/")
+                .sameSite("None")
+                .httpOnly(true)
+                .secure(true)
+                .maxAge(refreshTime)
+                .build();
+    }
+
     public Cookie deleteCookie(String key) {
         Cookie cookie = new Cookie(key, null);
         cookie.setMaxAge(0);
         cookie.setPath("/");
 
         return cookie;
+    }
+
+    public ResponseCookie deleteResponseCookie(String key, String domain) {
+        return ResponseCookie.from(key, "")
+                .domain(domain)
+                .path("/")
+                .sameSite("None")
+                .httpOnly(true)
+                .secure(true)
+                .maxAge(0)  // 즉시 만료
+                .build();
     }
 }
