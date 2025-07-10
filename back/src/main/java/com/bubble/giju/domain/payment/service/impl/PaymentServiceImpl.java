@@ -111,7 +111,7 @@ public class PaymentServiceImpl implements PaymentService {
 
         //추가 검증
         if (!orderId.equals(tossResponse.getOrderId()) ||
-            order.getTotalAmount() != tossResponse.getTotalAmount()) {
+            (order.getTotalAmount()+order.getDeliveryCharge()) != tossResponse.getTotalAmount())  {
 
             //결제 취소
             TossCancelResponseDto cancelResponse = tossClientImpl.cancelPayment(

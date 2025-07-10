@@ -97,7 +97,7 @@ class PaymentServiceImplTest {
         TossPaymentResponseDto tossResponse = new TossPaymentResponseDto();
         ReflectionTestUtils.setField(tossResponse, "paymentKey", paymentKey);
         ReflectionTestUtils.setField(tossResponse, "orderId", orderId);
-        ReflectionTestUtils.setField(tossResponse, "totalAmount", 10000);
+        ReflectionTestUtils.setField(tossResponse, "totalAmount", 11000);
         ReflectionTestUtils.setField(tossResponse, "method", "CARD");
         ReflectionTestUtils.setField(tossResponse, "status", "DONE");
         ReflectionTestUtils.setField(tossResponse, "approvedAt", OffsetDateTime.now());
@@ -127,6 +127,7 @@ class PaymentServiceImplTest {
         verify(cartRepository).deleteAll(anyList());
         verify(orderCartMappingRepository).deleteByOrder(mockOrder);
     }
+
 
     @Test
     @DisplayName("결제 실패 - 금액 불일치")
@@ -311,5 +312,6 @@ class PaymentServiceImplTest {
         verifyNoInteractions(paymentRepository);
         verifyNoInteractions(tossClientImpl);
     }
+
 
 }
