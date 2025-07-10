@@ -27,8 +27,11 @@ spring:
 
   sql:
     init:
-      mode: always  # 항상 SQL 실행
-      data-locations: classpath:data.sql
+      mode: never
 
 app:
-  base-url: http://43.200.226.212:8080
+  base-url: https://giju.vercel.app
+
+front:
+  uri: ${FRONT_URI:https://giju-front.vercel.app}
+#  uri: ${FRONT_URI:http://localhost:3000}

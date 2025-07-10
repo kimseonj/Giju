@@ -2,7 +2,6 @@ package com.bubble.giju.domain.cart.dto.response;
 
 import lombok.Builder;
 import lombok.Getter;
-import lombok.ToString;
 
 import java.util.List;
 

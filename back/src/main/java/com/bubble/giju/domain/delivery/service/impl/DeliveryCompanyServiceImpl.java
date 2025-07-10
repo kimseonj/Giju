@@ -20,6 +20,10 @@ import java.util.List;
 public class DeliveryCompanyServiceImpl implements DeliveryCompanyService {
 
     private final DeliveryCompanyRepository deliveryCompanyRepository;
+
+    /*
+    * 택배회사 리스트(전체)를 가져오는 메서드
+    * */
     @Override
     public List<DeliveryCompanyResponseDto> findAll() {
         List<DeliveryCompany> deliveryCompanies = deliveryCompanyRepository.findAll();
@@ -33,6 +37,9 @@ public class DeliveryCompanyServiceImpl implements DeliveryCompanyService {
         return deliveryCompanyResponseDtoList;
     }
 
+    /*
+     * 택배회사 삭제하는 메서드
+     * */
     @Override
     public DeliveryCompanyResponseDto deleteById(int deliveryCompanyId) {
         if(!deliveryCompanyRepository.existsById(deliveryCompanyId)){
@@ -44,6 +51,9 @@ public class DeliveryCompanyServiceImpl implements DeliveryCompanyService {
         return deliveryCompanyResponseDto;
     }
 
+    /*
+     * 택배회사 정보를 수정하는 메서드
+     * */
     @Override
     public DeliveryCompanyResponseDto update(int deliveryCompanyId, DeliveryCompanyUpdateRequestDto deliveryCompanyUpdateRequestDto) {
         DeliveryCompany deliveryCompany = deliveryCompanyRepository.findById(deliveryCompanyId).orElseThrow(()-> new CustomException(ErrorCode.NON_EXISTENT_DELIVERY_COMPANY));

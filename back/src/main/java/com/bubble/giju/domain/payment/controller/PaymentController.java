@@ -25,7 +25,7 @@ public class PaymentController {
 
     @Operation(summary = "결제 성공 처리", description = "Toss 결제 승인 시 호출되는 콜백 URL")
     @GetMapping("/success")
-    public ResponseEntity<String> PaymentSuccess(
+    public ResponseEntity<String> paymentSuccess(
             @RequestParam String paymentKey,
             @RequestParam String orderId,
             @RequestParam int amount) {
@@ -46,12 +46,14 @@ public class PaymentController {
 
     @PreAuthorize("hasRole('USER')")
     @Operation(summary = "결제 취소", description = "선택한 상품 또는 전체 결제 금액을 취소 처리, isFullCancel는 전체 취소인지 아닌지 판별용, 주문상태가 SUCCEEDED 만 사용")
-    @PostMapping("/{order_id}/cancel")
+    @PostMapping("/cancel")
     public ResponseEntity<ApiResponse<PaymentCancelResponseDto>> cancelPayment(@AuthenticationPrincipal CustomPrincipal customPrincipal, @RequestBody PaymentCancelRequestDto paymentCancelRequestDto) {
         PaymentCancelResponseDto cancel = paymentService.paymentCancel(customPrincipal, paymentCancelRequestDto);
         ApiResponse<PaymentCancelResponseDto> response = ApiResponse.success("결제 취소 성공",cancel);
         return ResponseEntity.ok(response);
     }
+
+
 
 
 }

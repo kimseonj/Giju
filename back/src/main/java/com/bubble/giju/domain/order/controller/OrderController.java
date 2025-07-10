@@ -1,7 +1,9 @@
 package com.bubble.giju.domain.order.controller;
 
+import com.bubble.giju.domain.order.dto.request.DirectOrderRequestDto;
 import com.bubble.giju.domain.order.dto.request.OrderRequestDto;
 import com.bubble.giju.domain.order.dto.request.RefundRequestDto;
+import com.bubble.giju.domain.order.dto.response.DirectOrderResponseDto;
 import com.bubble.giju.domain.order.dto.response.OrderHistoryResonseDto;
 import com.bubble.giju.domain.order.dto.response.OrderResponseDto;
 import com.bubble.giju.domain.order.dto.response.RefundResponseDto;
@@ -30,7 +32,7 @@ public class OrderController {
     private final OrderService orderService;
 
 
-    @Operation(summary = "주문 생성", description = "order, orderDetail 생성, toss연결을 위한 orderId, amount, orderName, customerName, customerEmail, successUrl, failUrl 반환")
+    @Operation(summary = "장바구니 담고 주문 생성", description = "order, orderDetail 생성, toss연결을 위한 orderId, amount, orderName, customerName, customerEmail, successUrl, failUrl 반환")
     @PostMapping
     public ResponseEntity<ApiResponse<OrderResponseDto>> createOrder(
             @RequestBody OrderRequestDto orderRequestDto,
@@ -40,6 +42,30 @@ public class OrderController {
         ApiResponse<OrderResponseDto> response = ApiResponse.success("주문 추가 완료", orderResponseDto);
         return ResponseEntity.ok(response);
     }
+
+    @Operation(summary = "바로구매 결제 정보 조회", description = "상품 단건으로 결제 정보를 조회")
+    @GetMapping("/confirm-direct")
+    public ResponseEntity<ApiResponse<DirectOrderResponseDto>> confirmDirect(
+            @RequestParam Long drinkId,
+            @RequestParam int quantity,
+            @AuthenticationPrincipal CustomPrincipal customPrincipal
+    ) {
+        DirectOrderResponseDto directBuyInfo = orderService.getDirectBuyInfo(drinkId, quantity, customPrincipal);
+        return ResponseEntity.ok(ApiResponse.success("바로구매 결제 정보 조회", directBuyInfo));
+    }
+
+
+    @Operation(summary = "바로구매 주문 생성", description = "상품 단건으로 order/orderDetail 생성")
+    @PostMapping("/direct")
+    public ResponseEntity<ApiResponse<OrderResponseDto>> createDirectOrder(
+            @RequestBody DirectOrderRequestDto directOrderRequestDto,
+            @AuthenticationPrincipal CustomPrincipal customPrincipal) {
+
+        OrderResponseDto response = orderService.createDirectOrder(directOrderRequestDto, customPrincipal);
+        return ResponseEntity.ok(ApiResponse.success("바로구매 주문 생성 완료", response));
+    }
+
+
 
     @Operation(summary = "주문 이력 조회", description = "사용자의 전체 주문 이력을 조회합니다")
     @GetMapping("/history")
@@ -59,16 +85,5 @@ public class OrderController {
         return ResponseEntity.ok(response);
     }
 
-
-
-    /*
-    @Operation(summary = "주문 상세 조회", description = "특정 주문의 상세 정보를 조회합니다")
-    @GetMapping("/order/{orderId}")
-    public ResponseEntity<OrderDetailResponseDto> orderDetail(
-            @PathVariable Long orderId,
-            @AuthenticationPrincipal CustomPrincipal principal) {
-        OrderDetailResponseDto detail = orderService.getOrderDetail(orderId, principal);
-        return ResponseEntity.ok(detail);
-    }*/
 
 }

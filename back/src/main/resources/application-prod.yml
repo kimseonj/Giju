@@ -19,3 +19,6 @@ spring:
 
 app:
   base-url: http://43.200.226.212:8080
+
+front:
+  uri: ${FRONT_URI:https://giju.vercel.app}

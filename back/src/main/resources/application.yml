@@ -20,8 +20,8 @@ spring:
   profiles:
     active: local
     group:
-      "prod": "prod, secret, swagger"
-      "local": "local, secret, swagger"
+      "prod": "prod, oauth, swagger"
+      "local": "local, oauth, swagger, secret"
   servlet:
     multipart:
       max-file-size: 20MB
@@ -41,12 +41,14 @@ logging:
 order:
   targetPrice: 30000
   delivery-charge: 3000
-  cleanup-expiration-minutes: 15
+  cleanup-expiration-minutes: 20
   delete-cycle: 30
 
 toss:
-  success_url: "/api/payment/success"
-  fail_url: "/api/payment/fail"
+  success_url: "/payment/success"
+  fail_url: "/payment/fail"
+  secret-key: ${TOSS_SECRET_KEY:asdfasdfasdfasdf}
+#  secret-key: ${toss-secret:asdfasdfasdfasdf}
 
 jwt:
   expirationtime:
@@ -56,3 +58,4 @@ jwt:
 
 springdoc:
   show-login-endpoint: true
+

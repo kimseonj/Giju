@@ -1,3 +1,4 @@
+<<<<<<< HEAD
 INSERT INTO users (user_id, login_id, password, name, email, phone_number, birthday, created_at, role)
 VALUES ('11111111-1111-1111-1111-111111111112', 'testuser1',
         '$2a$12$WbQzovwzqOtzDEUBjGeFcehv9OWx/ZJ0E0V3UHMJRw3m8Uiq..mDi', '김선준', 'kim@example.com', '01012348678',
@@ -281,3 +282,5 @@ VALUES
 
 -- 강원도
 (1081, 9700, 5, '홍감자주', '강원도', 1400, false, false, false);
+=======
+>>>>>>> dev

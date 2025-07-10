@@ -7,8 +7,10 @@ import com.bubble.giju.domain.user.entity.User;
 import jakarta.persistence.*;
 import lombok.AccessLevel;
 import lombok.Builder;
+import lombok.Getter;
 import lombok.NoArgsConstructor;
 
+@Getter
 @Entity
 @NoArgsConstructor(access = AccessLevel.PROTECTED)
 @Table(name = "Reviews")
@@ -42,11 +44,12 @@ public class Review {
     private int score;
 
     @Builder
-    public Review(User user, Drink drink, Order order, Image image, String content) {
+    public Review(User user, Drink drink, Order order, Image image, String content, int score) {
         this.user = user;
         this.drink = drink;
         this.order = order;
         this.image = image;
         this.content = content;
+        this.score = score;
     }
 }

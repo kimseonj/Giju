@@ -3,14 +3,13 @@ package com.bubble.giju.domain.user.dto;
 import com.bubble.giju.domain.user.entity.User;
 import org.springframework.security.core.GrantedAuthority;
 import org.springframework.security.core.userdetails.UserDetails;
+import org.springframework.security.oauth2.core.user.OAuth2User;
 
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.Map;
 
-//public class CustomPrincipal implements OAuth2User, UserDetails {
-public class CustomPrincipal implements UserDetails {
-
+public class CustomPrincipal implements OAuth2User, UserDetails {
     private final User user;
 
     public CustomPrincipal(User user) {
@@ -41,15 +40,15 @@ public class CustomPrincipal implements UserDetails {
     }
 
     // OAuth2User
-//    @Override
-//    public Map<String, Object> getAttributes() {
-//        return Map.of();
-//    }
-//
-//    @Override
-//    public String getName() {
-//        return user.getName();
-//    }
+    @Override
+    public Map<String, Object> getAttributes() {
+        return Map.of();
+    }
+
+    @Override
+    public String getName() {
+        return user.getName();
+    }
 
     // UserDetails
     @Override

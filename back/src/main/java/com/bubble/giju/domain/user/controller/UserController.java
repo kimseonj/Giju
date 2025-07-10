@@ -1,5 +1,7 @@
 package com.bubble.giju.domain.user.controller;
 
+import com.bubble.giju.domain.address.dto.AddressDto;
+import com.bubble.giju.domain.address.service.AddressService;
 import com.bubble.giju.domain.like.dto.LikeDto;
 import com.bubble.giju.domain.like.service.LikeService;
 import com.bubble.giju.domain.user.dto.CustomPrincipal;
@@ -8,6 +10,7 @@ import com.bubble.giju.domain.user.service.UserService;
 import com.bubble.giju.global.config.ApiResponse;
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.tags.Tag;
+import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.http.ResponseEntity;
@@ -25,6 +28,7 @@ public class UserController {
 
     private final UserService userService;
     private final LikeService likeService;
+    private final AddressService addressService;
 
     // read
     @Operation(summary = "회원 불러오기", description = "현재 로그인한 회원의 정보를 불러옵니다.")
@@ -39,11 +43,11 @@ public class UserController {
     // update
     @Operation(summary = "회원 업데이트", description = "현재 로그인한 회원의 정보를 업데이트합니다.")
     @PatchMapping("")
-    public ResponseEntity<ApiResponse<UserDto.Response>> updateUser(@AuthenticationPrincipal CustomPrincipal customPrincipal, @RequestBody UserDto.Request request) {
-        log.info(request.toString());
+    public ResponseEntity<ApiResponse<UserDto.Response>> updateUser(@AuthenticationPrincipal CustomPrincipal customPrincipal, @Valid @RequestBody UserDto.UserRequest userRequest) {
+        log.info(userRequest.toString());
 
         ApiResponse<UserDto.Response> apiResponse = ApiResponse.success(
-                "회원수정 성공", userService.update(customPrincipal.getUserId(), request));
+                "회원수정 성공", userService.update(customPrincipal.getUserId(), userRequest));
 
         return ResponseEntity.ok(apiResponse);
     }
@@ -60,8 +64,14 @@ public class UserController {
     }
 
     @Operation(summary = "찜목록 불러오기", description = "회원이 찜한 상품들을 불러옵니다.")
-    @GetMapping("/me/like")
-    public List<LikeDto.Response> getLike(@AuthenticationPrincipal CustomPrincipal customPrincipal) {
+    @GetMapping("/me/wishlist")
+    public List<LikeDto.LikeResponse> getLike(@AuthenticationPrincipal CustomPrincipal customPrincipal) {
         return likeService.getLike(customPrincipal.getUserId());
+    }
+
+    @Operation(summary = "기본 배송지 불러오기", description = "회원의 기본 배송지를 불러옵니다.")
+    @GetMapping("/me/addresses/default")
+    public ResponseEntity<AddressDto.Response> getDefaultAddress(@AuthenticationPrincipal CustomPrincipal customPrincipal) {
+        return ResponseEntity.ok(addressService.getDefaultAddress(customPrincipal.getUserId()));
     }
 }

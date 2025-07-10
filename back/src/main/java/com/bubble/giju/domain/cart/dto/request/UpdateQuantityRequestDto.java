@@ -1,5 +1,6 @@
 package com.bubble.giju.domain.cart.dto.request;
 
+import jakarta.validation.constraints.Min;
 import lombok.Builder;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
@@ -8,6 +9,7 @@ import lombok.NoArgsConstructor;
 @NoArgsConstructor
 public class UpdateQuantityRequestDto {
 
+    @Min(1)
     private int quantity;
 
     @Builder

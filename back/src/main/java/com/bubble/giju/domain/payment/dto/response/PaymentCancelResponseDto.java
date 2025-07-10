@@ -6,14 +6,12 @@ import lombok.Builder;
 import lombok.Getter;
 
 
-import java.time.LocalDateTime;
 import java.time.OffsetDateTime;
 
 @Getter
 @Builder
 public class PaymentCancelResponseDto {
     private Long orderId;
-    private String paymentKey;
     private int cancelAmount;
     private String cancelReason;
     private boolean isFullCancel;

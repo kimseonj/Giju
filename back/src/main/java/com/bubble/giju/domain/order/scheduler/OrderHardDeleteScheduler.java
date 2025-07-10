@@ -10,6 +10,7 @@ import org.springframework.transaction.PlatformTransactionManager;
 import org.springframework.transaction.support.TransactionTemplate;
 
 import java.time.LocalDateTime;
+import java.time.OffsetDateTime;
 import java.util.List;
 
 @Component
@@ -33,7 +34,7 @@ public class OrderHardDeleteScheduler {
 
     @Scheduled(cron = "0 0 3 * * ?")
     public void hardDeleteExpiredSoftDeletedOrders() {
-        LocalDateTime cutoff = LocalDateTime.now().minusDays(orderDeltedCycle);
+        OffsetDateTime cutoff = OffsetDateTime.now().minusDays(orderDeltedCycle);
 
         // 30일 이상 soft delete된 주문 id 조회 ->  불필요한 쿼리 실행을 막기 위함
         List<Long> orderIdsToDelete = orderRepository.findIdsBySoftDeletedBefore(cutoff);
@@ -56,9 +57,8 @@ public class OrderHardDeleteScheduler {
              *  트랜잭션 블럭을 벗어나면 자동으로 commit됨
              *  만약 예외가 발생하면 자동으로 rollback됨
              */
-            txTemplate.executeWithoutResult(status -> {
-                orderRepository.hardDeleteByOrderIds(chunk);
-            });
+            txTemplate.executeWithoutResult(status -> orderRepository.hardDeleteByOrderIds(chunk));
+
             log.info("[HardDelete] {} ~ {}번 주문 삭제 처리 완료", i + 1, i + chunk.size());
         }
 

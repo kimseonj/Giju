@@ -1,0 +1,87 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+    <meta charset="utf-8" />
+    <script src="https://js.tosspayments.com/v2/standard"></script>
+</head>
+<body>
+<!-- Discount coupon -->
+<div>
+    <input type="checkbox" id="coupon-box" />
+    <label for="coupon-box"> 5,000원 쿠폰 적용 </label>
+</div>
+<!-- Payment UI -->
+<div id="payment-method"></div>
+<!-- Agreement UI -->
+<div id="agreement"></div>
+<!-- Pay now button -->
+<button class="button" id="payment-button" style="margin-top: 30px">Pay now</button>
+
+<script>
+    main();
+
+    async function main() {
+        const button = document.getElementById("payment-button");
+        const coupon = document.getElementById("coupon-box");
+        // ------  Initialize widget ------
+
+        const clientKey = "클라이언트 key입력";
+        const tossPayments = TossPayments(clientKey);
+        // Logged in customers
+        const customerKey = "ne93IVS3YN7kaA_Ag7Dts";
+        const widgets = tossPayments.widgets({
+            customerKey,
+        });
+        // Other customers
+        // const widgets = tossPayments.widgets({ customerKey: TossPayments.ANONYMOUS });
+
+        // ------ Set payment amount ------
+        await widgets.setAmount({
+            currency: "KRW",
+            value: 3500,
+        });
+
+        await Promise.all([
+            // ------  Render payment UI ------
+            widgets.renderPaymentMethods({
+                selector: "#payment-method",
+                variantKey: "DEFAULT",
+            }),
+            // ------  Render agreement UI ------
+            widgets.renderAgreement({ selector: "#agreement", variantKey: "AGREEMENT" }),
+        ]);
+
+        // ------  Update payment amount if necessary ------
+        coupon.addEventListener("change", async function () {
+            if (coupon.checked) {
+                await widgets.setAmount({
+                    currency: "KRW",
+                    value: 50000 - 5000,
+                });
+
+                return;
+            }
+
+            await widgets.setAmount({
+                currency: "KRW",
+                value: 3500,
+            });
+        });
+
+        // ------ Open payment method ------
+        // Save the amount and orderId to prevent malicious attempts to change them
+        button.addEventListener("click", async function () {
+            await widgets.requestPayment({
+                orderId: "ORDER_5000_i1j2k3l4-m5n6-vwxy-ijkl-zabcdefghijk",
+                orderName: "토스 티셔츠 외 2건",
+                successUrl: "http://localhost:8080/api/payment/success",
+                failUrl: "http://localhost:8080/api/payment/fail",
+                customerEmail: "customer123@gmail.com",
+                customerName: "김토스",
+                customerMobilePhone: "01012341234",
+            });
+        });
+    }
+</script>
+</body>
+</html>

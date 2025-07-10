@@ -6,6 +6,7 @@ import lombok.Getter;
 
 public class AddressDto {
 
+    @AllArgsConstructor
     @Getter
     public static class Request {
         private String recipientName;

@@ -14,8 +14,9 @@ public enum ErrorCode {
     DUPLICATE_USER_LoginId("이미 사용 중인 아이디입니다", HttpStatus.CONFLICT),
     INVALID_USERID("적절하지 않은 사용자 아이디입니다.",HttpStatus.BAD_REQUEST),
 
-    // 이미 사용중인 이메일
+    // 데이저 정합
     DUPLICATE_USER_EMAIL("이미 사용 중인 이메일입니다", HttpStatus.CONFLICT),
+    AGE_RESTRICTION("19세 미만은 가입이 불가능합니다.", HttpStatus.FORBIDDEN),
 
     // 존재하지않는 유저
     NON_EXISTENT_USER("존재하지 않는 유저입니다", HttpStatus.BAD_REQUEST),
@@ -25,14 +26,18 @@ public enum ErrorCode {
 
     //권한 없음
     USER_UNAUTHORIZED("사용자가 권한이없음",HttpStatus.UNAUTHORIZED),
+    THUMBNAIL_IMAGE_NOT_FOUND("해당 상품의 썸네일 이미지를 찾을 수 없습니다",HttpStatus.NOT_FOUND),
+    OAUTH2_UNAUTHORIZED("소셜로그인 인증실패", HttpStatus.UNAUTHORIZED),
 
+    // ROLE
+    NON_EXISTENT_ROLE("존재하지 않는 Role 입니다.", HttpStatus.BAD_REQUEST),
 
     /**
      * CART
      * */
     NON_EXISTENT_DRINK("해당 술은 존재 하지않음",HttpStatus.BAD_REQUEST),
     NON_EXISTENT_CART("장바구니가 존재하지 않습니다", HttpStatus.BAD_REQUEST),
-    INVALID_QUANTITY("유요하지 않은 수량입니다",HttpStatus.BAD_REQUEST),
+    INVALID_QUANTITY("유효하지 않은 수량입니다",HttpStatus.BAD_REQUEST),
 
     /**
      * ORDER
@@ -40,6 +45,9 @@ public enum ErrorCode {
     NON_EXISTENT_ORDER("주문이 존재 하지않습니다",HttpStatus.BAD_REQUEST),
     CANNOT_REFUND_THIS_ORDER("해당 주문은 환불할 수 없는 상태입니다", HttpStatus.BAD_REQUEST),
     INVALID_REFUND_ITEM("유효하지 않은 환불 요청 항목입니다", HttpStatus.BAD_REQUEST),
+    ALREADY_DELETED_ORDER("결제 시간 초과로 소프트삭제도니 주문 입니다",HttpStatus.BAD_REQUEST),
+    JSON_PROCESSING_ERROR("Cart ID 저장 중 올 발생", HttpStatus.BAD_REQUEST),
+    ORDER_DETAIL_NOT_FOUND("주문상세를 찾을 수 없습니다", HttpStatus.BAD_REQUEST),
 
     /**
      * PAYMENT
@@ -54,17 +62,20 @@ public enum ErrorCode {
     UNAUTHORIZED_USER("해당 주문에 대한 권한이 없습니다", HttpStatus.FORBIDDEN),
     CANNOT_CANCEL_THIS_ORDER("해당 주문은 현재 취소할 수 없는 상태입니다", HttpStatus.BAD_REQUEST),
     UNAUTHORIZED_CANCEL_ACCESS("해당 주문에 대한 결제 취소 권한이 없습니다", HttpStatus.BAD_REQUEST),
+    INVALID_ORDER_ID_FORMAT("주문ID 변환 실패", HttpStatus.BAD_REQUEST),
 
     /**
      * Ranking
      */
+    REGION_CODE_NULL("지역 코드는 필수입니다", HttpStatus.BAD_REQUEST),
     INVALID_REGION_CODE("유효하지 않은 지역입니다", HttpStatus.BAD_REQUEST),
+
 
     /**
      * Auth
      */
     // Json파싱 실패
-    INVALID_LOGIN_JSON("적절하지 않은 로그인 요청입니다", HttpStatus.BAD_REQUEST),
+    INVALID_LOGIN_JSON("적절하지 않은 로그인 요청입니다. loginId와 password로 요청을 보내주세요.", HttpStatus.BAD_REQUEST),
     // 로그인 실패
     LOGIN_UNAUTHORIZED("로그인 실패", HttpStatus.UNAUTHORIZED),
 
@@ -104,6 +115,17 @@ public enum ErrorCode {
      */
     NON_EXISTENT_DELIVERY_COMPANY("존재하지 않는 택배회사입니다.",HttpStatus.BAD_REQUEST),
 
+    /**
+     * drink
+     */
+    EXISTENT_DRINK("이미 존재하는 술 입니다.",HttpStatus.CONFLICT),
+    DELETED_DRINK("삭제된 술입니다.", HttpStatus.GONE),
+
+
+    /**
+     * image
+     */
+    NON_EXISTENT_IMAGE("존재하지 않는 이미지입니다.", HttpStatus.NOT_FOUND),
     /**
      * Error
      */
