@@ -75,10 +75,7 @@ public class CartServiceImpl implements CartService {
             cart = optionalCart.get();
             cart.increaseQuantity(requestDto.getQuantity());
             cartRepository.save(cart);
-<<<<<<< HEAD:back/src/main/java/com/bubble/giju/domain/cart/service/serviceImpl/CartServiceImpl.java
 
-=======
->>>>>>> dev:back/src/main/java/com/bubble/giju/domain/cart/service/impl/CartServiceImpl.java
         } else {
             cart = Cart.builder()
                     .user(user)
@@ -86,10 +83,6 @@ public class CartServiceImpl implements CartService {
                     .quantity(requestDto.getQuantity())
                     .build();
             cartRepository.save(cart);
-<<<<<<< HEAD:back/src/main/java/com/bubble/giju/domain/cart/service/serviceImpl/CartServiceImpl.java
-
-=======
->>>>>>> dev:back/src/main/java/com/bubble/giju/domain/cart/service/impl/CartServiceImpl.java
         }
 
         // 카트 총 물건값 계산

@@ -11,15 +11,15 @@ import java.util.stream.Collectors;
 
 @Getter
 public enum Region {
-    경기도("GYEONGGI", "경기도"),
-    강원도("GANGWON", "강원도"),
-    충청북도("CHUNGBUK", "충청북도"),
-    충청남도("CHUNGNAM", "충청남도"),
-    전라북도("JEONBUK", "전라북도"),
-    전라남도("JEONNAM", "전라남도"),
-    경상북도("GYEONGBUK", "경상북도"),
-    경상남도("GYEONGNAM", "경상남도"),
-    제주도("JEJU", "제주도");
+    GYEONGGI("GYEONGGI", "경기도"),
+    GANGWON("GANGWON", "강원도"),
+    CHUNGBUK("CHUNGBUK", "충청북도"),
+    CHUNGNAM("CHUNGNAM", "충청남도"),
+    JEONBUK("JEONBUK", "전라북도"),
+    JEONNAM("JEONNAM", "전라남도"),
+    GYEONGBUK("GYEONGBUK", "경상북도"),
+    GYEONGNAM("GYEONGNAM", "경상남도"),
+    JEJU("JEJU", "제주도");
 
     private final String code;
     private final String koreanName;
