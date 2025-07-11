@@ -25,7 +25,7 @@ public class PaymentController {
 
     @Operation(summary = "결제 성공 처리", description = "Toss 결제 승인 시 호출되는 콜백 URL")
     @GetMapping("/success")
-    public ResponseEntity<String> PaymentSuccess(
+    public ResponseEntity<String> paymentSuccess(
             @RequestParam String paymentKey,
             @RequestParam String orderId,
             @RequestParam int amount) {

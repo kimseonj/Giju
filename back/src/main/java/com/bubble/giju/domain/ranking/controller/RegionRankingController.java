@@ -3,6 +3,7 @@ package com.bubble.giju.domain.ranking.controller;
 import com.bubble.giju.domain.ranking.dto.response.RegionRankingResponseDto;
 import com.bubble.giju.domain.ranking.enums.Region;
 import com.bubble.giju.domain.ranking.service.RegionRankingService;
+import com.bubble.giju.domain.ranking.service.impl.RegionRankingServiceImpl;
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.tags.Tag;
 import lombok.RequiredArgsConstructor;
