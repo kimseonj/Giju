@@ -10,6 +10,7 @@ import com.bubble.giju.global.config.ApiResponse;
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.Parameter;
 import io.swagger.v3.oas.annotations.tags.Tag;
+import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
 import org.springframework.data.domain.Page;
 import org.springframework.http.HttpStatus;
@@ -31,12 +32,11 @@ public class DrinkController {
 
     private final DrinkService drinkService;
 
-    //todo admin 관련 api가 존재하지않아 임시로 만듦 Valid 어노테이션 통해서 검증도 해야함.
     @PostMapping(value = "/api/admin/drink", consumes = MediaType.MULTIPART_FORM_DATA_VALUE)
     @PreAuthorize("hasRole('ADMIN')")
     @Operation(summary = "술(상품)등록",description = "술(상품) 을 등록하는 API")
     public ResponseEntity<ApiResponse<DrinkResponseDto>> addDrink(
-            @RequestPart("drink") DrinkRequestDto drinkDto,   // JSON 데이터를 part로 받음
+            @Valid @RequestPart("drink") DrinkRequestDto drinkDto,   // JSON 데이터를 part로 받음
             @RequestPart("files") List<MultipartFile> files,  // 여러 파일
             @RequestPart("thumbnail") MultipartFile thumbnail // 단일 파일
             ) throws IOException {
