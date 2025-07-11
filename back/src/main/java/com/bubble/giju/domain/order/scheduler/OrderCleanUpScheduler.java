@@ -12,7 +12,6 @@ import org.springframework.scheduling.annotation.Scheduled;
 import org.springframework.stereotype.Component;
 import org.springframework.transaction.annotation.Transactional;
 
-import java.time.LocalDateTime;
 import java.time.OffsetDateTime;
 
 @Component
@@ -28,7 +27,7 @@ public class OrderCleanUpScheduler {
 
     @Scheduled(fixedRate = 5 * 60 * 1000) // 5분 간격
     @Transactional
-    public void CleanUpExpiredPendingOrder(){
+    public void cleanUpExpiredPendingOrder(){
         OffsetDateTime cutoff =  OffsetDateTime.now().minusMinutes(expirationMinutes);
         log.info("[OrderCleanUpScheduler] {}분 경과 주문 소프트 삭제 시작 - 기준 시각: {}", expirationMinutes, cutoff);
 

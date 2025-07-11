@@ -24,7 +24,7 @@ public class AddressController {
 
     @Operation(summary = "주소 저장", description = "회원의 주소를 저장합니다.")
     @PostMapping("")
-    public ResponseEntity<ApiResponse<?>> getAddress(@AuthenticationPrincipal CustomPrincipal customPrincipal, @RequestBody AddressDto.Request request) {
+    public ResponseEntity<ApiResponse<?>> createAddress(@AuthenticationPrincipal CustomPrincipal customPrincipal, @RequestBody AddressDto.Request request) {
         AddressDto.Response address = addressService.createAddress(customPrincipal.getUserId(), request);
 
         ApiResponse<AddressDto.Response> apiResponse = ApiResponse.success("주소 저장 완료", address);
