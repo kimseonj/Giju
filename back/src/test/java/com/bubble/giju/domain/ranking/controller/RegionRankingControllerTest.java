@@ -45,6 +45,7 @@ class RegionRankingControllerTest {
                 UserRegionRankingDto.builder().name("testuser2").totalQuantity(15).build()
         );
 
+
         RegionRankingResponseDto mockResponse = RegionRankingResponseDto.builder()
                 .region("경기도")
                 .ranking(mockRanking)

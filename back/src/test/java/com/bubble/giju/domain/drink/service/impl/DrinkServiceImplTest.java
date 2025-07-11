@@ -158,7 +158,7 @@ class DrinkServiceImplTest {
                 .stock(100)
                 .alcoholContent(13.5)
                 .volume(350)
-                .region(Region.CHUNGBUK)
+                .region(Region.충청북도)
                 .is_delete(false)
                 .category(category)
                 .build();
@@ -221,7 +221,7 @@ class DrinkServiceImplTest {
                 .stock(100)
                 .alcoholContent(13.5)
                 .volume(350)
-                .region(Region.CHUNGBUK)
+                .region(Region.충청북도)
                 .is_delete(false)
                 .category(category)
                 .build();
@@ -431,7 +431,7 @@ class DrinkServiceImplTest {
         Drink drink = Drink.builder()
                 .id(1L)
                 .name("막걸리")
-                .region(Region.CHUNGBUK)
+                .region(Region.충청북도)
                 .category(category)
                 .is_delete(false)
                 .build();
