@@ -109,9 +109,16 @@ public class PaymentServiceImpl implements PaymentService {
         paymentRepository.save(payment);
 
 
+        log.info("[결제 검증] orderId={}, tossOrderId={}", orderId, tossResponse.getOrderId());
+        log.info("[결제 검증] 금액 요청합계={}, 응답금액={}",
+                (order.getTotalAmount() + order.getDeliveryCharge()), tossResponse.getTotalAmount());
+
+
         //추가 검증
         if (!orderId.equals(tossResponse.getOrderId()) ||
             (order.getTotalAmount()+order.getDeliveryCharge()) != tossResponse.getTotalAmount())  {
+
+            log.warn("[결제 검증 실패] TossPayments 응답과 서버 계산값 불일치 - 결제 취소 진행");
 
             //결제 취소
             TossCancelResponseDto cancelResponse = tossClientImpl.cancelPayment(
@@ -139,6 +146,7 @@ public class PaymentServiceImpl implements PaymentService {
 
             throw new CustomException(ErrorCode.INVALID_PAYMENT_VERIFICATION);
         }
+        log.info("[결제 검증 성공] TossPayments 응답이 서버 계산값과 일치");
 
 
         // Order주문 상태 변경
