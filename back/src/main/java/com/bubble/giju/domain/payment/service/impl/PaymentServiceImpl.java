@@ -1,4 +1,4 @@
-package com.bubble.giju.domain.payment.service.paymentImpl;
+package com.bubble.giju.domain.payment.service.impl;
 
 import com.bubble.giju.domain.cart.entity.Cart;
 import com.bubble.giju.domain.cart.repository.CartRepository;
@@ -10,7 +10,6 @@ import com.bubble.giju.domain.order.entity.OrderStatus;
 
 import com.bubble.giju.domain.order.repository.OrderCartMappingRepository;
 import com.bubble.giju.domain.order.repository.OrderRepository;
-import com.bubble.giju.domain.payment.dto.request.CanceledItemDto;
 import com.bubble.giju.domain.payment.dto.request.PaymentCancelRequestDto;
 import com.bubble.giju.domain.payment.dto.response.*;
 import com.bubble.giju.domain.payment.entity.Payment;
@@ -262,8 +261,8 @@ public class PaymentServiceImpl implements PaymentService {
                 .map(OrderCartMapping::getCart)
                 .toList();
 
-        cartRepository.deleteAll(cartsToDelete);
         orderCartMappingRepository.deleteByOrder(order);
+        cartRepository.deleteAll(cartsToDelete);
     }
 
 
