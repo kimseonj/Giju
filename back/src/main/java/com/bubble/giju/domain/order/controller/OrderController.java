@@ -1,6 +1,5 @@
 package com.bubble.giju.domain.order.controller;
 
-import com.bubble.giju.domain.cart.dto.response.CartListResponseDto;
 import com.bubble.giju.domain.order.dto.request.DirectOrderRequestDto;
 import com.bubble.giju.domain.order.dto.request.OrderRequestDto;
 import com.bubble.giju.domain.order.dto.request.RefundRequestDto;

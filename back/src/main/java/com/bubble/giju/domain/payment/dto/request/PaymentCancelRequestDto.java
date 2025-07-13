@@ -14,9 +14,9 @@ public class PaymentCancelRequestDto {
     private String cancelReason;
 
     @Builder
-    public PaymentCancelRequestDto (Long orderId, List<CanceledItemDto> canceledItmes, String cancelReason) {
+    public PaymentCancelRequestDto (Long orderId, List<CanceledItemDto> canceledItems, String cancelReason) {
         this.orderId = orderId;
-        this.canceledItems = canceledItmes;
+        this.canceledItems = canceledItems;
         this.cancelReason = cancelReason;
     }
 }

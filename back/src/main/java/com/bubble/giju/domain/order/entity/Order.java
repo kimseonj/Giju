@@ -3,19 +3,11 @@ package com.bubble.giju.domain.order.entity;
 import com.bubble.giju.domain.payment.entity.Payment;
 import com.bubble.giju.domain.user.entity.User;
 
-import com.bubble.giju.global.config.CustomException;
-import com.bubble.giju.global.config.ErrorCode;
-import com.fasterxml.jackson.core.JsonProcessingException;
-import com.fasterxml.jackson.databind.ObjectMapper;
 import jakarta.persistence.*;
 import lombok.AccessLevel;
 import lombok.Builder;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
-import org.springframework.data.annotation.CreatedDate;
-
-
-import java.time.LocalDateTime;
 import java.time.OffsetDateTime;
 import java.time.ZoneId;
 import java.util.ArrayList;

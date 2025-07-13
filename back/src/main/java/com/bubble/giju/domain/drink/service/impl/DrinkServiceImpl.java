@@ -58,18 +58,14 @@ public class DrinkServiceImpl implements DrinkService {
     public DrinkResponseDto saveDrink(DrinkRequestDto drinkRequestDto, List<MultipartFile> files, MultipartFile thumbnail) throws IOException {
         //카테고리 가져옴
         Category category = getCategoryOrThrow(drinkRequestDto.getCategoryId());
-        log.debug("카테고리 가져옴");
         String drinkName= generateDrinkName(drinkRequestDto);
 
         validateDuplicateDrink(drinkName);
-        log.debug("상품 이름 확인");
         //술 엔티티 만듦
         Drink drink =toDrinkEntity(drinkRequestDto,category,drinkName);
         drinkRepository.save(drink);
-        log.debug("상품저장");
         List<DrinkImage> drinkImages = createDrinkImages(drink, files, thumbnail);
         drinkImageRepository.saveAll(drinkImages);
-        log.debug("술 이미지 저장 성공");
         return toDrinkResponseDto(drink, drinkImages);
 
     }
@@ -110,6 +106,7 @@ public class DrinkServiceImpl implements DrinkService {
         //단일 조회이기 때문에 false면 가져오는것이 아닌, 에러를 던지도록 함
         if(drink.is_delete())
         {
+            log.warn("삭제한 상품(술) 정보를 요청했습니다.");
             throw new CustomException(ErrorCode.DELETED_DRINK);
         }
 
@@ -161,10 +158,11 @@ public class DrinkServiceImpl implements DrinkService {
         };
 
         List<DrinkDetailResponseDto> dtoList = new ArrayList<>();
-        //todo N+1 해결 안했으니까 시간재보고 해결 꼭 할 것 데이터 몇개 없을때 N+1 해결안한 시간 -  94ms
+        //todo N+1 해결 안했으니까 시간재보고 해결 꼭 할 것 데이터 몇개 없을때 N+1 해결안한 시간 -  94ms , 160ms
         //술 페이지 1번 + 술마다 (리뷰 3번 + 이미지 2번) -> 5 * 페이지 크기 6 => 31번 조회
         //술 entity graph 사용시 술, 이미지 리뷰 다 가져와서 로직에서 계산하기? -> 1번이면 됨 but..
         //실제 리뷰 데이터를 가져와버리면 서버의 메모리 문제가 생김. query DSL이 가장 적합
+        long startTime = System.currentTimeMillis();
         for (Drink drink : drinkPage.getContent()) {
             long reviewSum = reviewRepository.findSumScoreByDrinkId(drink.getId());
             long reviewCount = reviewRepository.countByDrinkId(drink.getId());
@@ -181,6 +179,8 @@ public class DrinkServiceImpl implements DrinkService {
 
             dtoList.add(drinkDetailResponseDto);
         }
+        long endTime= System.currentTimeMillis();
+        System.out.println("조회에 걸린 시간: " + (endTime - startTime) + "ms");
         return new PageImpl<>(dtoList, pageable, drinkPage.getTotalElements());
     }
     /*

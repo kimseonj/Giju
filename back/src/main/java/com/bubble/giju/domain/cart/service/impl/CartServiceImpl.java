@@ -47,7 +47,7 @@ public class CartServiceImpl implements CartService {
 
     /**
      * 사용자의 장바구니에 상품을 추가
-     * 이미 장바구니에 존재하는 상품이면 수량을 증가시키고,
+     * 이미 장바구니에 존재하는 상품이면 수량을 증가
      * 그렇지 않으면 새로 장바구니 항목을 생성
      *
      * @param requestDto 장바구니에 추가할 상품 ID 및 수량 정보
@@ -75,6 +75,7 @@ public class CartServiceImpl implements CartService {
             cart = optionalCart.get();
             cart.increaseQuantity(requestDto.getQuantity());
             cartRepository.save(cart);
+
         } else {
             cart = Cart.builder()
                     .user(user)
@@ -210,7 +211,7 @@ public class CartServiceImpl implements CartService {
 
     /**
      * 결제를 위해 선택된 장바구니 항목 목록을 조회00
-     * 본인 소유의 장바구니 항목만 필터링하며,
+     * 본인 소유의 장바구니 항목만 필터링
      * 배송비 정책에 따라 배송비를 계산하여 함께 반환
      *
      * @param cartIds 결제할 장바구니 항목 ID 목록

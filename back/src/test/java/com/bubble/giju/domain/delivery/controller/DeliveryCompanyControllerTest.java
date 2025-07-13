@@ -3,7 +3,6 @@ package com.bubble.giju.domain.delivery.controller;
 import com.bubble.giju.domain.delivery.dto.DeliveryCompanyResponseDto;
 import com.bubble.giju.domain.delivery.dto.DeliveryCompanyUpdateRequestDto;
 import com.bubble.giju.domain.delivery.service.DeliveryCompanyService;
-import com.bubble.giju.global.config.ApiResponse;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;

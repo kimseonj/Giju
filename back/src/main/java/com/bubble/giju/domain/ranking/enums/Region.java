@@ -21,6 +21,7 @@ public enum Region {
     경상남도("GYEONGNAM", "경상남도"),
     제주도("JEJU", "제주도");
 
+
     private final String code;
     private final String koreanName;
 
