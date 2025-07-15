@@ -10,8 +10,7 @@ import org.springframework.stereotype.Repository;
 import java.util.Optional;
 
 @Repository
-public interface DrinkRepository extends JpaRepository<Drink, Long> {
-    Page<Drink> findByCategoryIdAndDeletedFalse(int category_id, Pageable pageable);
+public interface DrinkRepository extends JpaRepository<Drink, Long> ,DrinkRepositoryCustom{
     Page<Drink> findByRegionAndDeletedFalse(Region region, Pageable pageable);
     Page<Drink> findByNameContainsAndDeletedFalse(String name, Pageable pageable);
     Page<Drink> findByDeletedFalseOrderByNameAsc(Pageable pageable);
