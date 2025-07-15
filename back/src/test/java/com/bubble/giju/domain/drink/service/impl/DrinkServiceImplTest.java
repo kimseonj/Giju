@@ -9,6 +9,7 @@ import com.bubble.giju.domain.drink.dto.DrinkResponseDto;
 import com.bubble.giju.domain.drink.dto.DrinkUpdateRequestDto;
 import com.bubble.giju.domain.drink.entity.Drink;
 import com.bubble.giju.domain.drink.entity.DrinkImage;
+import com.bubble.giju.domain.drink.entity.QDrink;
 import com.bubble.giju.domain.drink.mapper.DrinkMapper;
 import com.bubble.giju.domain.drink.repository.DrinkImageRepository;
 import com.bubble.giju.domain.drink.repository.DrinkRepository;
@@ -23,6 +24,9 @@ import com.bubble.giju.domain.review.repository.ReviewRepository;
 import com.bubble.giju.domain.user.entity.User;
 import com.bubble.giju.global.config.CustomException;
 import com.bubble.giju.global.config.ErrorCode;
+import com.querydsl.core.Tuple;
+import com.querydsl.core.types.dsl.Expressions;
+import lombok.extern.slf4j.Slf4j;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
@@ -50,6 +54,7 @@ import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.ArgumentMatchers.anyList;
 import static org.mockito.Mockito.*;
 
+@Slf4j
 @ExtendWith(MockitoExtension.class)
 class DrinkServiceImplTest {
 
@@ -425,61 +430,32 @@ class DrinkServiceImplTest {
         UUID userUuid = UUID.randomUUID();
         int pageNum = 0;
 
-        Category category = new Category("탁주");
-        ReflectionTestUtils.setField(category, "id", 1);
+        // Mock Tuple
+        Tuple mockTuple = mock(Tuple.class);
 
-        Drink drink = Drink.builder()
-                .id(1L)
-                .name("막걸리")
-                .region(Region.충청북도)
-                .category(category)
-                .is_delete(false)
-                .build();
+        when(mockTuple.get(QDrink.drink.id)).thenReturn(1L);
+        when(mockTuple.get(QDrink.drink.name)).thenReturn("막걸리");
+        when(mockTuple.get(QDrink.drink.price)).thenReturn(10000);
+        when(mockTuple.get(QDrink.drink.stock)).thenReturn(50);
+        when(mockTuple.get(QDrink.drink.alcoholContent)).thenReturn(6.0);
+        when(mockTuple.get(QDrink.drink.volume)).thenReturn(750);
+        when(mockTuple.get(QDrink.drink.deleted)).thenReturn(false);
+        when(mockTuple.get(QDrink.drink.region)).thenReturn(Region.충청북도);
 
-        Page<Drink> drinkPage = new PageImpl<>(List.of(drink));
+        when(mockTuple.get(Expressions.numberPath(Integer.class, "categoryId"))).thenReturn(1);
+        when(mockTuple.get(Expressions.stringPath("categoryName"))).thenReturn("탁주");
 
-        // Mocking repository
-        when(drinkRepository.findByCategoryIdAndDeletedFalse(1, PageRequest.of(pageNum, 6)))
-                .thenReturn(drinkPage);
-        when(reviewRepository.findSumScoreByDrinkId(1L)).thenReturn(5L);
-        when(reviewRepository.countByDrinkId(1L)).thenReturn(2L);
-        when(likeRepository.findByUser_UserIdAndDrink_Id(userUuid, 1L)).thenReturn(Optional.empty());
-        when(drinkImageRepository.findByDrinkIdAndThumbnailIsTrue(1L)).thenReturn(null);
-        when(drinkImageRepository.findByDrinkIdAndThumbnailIsFalse(1L)).thenReturn(Collections.emptyList());
+        when(mockTuple.get(Expressions.stringPath("thumbnailUrl"))).thenReturn(null);
+        when(mockTuple.get(Expressions.stringPath("imageUrls"))).thenReturn(""); // 빈 이미지 리스트
 
-        // Mocking mapper
-        when(drinkMapper.toDrinkResponseDto(any(Drink.class), any(), any()))
-                .thenReturn(DrinkResponseDto.builder()
-                        .id(1L)
-                        .name("막걸리")
-                        .price(10000)
-                        .stock(50)
-                        .alcoholContent(6.0)
-                        .volume(750)
-                        .is_delete(false)
-                        .region("충청북도")
-                        .category(new CategoryResponseDto(1, "탁주"))
-                        .thumbnailUrl(null)
-                        .drinkImageUrlList(Collections.emptyList())
-                        .build());
+        when(mockTuple.get(Expressions.numberPath(Double.class, "avgScore"))).thenReturn(2.5);
+        when(mockTuple.get(Expressions.numberPath(Long.class, "reviewCount"))).thenReturn(2L);
+        when(mockTuple.get(Expressions.booleanPath("isLiked"))).thenReturn(false);
 
-        when(drinkMapper.toDrinkDetailResponseDto(any(DrinkResponseDto.class), eq(2.5), eq(2L), eq(false)))
-                .thenReturn(DrinkDetailResponseDto.builder()
-                        .id(1L)
-                        .name("막걸리")
-                        .price(10000)
-                        .stock(50)
-                        .alcoholContent(6.0)
-                        .volume(750)
-                        .is_delete(false)
-                        .region("충청북도")
-                        .category(new CategoryResponseDto(1, "탁주"))
-                        .thumbnailUrl(null)
-                        .drinkImageUrlList(Collections.emptyList())
-                        .reviewScore(2.5)
-                        .reviewCount(2L)
-                        .is_like(false)
-                        .build());
+        Page<Tuple> mockPage = new PageImpl<>(List.of(mockTuple), PageRequest.of(pageNum, 6), 1);
+
+        when(drinkRepository.findDrinksCustom(type, keyword, userUuid, PageRequest.of(pageNum, 6)))
+                .thenReturn(mockPage);
 
         // when
         Page<DrinkDetailResponseDto> result = drinkService.findDrinks(type, keyword, pageNum, userUuid);
@@ -492,7 +468,12 @@ class DrinkServiceImplTest {
         assertEquals(2L, dto.getReviewCount());
         assertEquals(2.5, dto.getReviewScore());
         assertFalse(dto.is_like());
+        assertEquals("충청북도", dto.getRegion());
+        assertEquals(1, dto.getCategory().getId());
+        assertEquals("탁주", dto.getCategory().getName());
+        assertTrue(dto.getDrinkImageUrlList().isEmpty());
     }
+
 
 
 }

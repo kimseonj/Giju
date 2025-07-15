@@ -9,6 +9,7 @@ import com.bubble.giju.domain.drink.dto.DrinkResponseDto;
 import com.bubble.giju.domain.drink.dto.DrinkUpdateRequestDto;
 import com.bubble.giju.domain.drink.entity.Drink;
 import com.bubble.giju.domain.drink.entity.DrinkImage;
+import com.bubble.giju.domain.drink.entity.QDrink;
 import com.bubble.giju.domain.drink.mapper.DrinkMapper;
 import com.bubble.giju.domain.drink.repository.DrinkImageRepository;
 import com.bubble.giju.domain.drink.repository.DrinkRepository;
@@ -19,10 +20,11 @@ import com.bubble.giju.domain.image.service.ImageService;
 import com.bubble.giju.domain.like.entity.Like;
 import com.bubble.giju.domain.like.repository.LikeRepository;
 import com.bubble.giju.domain.ranking.enums.Region;
-import com.bubble.giju.domain.review.entity.Review;
 import com.bubble.giju.domain.review.repository.ReviewRepository;
 import com.bubble.giju.global.config.CustomException;
 import com.bubble.giju.global.config.ErrorCode;
+import com.querydsl.core.Tuple;
+import com.querydsl.core.types.dsl.Expressions;
 import jakarta.transaction.Transactional;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
@@ -32,8 +34,6 @@ import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
 import org.springframework.web.multipart.MultipartFile;
-
-import javax.swing.text.html.Option;
 import java.io.IOException;
 import java.util.*;
 import java.util.stream.Collectors;
@@ -132,9 +132,11 @@ public class DrinkServiceImpl implements DrinkService {
      * - category : 1 , 2 등 category Id 를 기준으로 한 값
      * - region : String 으로 지역 기준으로 한 값이지만 Enum으로 존재하지 않는 값이라면 오류를 냄
      * - name : String 으로 Like 연산을 통해 조회하게됨
+     * JPA를 이용하여 조회 5N +1 문제 : 94ms , 160ms ->queryDSL -> 3ms,2ms
+     * 양뱡향 통해 리뷰 가져오면 서버 메모리 부하
      * */
     @Override
-    public Page<DrinkDetailResponseDto> findDrinks(String type, String keyword, int pageNum,UUID userUuid) {
+    public Page<DrinkDetailResponseDto> findDrinks(String type, String keyword, int pageNum,UUID userId) {
         if(type == null || type.isBlank())
         {
             throw new CustomException(ErrorCode.MISSING_REQUIRED_VALUE);
@@ -144,44 +146,55 @@ public class DrinkServiceImpl implements DrinkService {
         int pageSize = 6;
         Pageable pageable = PageRequest.of(pageNum, pageSize);
 
-        Page<Drink> drinkPage = switch (type) {
-            case "category" -> drinkRepository.findByCategoryIdAndDeletedFalse(Integer.parseInt(keyword), pageable);
-            case "region" -> drinkRepository.findByRegionAndDeletedFalse(Region.fromName(keyword), pageable);
-            case "name" -> {
-                if (keyword.isBlank()) {
-                    yield drinkRepository.findByDeletedFalseOrderByNameAsc(pageable);
-                } else {
-                    yield drinkRepository.findByNameContainsAndDeletedFalse(keyword, pageable);
-                }
+        Page<Tuple> drinkPage = drinkRepository.findDrinksCustom(type,keyword,userId,pageable);
+
+        List<DrinkDetailResponseDto> drinkDetailResponseDtoList = new ArrayList<>();
+
+        for(Tuple tuple : drinkPage)
+        {
+            String imageUrls = tuple.get(Expressions.stringPath("imageUrls"));
+            assert imageUrls != null;
+            List<String> imageUrlList ;
+            if (imageUrls.isEmpty()) {
+                imageUrlList= Collections.emptyList();
             }
-            default -> throw new CustomException(ErrorCode.UNSUPPORTED_SEARCH_TYPE);
-        };
+           else imageUrlList = Arrays.stream(imageUrls.split(",")).toList();
 
-        List<DrinkDetailResponseDto> dtoList = new ArrayList<>();
-        //todo N+1 해결 안했으니까 시간재보고 해결 꼭 할 것 데이터 몇개 없을때 N+1 해결안한 시간 -  94ms , 160ms
-        //술 페이지 1번 + 술마다 (리뷰 3번 + 이미지 2번) -> 5 * 페이지 크기 6 => 31번 조회
-        //술 entity graph 사용시 술, 이미지 리뷰 다 가져와서 로직에서 계산하기? -> 1번이면 됨 but..
-        //실제 리뷰 데이터를 가져와버리면 서버의 메모리 문제가 생김. query DSL이 가장 적합
-        long startTime = System.currentTimeMillis();
-        for (Drink drink : drinkPage.getContent()) {
-            long reviewSum = reviewRepository.findSumScoreByDrinkId(drink.getId());
-            long reviewCount = reviewRepository.countByDrinkId(drink.getId());
-            reviewSum = reviewSum < 0 ? 0 : reviewSum;
-            reviewCount = reviewCount < 1 ? 1 : reviewCount;
+            boolean isLike;
 
-            double reviewScore= (double) reviewSum /reviewCount;
+            if(userId!=null)
+            {
+                isLike = Optional.ofNullable(tuple.get(Expressions.booleanPath("isLiked"))).orElse(false);
+            }
+            else
+            {
+                isLike=false;
+            }
 
-            Optional<Like> optionalLike = likeRepository.findByUser_UserIdAndDrink_Id(userUuid, drink.getId());
-            boolean isLike = optionalLike.filter(like -> !like.isDelete()).isPresent();
+            DrinkDetailResponseDto dto = DrinkDetailResponseDto.builder()
+                    .id(tuple.get(QDrink.drink.id))
+                    .name(tuple.get(QDrink.drink.name))
+                    .price(Optional.ofNullable(tuple.get(QDrink.drink.price)).orElse(0))
+                    .stock(Optional.ofNullable(tuple.get(QDrink.drink.stock)).orElse(0))
+                    .alcoholContent(Optional.ofNullable(tuple.get(QDrink.drink.alcoholContent)).orElse(0.0))
+                    .volume(Optional.ofNullable(tuple.get(QDrink.drink.volume)).orElse(0))
+                    .is_delete(Optional.ofNullable(tuple.get(QDrink.drink.deleted)).orElse(false))
+                    .region(Optional.ofNullable(tuple.get(QDrink.drink.region)).map(Enum::toString).orElse("UNKNOWN"))
+                    .category(new CategoryResponseDto(
+                            Optional.ofNullable(tuple.get(Expressions.numberPath(Integer.class, "categoryId"))).orElse(0),
+                            Optional.ofNullable(tuple.get(Expressions.stringPath("categoryName"))).orElse("알 수 없음")
+                    ))
+                    .thumbnailUrl(tuple.get(Expressions.stringPath("thumbnailUrl")))
+                    .drinkImageUrlList(imageUrlList)
+                    .reviewScore(Optional.ofNullable(tuple.get(Expressions.numberPath(Double.class, "avgScore"))).orElse(0.0))
+                    .reviewCount(Optional.ofNullable(tuple.get(Expressions.numberPath(Long.class, "reviewCount"))).orElse(0L))
+                    .is_like(isLike)
+                    .build();
 
-            DrinkResponseDto dto = buildDrinkResponseDto(drink);
-            DrinkDetailResponseDto drinkDetailResponseDto = drinkMapper.toDrinkDetailResponseDto(dto, reviewScore, reviewCount, isLike);
-
-            dtoList.add(drinkDetailResponseDto);
+            drinkDetailResponseDtoList.add(dto);
         }
-        long endTime= System.currentTimeMillis();
-        System.out.println("조회에 걸린 시간: " + (endTime - startTime) + "ms");
-        return new PageImpl<>(dtoList, pageable, drinkPage.getTotalElements());
+
+        return new PageImpl<>(drinkDetailResponseDtoList, pageable, drinkPage.getTotalElements());
     }
     /*
      * 상품(술) 삭제 메서드
