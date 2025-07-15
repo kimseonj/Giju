@@ -5,7 +5,6 @@ import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
 import lombok.Getter;
 
 import java.time.OffsetDateTime;
-import java.time.ZonedDateTime;
 
 /*
 * 응답 JSON에 정의하지 않은 필드가 있어도 무시하고 넘어감

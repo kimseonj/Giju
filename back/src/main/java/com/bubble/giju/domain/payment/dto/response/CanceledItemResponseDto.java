@@ -1,6 +1,5 @@
 package com.bubble.giju.domain.payment.dto.response;
 
-import jakarta.validation.constraints.NotNull;
 import lombok.Builder;
 import lombok.Getter;
 import lombok.NoArgsConstructor;

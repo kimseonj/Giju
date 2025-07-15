@@ -2,8 +2,8 @@
 cloud:
   aws:
     credentials:
-      access-key: ${S3STORAGE_ACCESS_KEY}     # 환경 변수로부터 읽음
-      secret-key: ${S3STORAGE_SECRET_KEY} # 환경 변수로부터 읽음
+      access-key: ${S3STORAGE_ACCESS_KEY:test}     # 환경 변수로부터 읽음
+      secret-key: ${S3STORAGE_SECRET_KEY:test} # 환경 변수로부터 읽음
     region:
       static: ap-northeast-2 # 환경 변수 또는 기본값 :contentReference[oaicite:0]{index=0}
 
