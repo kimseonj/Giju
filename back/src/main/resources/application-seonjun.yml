@@ -13,7 +13,6 @@ spring:
     username: root
     password: root1234
 
-
   jpa:
     hibernate:
       ddl-auto: none
@@ -28,6 +27,11 @@ spring:
   sql:
     init:
       mode: never
+
+  data:
+    redis:
+      host: 127.0.0.1
+      port: 6379
 
 app:
   base-url: https://giju.vercel.app
