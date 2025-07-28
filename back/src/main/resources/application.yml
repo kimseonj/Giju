@@ -22,6 +22,7 @@ spring:
     group:
       "prod": "prod, oauth, swagger"
       "local": "local, oauth, swagger, secret"
+      "seonjun": "seonjun, oauth, swagger, secret"
   servlet:
     multipart:
       max-file-size: 20MB
