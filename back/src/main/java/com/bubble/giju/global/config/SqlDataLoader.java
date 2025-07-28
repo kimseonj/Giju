@@ -25,13 +25,13 @@ public class SqlDataLoader implements ApplicationRunner {
     @Override
     public void run(ApplicationArguments args) throws Exception {
         List<String> sqlFiles = List.of(
-                "sql/userData.sql",
-                "sql/drinkData.sql",
-                "sql/images.sql",
-                "sql/orderData.sql",
-                "sql/paymentData.sql",
-                "sql/likesData.sql",
-                "sql/reviews.sql"
+//                "sql/userData.sql",
+//                "sql/drinkData.sql",
+//                "sql/images.sql",
+//                "sql/orderData.sql",
+//                "sql/paymentData.sql",
+//                "sql/likesData.sql",
+//                "sql/reviews.sql"
         );
 
         try (Connection conn = dataSource.getConnection()) {
