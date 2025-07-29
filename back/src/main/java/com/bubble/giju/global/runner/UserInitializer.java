@@ -29,7 +29,7 @@ public class UserInitializer implements CommandLineRunner {
     public void run(String... args) throws Exception {
 //        if (userRepository.count() == 0) {
         if (true) {
-            loadUserData();
+//            loadUserData();
             log.info("사용자 데이터 로딩 완료...");
         }
     }
