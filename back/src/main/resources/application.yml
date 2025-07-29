@@ -18,7 +18,7 @@ spring:
     name: giju
 
   profiles:
-    active: local
+    active: seonjun
     group:
       "prod": "prod, oauth, swagger"
       "local": "local, oauth, swagger, secret"
