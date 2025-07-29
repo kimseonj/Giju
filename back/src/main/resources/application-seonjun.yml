@@ -9,9 +9,9 @@ spring:
 
   datasource:
     driver-class-name: com.mysql.cj.jdbc.Driver
-    url: jdbc:mysql://database-giju.c54g8qaouy1y.ap-northeast-2.rds.amazonaws.com:3306/giju?useUnicode=true&serverTimezone=Asia/Seoul
-    username: root
-    password: root1234
+    url: ${DB_URI}
+    username: ${DB_USERNAME}
+    password: ${DB_PASSWORD}
 
   jpa:
     hibernate:
