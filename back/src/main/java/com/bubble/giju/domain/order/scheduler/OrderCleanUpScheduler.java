@@ -25,7 +25,7 @@ public class OrderCleanUpScheduler {
     @Value("${order.cleanup-expiration-minutes}")
     private int expirationMinutes;
 
-    @Scheduled(fixedRate = 5 * 60 * 1000) // 5분 간격
+//    @Scheduled(fixedRate = 5 * 60 * 1000) // 5분 간격
     @Transactional
     public void cleanUpExpiredPendingOrder(){
         OffsetDateTime cutoff =  OffsetDateTime.now().minusMinutes(expirationMinutes);
