@@ -5,10 +5,12 @@ import com.bubble.giju.domain.ranking.dto.response.UserRegionRankingDto;
 import com.bubble.giju.domain.ranking.repository.RegionRankingRepository;
 import com.bubble.giju.domain.ranking.service.RegionRankingService;
 import lombok.RequiredArgsConstructor;
+import org.springframework.context.annotation.Primary;
 import org.springframework.stereotype.Service;
 
 import java.util.List;
 
+@Primary
 @Service
 @RequiredArgsConstructor
 public class RegionRankingServiceImpl implements RegionRankingService {
