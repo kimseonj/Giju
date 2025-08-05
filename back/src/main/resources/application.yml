@@ -18,11 +18,11 @@ spring:
     name: giju
 
   profiles:
-    active: seonjun
+    active: local
     group:
       "prod": "prod, oauth, swagger"
-      "local": "local, oauth, swagger, secret"
-      "seonjun": "seonjun, oauth, swagger, secret"
+      "local": "local, oauth, swagger"
+      "seonjun": "seonjun, oauth, swagger, mysql"
   servlet:
     multipart:
       max-file-size: 20MB
